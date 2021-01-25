@@ -1,0 +1,28 @@
+$title: gold;
+$subtitle: lightblue;
+$text: white;
+
+@mixin Button {
+    font-family: 'Trispace';
+    color: $text;
+    background: black;
+    border: 0.5vh solid white;
+    text-align: center;
+    padding: 1%;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    border-radius: 3px;
+
+    &:hover {
+        cursor: pointer;
+        background: white;
+        color: black;
+    }
+
+    &:active {
+        background: grey;
+        border: 0.5vh solid grey;
+        color: black;
+        cursor: pointer;
+    }
+}
