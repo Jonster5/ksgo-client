@@ -2,14 +2,16 @@
     import { createEventDispatcher } from 'svelte';
     import Createlobby from './join/Createlobby.svelte';
     import Joinlobby from './join/Joinlobby.svelte';
-    import { client, serverdata, sockets, serverListID } from './modules/data';
-    // import { SWSmessage, SWSopen } from './modules/sockets';
+    import { client, gserverlist, sockets } from './modules/data';
+
+    import { SWSConnect } from './modules/sockets';
 
     const dispatch = createEventDispatcher();
 
-    $: sda = Array.from(serverdata);
-
     let selectedServerID: string;
+
+    let s_in: Node;
+    let s_l: MutationObserver;
 
     const click = (screen: string): void => {
         dispatch('click', {
@@ -22,9 +24,9 @@
     <div class="backbutton" on:click={() => click('title')}>Back</div>
     <div class="server">
         <label>
-            Game Server: <select bind:value={selectedServerID}>
-                {#each sda as s}
-                    <option value={s[0]}>{s[1].name}</option>
+            Game Server: <select bind:value={selectedServerID} bind:this={s_in}>
+                {#each gserverlist as s}
+                    <option value={s.id}>{s.name}</option>
                 {/each}
             </select>
         </label>

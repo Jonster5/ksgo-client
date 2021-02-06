@@ -1,4 +1,4 @@
-import { client, msaddress, serverdata, serverListID, ServerListItem, sockets } from './data';
+import { client, msaddress, gserverlist, sockets } from './data';
 
 function mwsopen(): void {
     console.info('MWS: Connected');
@@ -16,22 +16,6 @@ function mwsmessage({ data }): void {
     if (message.id === 'user-connect-confirm') {
         client.id = message.content;
     } else if (message.id === 'user-serverlist') {
-        if (message.content.length > serverdata.size) {
-            for (let { id, name, address } of message.content) {
-                if (serverdata.has(id)) continue;
-                serverdata.set(id, {
-                    name,
-                    address,
-                });
-                break;
-            }
-        } else if (message.content.length < serverdata.size) {
-            for (let id of serverdata.keys()) {
-                if (message.content.some((x) => x.id === id)) continue;
-                serverdata.delete(id);
-                break;
-            }
-        }
     }
 }
 
@@ -70,10 +54,10 @@ function SWSmessage({ data }) {
     }
 }
 
-function SWSConnect(id: string) {
+export function SWSConnect(id: string) {
     if (this.SWS) this.SWS.close();
     if (id) {
-        this.SWS = new WebSocket(serverdata.get(id).address);
+        this.SWS = new WebSocket(gserverlist.find((s) => s.id === id).address);
         this.SWS.onopen = SWSopen.bind(this);
         this.SWS.onmessage = SWSmessage.bind(this);
         this.SWSonerror = SWSerror.bind(this);
@@ -87,5 +71,3 @@ function SWSerror() {
 export const init = () => {
     MWSConnect.call(sockets);
 };
-
-export { msaddress } from './data';

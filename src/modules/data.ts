@@ -1,12 +1,12 @@
-import { writable } from 'svelte/store';
-
 export interface ServerListItem {
+    id: string;
     name: string;
     address: string;
 }
 
 export interface ClientObject {
     id: string;
+    name?: string;
 }
 
 export interface ClientSocketObject {
@@ -17,8 +17,6 @@ export interface ClientSocketObject {
         GWS: WebSocket | null;
     };
 }
-
-export const serverdata = new Map<string, ServerListItem>();
 
 export const sockets: ClientSocketObject = {
     MWS: null,
@@ -33,7 +31,23 @@ export const client: ClientObject = {
     id: null,
 };
 
-export const serverListID = writable<string>('');
+// export const msaddress = 'ws://192.168.1.157:4000';
+export const msaddress = 'wss://ksgo-master.herokuapp.com';
 
-export const msaddress = 'ws://192.168.1.157:4000';
-// export const msaddress = 'wss://ksgo-master.herokuapp.com';
+export const gserverlist: Array<ServerListItem> = [
+    {
+        id: null,
+        name: 'Server',
+        address: 'ws://192.168.1.157:8000',
+    },
+    {
+        id: null,
+        name: 'USA',
+        address: '',
+    },
+    {
+        id: null,
+        name: 'EU',
+        address: '',
+    },
+];
