@@ -20,8 +20,8 @@
         @include Button;
         display: block;
         position: absolute;
-        top: 1vh;
-        left: 1vw;
+        top: 0.6vh;
+        left: 0.6vh;
         padding: 0;
         width: 5vw;
         font-size: 1.4vw;
