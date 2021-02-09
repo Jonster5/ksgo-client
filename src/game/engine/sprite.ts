@@ -1,4 +1,4 @@
-import { DisplayObject } from './displayObject';
+import { DisplayObject } from './display';
 
 export class Sprite extends DisplayObject {
     frames: any[];

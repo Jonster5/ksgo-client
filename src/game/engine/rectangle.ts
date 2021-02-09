@@ -1,4 +1,4 @@
-import { DisplayObject } from './displayObject';
+import { DisplayObject } from './display';
 
 export class Rectangle extends DisplayObject {
     color: string;

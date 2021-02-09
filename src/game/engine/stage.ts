@@ -1,6 +1,6 @@
 'use strict';
 
-import { DisplayObject } from './displayObject';
+import { DisplayObject } from './display';
 import type { Canvas } from './canvas';
 
 export class Stage extends DisplayObject {

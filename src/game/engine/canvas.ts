@@ -1,4 +1,4 @@
-import type { DisplayObject } from './displayObject';
+import type { DisplayObject } from './display';
 import type { Stage } from './stage';
 
 export class Canvas {
@@ -34,7 +34,7 @@ export class Canvas {
     constructor(target: HTMLElement, size: number) {
         this.parent = target;
 
-        this.element = new HTMLCanvasElement();
+        this.element = document.createElement('canvas');
 
         const dpr = window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
         const rect = this.element.getBoundingClientRect();
@@ -64,6 +64,8 @@ export class Canvas {
         };
 
         this.animator = null;
+
+        this.children = new Set<DisplayObject>();
     }
 
     get UPS() {

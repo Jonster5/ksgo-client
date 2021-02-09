@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FP } from './lib/fp';
+    import { FP } from './game/fp';
 
     export let width: number;
     export let height: number;
@@ -12,7 +12,6 @@
     };
 
     let m_e: HTMLElement;
-    let c_e: HTMLCanvasElement;
 
     const game = new FP(m_e, 'empty');
 
