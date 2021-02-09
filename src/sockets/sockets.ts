@@ -68,6 +68,4 @@ function SWSerror() {
     setTimeout(SWSConnect.bind(this), 1000);
 }
 
-export const init = () => {
-    MWSConnect.call(sockets);
-};
+MWSConnect.call(sockets);

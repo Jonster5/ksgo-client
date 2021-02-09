@@ -1,27 +1,17 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+    import Backbutton from './Backbutton.svelte';
     import Createlobby from './join/Createlobby.svelte';
     import Joinlobby from './join/Joinlobby.svelte';
-    import { client, gserverlist, sockets } from './modules/data';
-
-    import { SWSConnect } from './modules/sockets';
-
-    const dispatch = createEventDispatcher();
+    import { gserverlist } from './sockets/data';
 
     let selectedServerID: string;
 
     let s_in: Node;
-    let s_l: MutationObserver;
-
-    const click = (screen: string): void => {
-        dispatch('click', {
-            screen,
-        });
-    };
 </script>
 
 <main>
-    <div class="backbutton" on:click={() => click('title')}>Back</div>
+    <Backbutton target="title" on:click />
     <div class="server">
         <label>
             Game Server: <select bind:value={selectedServerID} bind:this={s_in}>
@@ -46,17 +36,6 @@
         height: 100%;
         justify-content: center;
         align-items: center;
-    }
-
-    .backbutton {
-        @include Button;
-        display: block;
-        position: absolute;
-        top: 1vh;
-        left: 1vw;
-        padding: 0;
-        width: 5vw;
-        font-size: 1.4vw;
     }
 
     .server {
