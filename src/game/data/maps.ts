@@ -26,6 +26,8 @@ export interface PlanetItem {
     diameter: number | string;
     mass: number | string;
     color: string;
+    vx: number | string;
+    vy: number | string;
 }
 
 export interface AsteroidItem {
@@ -34,6 +36,8 @@ export interface AsteroidItem {
     diameter: number | string;
     mass: number | string;
     color: string;
+    vx: number | string;
+    vy: number | string;
 }
 
 export interface SpawnItem {

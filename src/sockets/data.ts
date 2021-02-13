@@ -31,8 +31,8 @@ export const client: ClientObject = {
     id: null,
 };
 
-// export const msaddress = 'ws://192.168.1.157:4000';
-export const msaddress = 'wss://ksgo-master.herokuapp.com';
+export const msaddress = 'ws://192.168.1.157:4000';
+// export const msaddress = 'wss://ksgo-master.herokuapp.com';
 
 export const gserverlist: Array<ServerListItem> = [
     {

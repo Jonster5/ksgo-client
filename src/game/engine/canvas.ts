@@ -92,7 +92,7 @@ export class Canvas {
     }
 
     add(stage: Stage) {
-        if (stage.parent !== null) stage.parent.remove(stage);
+        if (stage.parent) stage.parent.remove(stage);
         stage.parent = this;
         this.children.add(stage);
     }

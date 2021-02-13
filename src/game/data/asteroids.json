@@ -1,3 +1,44 @@
 {
-	"version": 1.0
+    "version": 1.0,
+    "name": "asteroids",
+    "size": 1500,
+    "friction": 0.999,
+    "stars": [],
+    "asteroids": [
+        {
+            "x": "0 1500",
+            "y": "0 1500",
+            "diameter": "5 10",
+            "mass": "3 7",
+            "color": "skyblue",
+            "vx": "-10 10",
+            "vy": "-10 10"
+        }
+    ],
+    "spawn": [
+        {
+            "x": 375,
+            "y": 187.5,
+            "width": 100,
+            "height": 100
+        },
+        {
+            "x": 375,
+            "y": 562.5,
+            "width": 100,
+            "height": 100
+        },
+        {
+            "x": 1125,
+            "y": 187.5,
+            "width": 100,
+            "height": 100
+        },
+        {
+            "x": 1125,
+            "y": 562.5,
+            "width": 100,
+            "height": 100
+        }
+    ]
 }
