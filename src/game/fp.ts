@@ -31,6 +31,15 @@ export class FP {
         box.x = 100;
         box.y = 100;
 
+        box.vx = 2;
+
+        this.canvas.UPS = 30;
+
+        this.canvas.update = () => {
+            box.x += box.vx;
+            document.title = `FPS ${this.canvas.FPS}`;
+        };
+
         this.remotes = new Set();
         this.user = null;
 
