@@ -2,9 +2,6 @@ import type { DisplayObject } from './display';
 import type { Stage } from './stage';
 
 export class Canvas {
-    Size(size: any) {
-        throw new Error('Method not implemented.');
-    }
     parent: HTMLElement;
     element: HTMLCanvasElement;
 
