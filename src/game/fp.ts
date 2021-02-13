@@ -5,6 +5,7 @@ import { AsteroidItem, MapItem, maps, PlanetItem, SpawnItem, StarItem } from './
 import { Star } from './stars/star';
 import { Planet } from './stars/planet';
 import { Asteroid } from './stars/asteroid';
+import { Rectangle } from './engine/rectangle';
 
 export class FP {
     canvas: Canvas;
@@ -19,10 +20,16 @@ export class FP {
     };
 
     constructor(p: HTMLElement, smap: string) {
-        this.canvas = new Canvas(p, 0);
-        this.stage = new Stage(0, 0);
+        this.canvas = new Canvas(p, 1500);
+        this.stage = new Stage(1500, 750);
 
         this.canvas.add(this.stage);
+
+        let box = new Rectangle(50, 50, 'white', { color: '', thickness: 0 });
+        this.stage.add(box);
+
+        box.x = 100;
+        box.y = 100;
 
         this.remotes = new Set();
         this.user = null;
@@ -35,9 +42,6 @@ export class FP {
         };
 
         const m: MapItem = maps.find((m) => m.name === smap);
-
-        // this.stage.width = m.size;
-        // this.stage.height = m.size / 2;
 
         if (!m) alert('broke');
 

@@ -34,13 +34,12 @@ export class Canvas {
         this.element = document.createElement('canvas');
 
         const dpr = window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
-        const rect = this.element.getBoundingClientRect();
 
         this.w = size;
         this.h = size / 2;
 
-        this.element.width = rect.width * dpr;
-        this.element.height = rect.height * dpr;
+        this.element.width = this.w * dpr;
+        this.element.height = this.h * dpr;
 
         this.ctx = this.element.getContext('2d');
         this.ctx.scale(dpr, dpr);
@@ -49,6 +48,8 @@ export class Canvas {
             'style',
             `display: block; width: calc(100% - 4px); height: auto; border: 2px solid gold; background: 'url(../../images/game/backgr.png)';`
         );
+
+        console.log(target.appendChild(this.element));
 
         this.rd = {
             timestamp: 0,
@@ -195,42 +196,42 @@ export class Canvas {
 
         for (let stage of this.children) {
             if (
-                stage.visible &&
-                stage.x < this.w &&
-                stage.x + stage.width > 0 &&
-                stage.y < this.h &&
-                stage.y + stage.height > 0
-            ) {
-                this.ctx.save();
+                !stage.visible ||
+                stage.x > this.w ||
+                stage.x + stage.width < 0 ||
+                stage.y > this.h ||
+                stage.y + stage.height < 0
+            )
+                continue;
 
-                const renderX =
-                    stage.prevx !== undefined
-                        ? (stage.x - stage.prevx) * lagOffset + stage.prevx
-                        : stage.x;
+            this.ctx.save();
 
-                const renderY =
-                    stage.prevy !== undefined
-                        ? (stage.y - stage.prevy) * lagOffset + stage.prevy
-                        : stage.y;
+            const renderX =
+                stage.prevx !== undefined
+                    ? (stage.x - stage.prevx) * lagOffset + stage.prevx
+                    : stage.x;
 
-                const renderR =
-                    stage.prevr !== undefined
-                        ? (stage.r - stage.prevr) * lagOffset + stage.prevr
-                        : stage.r;
+            const renderY =
+                stage.prevy !== undefined
+                    ? (stage.y - stage.prevy) * lagOffset + stage.prevy
+                    : stage.y;
 
-                this.ctx.translate(renderX + stage.halfWidth, renderY + stage.halfHeight);
+            const renderR =
+                stage.prevr !== undefined
+                    ? (stage.r - stage.prevr) * lagOffset + stage.prevr
+                    : stage.r;
 
-                this.ctx.rotate(renderR);
+            this.ctx.translate(renderX + stage.halfWidth, renderY + stage.halfHeight);
 
-                if (stage.children.size > 0) {
-                    this.ctx.translate(-stage.halfWidth, -stage.halfHeight);
+            this.ctx.rotate(renderR);
 
-                    for (let child of stage.children)
-                        this.displaySprite.call(this, child, lagOffset);
-                }
+            if (stage.children.size > 0) {
+                this.ctx.translate(-stage.halfWidth, -stage.halfHeight);
 
-                this.ctx.restore();
+                for (let child of stage.children) this.displaySprite.call(this, child, lagOffset);
             }
+
+            this.ctx.restore();
         }
 
         this.animator = requestAnimationFrame(this.render.bind(this));
