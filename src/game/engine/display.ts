@@ -1,12 +1,14 @@
 'use strict';
 
+import type { Canvas } from './canvas';
+
 export abstract class DisplayObject {
     x: number = 0;
     y: number = 0;
     r: number = 0;
     visible: boolean = true;
     parent: any;
-    children: Set<DisplayObject>;
+    children: Set<DisplayObject> = new Set<DisplayObject>();
     vx: number = 0;
     vy: number = 0;
     vr: number = 0;
@@ -41,7 +43,7 @@ export abstract class DisplayObject {
     add(...sprites: Array<DisplayObject>): void {
         if (sprites.length < 1) return;
         for (let sprite of sprites) {
-            if (sprite.parent !== null) sprite.parent.remove(sprite);
+            if (sprite.parent) sprite.parent.remove(sprite);
             if (sprite.parent === this) continue;
             sprite.parent = this;
             this.children.add(sprite);
