@@ -28,10 +28,10 @@ export class FP {
         let box = new Rectangle(50, 50, 'white', { color: '', thickness: 0 });
         this.stage.add(box);
 
-        box.x = 100;
-        box.y = 100;
+        box.x = 0;
+        box.y = 0;
 
-        box.vx = 2;
+        box.vx = 0;
 
         this.canvas.UPS = 30;
 
@@ -149,13 +149,17 @@ export class FP {
                 break;
         }
 
-        this.canvas.render();
+        this.canvas.start();
 
         function generate(input: string) {
             const nums = input.split(' ').map((x) => parseFloat(x));
 
             return Math.floor(Math.random() * (nums[1] - nums[0] + 1)) + nums[0];
         }
+    }
+
+    kill(): void {
+        this.canvas.stop();
     }
 }
 

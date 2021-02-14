@@ -25,8 +25,9 @@ export class Canvas {
     readonly gx = 0;
     readonly gy = 0;
 
-    animator: any;
+    animator: number;
     children: Set<DisplayObject>;
+    fpschecker: number;
 
     constructor(target: HTMLElement, size: number) {
         this.parent = target;
@@ -105,12 +106,20 @@ export class Canvas {
             setTimeout(this.stop, delay);
         } else {
             cancelAnimationFrame(this.animator);
+            cancelAnimationFrame(this.fpschecker);
             this.animator = null;
+            this.fpschecker = null;
         }
+    }
+
+    start() {
+        this.render();
+        this.refreshLoop();
     }
 
     step() {
         this.render();
+        this.refreshLoop();
         this.stop();
     }
 
@@ -120,6 +129,8 @@ export class Canvas {
 
         this.rd.times.push(now);
         this.rd.fps = this.rd.times.length;
+
+        this.fpschecker = requestAnimationFrame(this.refreshLoop.bind(this));
     }
 
     private getLagOffset(timestamp: number) {
@@ -187,9 +198,7 @@ export class Canvas {
         }
     }
 
-    render(timestamp?: number) {
-        this.refreshLoop();
-
+    private render(timestamp?: number) {
         const lagOffset = this.getLagOffset(timestamp);
 
         this.ctx.clearRect(0, 0, this.element.width, this.element.height);
@@ -226,7 +235,7 @@ export class Canvas {
             this.ctx.rotate(renderR);
 
             if (stage.children.size > 0) {
-                this.ctx.translate(-stage.halfWidth, -stage.halfHeight);
+                // this.ctx.translate(-stage.halfWidth, -stage.halfHeight);
 
                 for (let child of stage.children) this.displaySprite.call(this, child, lagOffset);
             }
