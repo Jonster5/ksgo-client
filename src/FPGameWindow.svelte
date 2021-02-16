@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
 
     import { FP } from './game/fp';
 
@@ -8,11 +8,13 @@
     let game: FP;
 
     const load = () => {
-        console.log('yes');
         game = new FP(m_e, 'empty');
     };
 
     onMount(load);
+    onDestroy(() => {
+        game.kill();
+    });
 </script>
 
 <main bind:this={m_e} />

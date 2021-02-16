@@ -50,7 +50,7 @@ export class Canvas {
             `display: block; width: calc(100% - 4px); height: auto; border: 2px solid gold; background: 'url(../../images/game/backgr.png)';`
         );
 
-        console.log(target.appendChild(this.element));
+        target.appendChild(this.element);
 
         this.rd = {
             timestamp: 0,
@@ -76,6 +76,14 @@ export class Canvas {
 
     get FPS() {
         return this.rd.fps;
+    }
+
+    get width(): number {
+        return this.w;
+    }
+
+    get height(): number {
+        return this.h;
     }
 
     size(width: number): void {
@@ -144,6 +152,10 @@ export class Canvas {
 
         while (this.rd.lag >= frameDuration) {
             this.children.forEach((stage: Stage) => {
+                stage.prevx = stage.x;
+                stage.prevy = stage.y;
+                stage.prevr = stage.r;
+
                 stage.children.forEach(spp);
 
                 function spp(sprite: DisplayObject) {
@@ -162,86 +174,12 @@ export class Canvas {
         return this.rd.lag / frameDuration;
     }
 
-    private displaySprite(sprite: DisplayObject, lagOffset: number) {
-        if (
-            sprite.visible &&
-            sprite.gx < this.w + sprite.halfWidth &&
-            sprite.gx + sprite.halfWidth > 0 &&
-            sprite.gy < this.h + sprite.halfHeight &&
-            sprite.gy + sprite.halfWidth > 0
-        ) {
-            this.ctx.save();
-
-            const renderX = sprite.prevx
-                ? (sprite.x - sprite.prevx) * lagOffset + sprite.prevx
-                : sprite.x;
-
-            const renderY = sprite.prevy
-                ? (sprite.y - sprite.prevy) * lagOffset + sprite.prevy
-                : sprite.y;
-
-            const renderR = sprite.prevr
-                ? (sprite.r - sprite.prevr) * lagOffset + sprite.prevr
-                : sprite.r;
-
-            this.ctx.translate(renderX, renderY);
-
-            this.ctx.rotate(renderR);
-
-            if (sprite.render) sprite.render(this.ctx);
-
-            if (sprite.children.size > 0) {
-                for (let child of sprite.children) this.displaySprite.call(this, child);
-            }
-
-            this.ctx.restore();
-        }
-    }
-
     private render(timestamp?: number) {
         const lagOffset = this.getLagOffset(timestamp);
 
         this.ctx.clearRect(0, 0, this.element.width, this.element.height);
 
-        for (let stage of this.children) {
-            if (
-                !stage.visible ||
-                stage.x > this.w ||
-                stage.x + stage.width < 0 ||
-                stage.y > this.h ||
-                stage.y + stage.height < 0
-            )
-                continue;
-
-            this.ctx.save();
-
-            const renderX =
-                stage.prevx !== undefined
-                    ? (stage.x - stage.prevx) * lagOffset + stage.prevx
-                    : stage.x;
-
-            const renderY =
-                stage.prevy !== undefined
-                    ? (stage.y - stage.prevy) * lagOffset + stage.prevy
-                    : stage.y;
-
-            const renderR =
-                stage.prevr !== undefined
-                    ? (stage.r - stage.prevr) * lagOffset + stage.prevr
-                    : stage.r;
-
-            this.ctx.translate(renderX + stage.halfWidth, renderY + stage.halfHeight);
-
-            this.ctx.rotate(renderR);
-
-            if (stage.children.size > 0) {
-                // this.ctx.translate(-stage.halfWidth, -stage.halfHeight);
-
-                for (let child of stage.children) this.displaySprite.call(this, child, lagOffset);
-            }
-
-            this.ctx.restore();
-        }
+        for (let stage of this.children) stage.render(this.ctx, lagOffset);
 
         this.animator = requestAnimationFrame(this.render.bind(this));
     }

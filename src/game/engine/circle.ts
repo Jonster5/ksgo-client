@@ -63,7 +63,30 @@ export class Circle extends DisplayObject {
         this.ra = value / 2;
     }
 
-    render(ctx: CanvasRenderingContext2D) {
+    render(ctx: CanvasRenderingContext2D, lagOffset: number) {
+        if (
+            !this.visible ||
+            this.x - this.halfWidth > this.parent.width / 2 ||
+            this.x + this.halfWidth < -this.parent.width / 2 ||
+            this.y - this.halfHeight > this.parent.height / 2 ||
+            this.y + this.halfHeight < -this.parent.height / 2
+        )
+            return;
+
+        ctx.save();
+
+        const renderX =
+            this.prevx !== undefined ? (this.x - this.prevx) * lagOffset + this.prevx : this.x;
+
+        const renderY =
+            this.prevy !== undefined ? (this.y - this.prevy) * lagOffset + this.prevy : this.y;
+
+        const renderR =
+            this.prevr !== undefined ? (this.r - this.prevr) * lagOffset + this.prevr : this.r;
+
+        ctx.translate(renderX + this.parent.width / 2, renderY + this.parent.height / 2);
+        ctx.rotate(renderR);
+
         ctx.fillStyle = this.color;
         ctx.strokeStyle = this.border.color;
         ctx.lineWidth = this.border.thickness;
@@ -71,5 +94,9 @@ export class Circle extends DisplayObject {
         ctx.arc(0, 0, this.radius, 0, 2 * Math.PI, false);
         if (this.color !== 'none' && this.color) ctx.fill();
         if (this.border.color !== 'none' && this.border.color) ctx.stroke();
+
+        if (this.children.size > 0) for (let child of this.children) child.render(ctx, lagOffset);
+
+        ctx.restore();
     }
 }

@@ -67,7 +67,20 @@ export abstract class DisplayObject {
         return this.y + this.parent.gy;
     }
 
-    forcePosition({ x, y, r }: { x: number; y: number; r: number }): void {}
+    render(ctx: CanvasRenderingContext2D, lagOffset: number): void {}
 
-    render(ctx: CanvasRenderingContext2D): void {}
+    setX(X: number) {
+        this.x = X;
+        this.prevx = X;
+    }
+
+    setY(Y: number) {
+        this.y = Y;
+        this.prevy = Y;
+    }
+
+    setR(R: number) {
+        this.r = R;
+        this.prevr = R;
+    }
 }

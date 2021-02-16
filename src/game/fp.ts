@@ -31,12 +31,25 @@ export class FP {
         box.x = 0;
         box.y = 0;
 
-        box.vx = 0;
+        box.vx = 5;
+
+        // this.stage.vx = 1;
+        // box.vr = 1 * (Math.PI / 180);
 
         this.canvas.UPS = 30;
 
         this.canvas.update = () => {
             box.x += box.vx;
+            box.y += box.vy;
+            box.r += box.vr;
+
+            this.stage.x += this.stage.vx;
+            this.stage.y += this.stage.vy;
+            this.stage.r += this.stage.vr;
+
+            if (box.x - box.halfWidth > this.stage.halfWidth)
+                box.setX(-(this.stage.halfWidth + box.halfWidth));
+
             document.title = `FPS ${this.canvas.FPS}`;
         };
 
