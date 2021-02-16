@@ -179,7 +179,13 @@ export class Canvas {
 
         this.ctx.clearRect(0, 0, this.element.width, this.element.height);
 
+        this.ctx.save();
+
+        this.ctx.translate(this.w / 2, this.h / 2);
+
         for (let stage of this.children) stage.render(this.ctx, lagOffset);
+
+        this.ctx.restore();
 
         this.animator = requestAnimationFrame(this.render.bind(this));
     }

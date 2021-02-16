@@ -84,7 +84,7 @@ export class Circle extends DisplayObject {
         const renderR =
             this.prevr !== undefined ? (this.r - this.prevr) * lagOffset + this.prevr : this.r;
 
-        ctx.translate(renderX + this.parent.width / 2, renderY + this.parent.height / 2);
+        ctx.translate(renderX, renderY);
         ctx.rotate(renderR);
 
         ctx.fillStyle = this.color;

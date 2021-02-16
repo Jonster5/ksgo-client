@@ -1,5 +1,6 @@
 import empty from './empty.json';
 import singlesun from './singlesun.json';
+import asteroids from './asteroids.json';
 
 export interface MapItem {
     version: number;
@@ -47,6 +48,6 @@ export interface SpawnItem {
     height: number;
 }
 
-export const maps: Array<MapItem> = [empty, singlesun];
+export const maps: Array<MapItem> = [empty, singlesun, asteroids];
 
 export default maps;

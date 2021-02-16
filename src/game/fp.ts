@@ -6,6 +6,7 @@ import { Star } from './stars/star';
 import { Planet } from './stars/planet';
 import { Asteroid } from './stars/asteroid';
 import { Rectangle } from './engine/rectangle';
+import { Circle } from './engine/circle';
 
 export class FP {
     canvas: Canvas;
@@ -25,33 +26,16 @@ export class FP {
 
         this.canvas.add(this.stage);
 
-        let box = new Rectangle(50, 50, 'white', { color: '', thickness: 0 });
-        this.stage.add(box);
-
-        box.x = 0;
-        box.y = 0;
-
-        box.vx = 5;
-
-        // this.stage.vx = 1;
-        // box.vr = 1 * (Math.PI / 180);
+        this.canvas.element.addEventListener(
+            'wheel',
+            (e: WheelEvent) => {
+                if (e.deltaY > 0) this.canvas.size(this.canvas.width + 50);
+                else this.canvas.size(this.canvas.width - 50);
+            },
+            { passive: true }
+        );
 
         this.canvas.UPS = 30;
-
-        this.canvas.update = () => {
-            box.x += box.vx;
-            box.y += box.vy;
-            box.r += box.vr;
-
-            this.stage.x += this.stage.vx;
-            this.stage.y += this.stage.vy;
-            this.stage.r += this.stage.vr;
-
-            if (box.x - box.halfWidth > this.stage.halfWidth)
-                box.setX(-(this.stage.halfWidth + box.halfWidth));
-
-            document.title = `FPS ${this.canvas.FPS}`;
-        };
 
         this.remotes = new Set();
         this.user = null;
@@ -124,6 +108,7 @@ export class FP {
 
                     this.map.planets.push(new Planet(this.stage, planet_stats));
                 });
+                console.log(m.asteroids.length);
                 m.asteroids.forEach((a) => {
                     const asteroid_stats: AsteroidItem = {
                         diameter: null,
@@ -161,6 +146,8 @@ export class FP {
                 alert('map version not supported ¯\\_(ツ)_/¯');
                 break;
         }
+
+        this.canvas.update = () => {};
 
         this.canvas.start();
 
