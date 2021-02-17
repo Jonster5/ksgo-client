@@ -166,12 +166,28 @@ export class FP {
                 planet.update_grav(this.map.stars, this.map.planets);
             });
 
-            this.map.planets.forEach((planet) => {
-                planet.x += planet.vx;
-                planet.y += planet.vy;
+            if (this.map.planets.length > 0) {
+                this.map.planets.forEach((planet) => {
+                    planet.x += planet.vx;
+                    planet.y += planet.vy;
+                });
+            }
+            if (this.map.asteroids.length > 0) {
+                this.map.asteroids.forEach((asteroid) => {
+                    asteroid.x += asteroid.vx;
+                    asteroid.y += asteroid.vy;
 
-                // console.log(planet.vx);
-            });
+                    if (asteroid.x > this.stage.halfWidth)
+                        asteroid.sprite.setX(-this.stage.halfWidth);
+                    if (asteroid.x < this.stage.halfWidth)
+                        asteroid.sprite.setX(this.stage.halfWidth);
+
+                    if (asteroid.y > this.stage.halfHeight)
+                        asteroid.sprite.setY(-this.stage.halfHeight);
+                    if (asteroid.y < this.stage.halfHeight)
+                        asteroid.sprite.setY(this.stage.halfHeight);
+                });
+            }
         };
 
         this.canvas.start();

@@ -25,40 +25,30 @@ export class Planet extends StellarObject {
                 let vx = star.x - this.x,
                     vy = star.y - this.y;
 
-                console.assert(!isNaN(vx));
-                console.assert(!isNaN(vy));
-
                 let m = Math.sqrt(vx * vx + vy * vy);
-
-                console.assert(!isNaN(m));
 
                 let dx = vx / m,
                     dy = vy / m;
 
-                console.assert(!isNaN(dx));
-                console.assert(!isNaN(dy));
-
                 gravity_modifier.x += (dx * (star.mass * this.mass)) / m;
                 gravity_modifier.y += (dy * (star.mass * this.mass)) / m;
-
-                console.assert(!isNaN(gravity_modifier.x));
-                console.assert(!isNaN(gravity_modifier.y));
             }
         }
-        // if (planets.length > 0) {
-        //     for (let planet of planets) {
-        //         let vx = planet.x - this.x,
-        //             vy = planet.y - this.y;
+        if (planets.length > 0) {
+            for (let planet of planets) {
+                if (planet === this) continue;
+                let vx = planet.x - this.x,
+                    vy = planet.y - this.y;
 
-        //         let m = Math.sqrt(vx * vx + vy * vy);
+                let m = Math.sqrt(vx * vx + vy * vy);
 
-        //         let dx = vx / m,
-        //             dy = vy / m;
+                let dx = vx / m,
+                    dy = vy / m;
 
-        //         gravity_modifier.x += (dx * (planet.mass * this.mass)) / m;
-        //         gravity_modifier.y += (dy * (planet.mass * this.mass)) / m;
-        //     }
-        // }
+                gravity_modifier.x += (dx * (planet.mass * this.mass)) / m;
+                gravity_modifier.y += (dy * (planet.mass * this.mass)) / m;
+            }
+        }
 
         this.vx += gravity_modifier.x;
         this.vy += gravity_modifier.y;
