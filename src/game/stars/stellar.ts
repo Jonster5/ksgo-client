@@ -7,15 +7,8 @@ export class StellarObject {
     sprite: Circle;
     mass: number;
 
-    constructor(stage: Stage, stats: StarItem | PlanetItem | AsteroidItem) {
-        const { x, y, mass, diameter, color } = stats;
-
+    constructor(stage: Stage, { diameter, color }) {
         this.sprite = new Circle((diameter as number) / 2, color, { color: '', thickness: 0 });
-
-        this.sprite.x = x as number;
-        this.sprite.y = y as number;
-
-        this.mass = mass as number;
 
         stage.add(this.sprite);
     }

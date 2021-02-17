@@ -44,8 +44,7 @@ export interface AsteroidItem {
 export interface SpawnItem {
     x: number;
     y: number;
-    width: number;
-    height: number;
+    size: number;
 }
 
 export const maps: Array<MapItem> = [empty, singlesun, asteroids];

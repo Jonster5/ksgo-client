@@ -13,6 +13,7 @@ export class FP {
     stage: Stage;
     remotes: Set<unknown>;
     user: any;
+    boundary: Rectangle;
     map: {
         stars: Array<Star>;
         planets: Array<Planet>;
@@ -21,16 +22,30 @@ export class FP {
     };
 
     constructor(p: HTMLElement, smap: string) {
-        this.canvas = new Canvas(p, 1500);
-        this.stage = new Stage(1500, 750);
+        const m: MapItem = maps.find((m) => m.name === smap);
+
+        this.canvas = new Canvas(p, m.size / 2);
+        this.stage = new Stage(m.size, m.size / 2);
 
         this.canvas.add(this.stage);
+
+        this.boundary = new Rectangle(this.stage.width, this.stage.height, '', {
+            color: 'red',
+            thickness: 2,
+        });
+
+        this.stage.add(this.boundary);
 
         this.canvas.element.addEventListener(
             'wheel',
             (e: WheelEvent) => {
-                if (e.deltaY > 0) this.canvas.size(this.canvas.width + 50);
-                else this.canvas.size(this.canvas.width - 50);
+                if (e.deltaY > 0) {
+                    this.canvas.size(this.canvas.width + 100);
+                    if (this.canvas.width >= this.stage.width) this.canvas.size(this.stage.width);
+                } else {
+                    this.canvas.size(this.canvas.width - 100);
+                    if (this.canvas.width <= 100) this.canvas.size(100);
+                }
             },
             { passive: true }
         );
@@ -46,8 +61,6 @@ export class FP {
             asteroids: [],
             spawns: [],
         };
-
-        const m: MapItem = maps.find((m) => m.name === smap);
 
         if (!m) alert('broke');
 
@@ -108,7 +121,6 @@ export class FP {
 
                     this.map.planets.push(new Planet(this.stage, planet_stats));
                 });
-                console.log(m.asteroids.length);
                 m.asteroids.forEach((a) => {
                     const asteroid_stats: AsteroidItem = {
                         diameter: null,
@@ -141,13 +153,26 @@ export class FP {
 
                     this.map.asteroids.push(new Asteroid(this.stage, asteroid_stats));
                 });
+
+                this.map.spawns = [...m.spawn];
                 break;
             default:
                 alert('map version not supported ¯\\_(ツ)_/¯');
                 break;
         }
 
-        this.canvas.update = () => {};
+        this.canvas.update = () => {
+            this.map.planets.forEach((planet) => {
+                planet.update_grav(this.map.stars, this.map.planets);
+            });
+
+            this.map.planets.forEach((planet) => {
+                planet.x += planet.vx;
+                planet.y += planet.vy;
+
+                // console.log(planet.vx);
+            });
+        };
 
         this.canvas.start();
 

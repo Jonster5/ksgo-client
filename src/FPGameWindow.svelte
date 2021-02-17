@@ -8,7 +8,7 @@
     let game: FP;
 
     const load = () => {
-        game = new FP(m_e, 'asteroids');
+        game = new FP(m_e, 'singlesun');
     };
 
     onMount(load);

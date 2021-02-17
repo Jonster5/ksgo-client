@@ -1,53 +1,49 @@
 {
     "version": 1.0,
     "name": "singlesun",
-    "size": 1500,
+    "size": 3000,
     "friction": 0.999,
     "stars": [
         {
-            "x": 750,
-            "y": 375,
-            "diameter": 50,
-            "mass": 1000,
+            "x": 0,
+            "y": 0,
+            "diameter": 100,
+            "mass": 500,
             "color": "gold"
         }
     ],
     "planets": [
         {
-            "x": 375,
-            "y": 375,
+            "x": -700,
+            "y": 0,
             "diameter": 30,
-            "mass": 25,
+            "mass": 5,
             "color": "skyblue",
             "vx": 0,
-            "vy": 10
+            "vy": -5
         }
     ],
     "asteroids": [],
     "spawn": [
         {
-            "x": 375,
-            "y": 187.5,
-            "width": 100,
-            "height": 100
+            "x": -750,
+            "y": -375,
+            "size": 100
         },
         {
-            "x": 375,
-            "y": 562.5,
-            "width": 100,
-            "height": 100
+            "x": -750,
+            "y": 375,
+            "size": 100
         },
         {
-            "x": 1125,
-            "y": 187.5,
-            "width": 100,
-            "height": 100
+            "x": 750,
+            "y": -375,
+            "size": 100
         },
         {
-            "x": 1125,
-            "y": 562.5,
-            "width": 100,
-            "height": 100
+            "x": 750,
+            "y": 375,
+            "size": 100
         }
     ]
 }
