@@ -8,7 +8,8 @@
     let game: FP;
 
     const load = () => {
-        game = new FP(m_e, 'singlesun');
+        game = new FP(m_e);
+        game.init('starsystem');
     };
 
     onMount(load);

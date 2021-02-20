@@ -12,17 +12,7 @@
             "color": "gold"
         }
     ],
-    "planets": [
-        {
-            "x": -700,
-            "y": 0,
-            "diameter": 30,
-            "mass": 5,
-            "color": "skyblue",
-            "vx": 0,
-            "vy": -5
-        }
-    ],
+    "planets": [],
     "asteroids": [],
     "spawn": [
         {

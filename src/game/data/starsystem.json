@@ -1,0 +1,76 @@
+{
+    "version": 1.0,
+    "name": "starsystem",
+    "size": 3000,
+    "friction": 0.999,
+    "stars": [
+        {
+            "x": 0,
+            "y": 0,
+            "diameter": 100,
+            "mass": 600,
+            "color": "gold"
+        }
+    ],
+    "planets": [
+        {
+            "x": -600,
+            "y": 0,
+            "diameter": 30,
+            "mass": 9,
+            "color": "skyblue",
+            "vx": 0,
+            "vy": -7.35
+        },
+        {
+            "x": 600,
+            "y": 0,
+            "diameter": 30,
+            "mass": 9,
+            "color": "saddlebrown",
+            "vx": 0,
+            "vy": 7.35
+        },
+        {
+            "x": 0,
+            "y": -600,
+            "diameter": 30,
+            "mass": 9,
+            "color": "lime",
+            "vx": 7.35,
+            "vy": 0
+        },
+        {
+            "x": 0,
+            "y": 600,
+            "diameter": 30,
+            "mass": 9,
+            "color": "indigo",
+            "vx": -7.35,
+            "vy": 0
+        }
+    ],
+    "asteroids": [],
+    "spawn": [
+        {
+            "x": -750,
+            "y": -375,
+            "size": 100
+        },
+        {
+            "x": -750,
+            "y": 375,
+            "size": 100
+        },
+        {
+            "x": 750,
+            "y": -375,
+            "size": 100
+        },
+        {
+            "x": 750,
+            "y": 375,
+            "size": 100
+        }
+    ]
+}

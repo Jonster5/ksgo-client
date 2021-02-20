@@ -18,7 +18,7 @@ export class Asteroid extends StellarObject {
         this.mass = (mass as number) / 10;
     }
 
-    update(stars: Array<Star>, planets: Array<Planet>, asteroids: Array<Asteroid>) {
+    updateGravity(stars: Array<Star>, planets: Array<Planet>, asteroids: Array<Asteroid>) {
         let gravity_modifier = { x: 0, y: 0 };
 
         if (stars.length > 0) {

@@ -1,6 +1,7 @@
 import empty from './empty.json';
 import singlesun from './singlesun.json';
 import asteroids from './asteroids.json';
+import starsystem from './starsystem.json';
 
 export interface MapItem {
     version: number;
@@ -47,6 +48,6 @@ export interface SpawnItem {
     size: number;
 }
 
-export const maps: Array<MapItem> = [empty, singlesun, asteroids];
+export const maps: Array<MapItem> = [empty, singlesun, asteroids, starsystem];
 
 export default maps;

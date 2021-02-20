@@ -17,7 +17,7 @@ export class Planet extends StellarObject {
         this.mass = (mass as number) / 10;
     }
 
-    update_grav(stars: Array<Star>, planets: Array<Planet>) {
+    updateGravity(stars: Array<Star>, planets: Array<Planet>) {
         const gravity_modifier = { x: 0, y: 0 };
 
         if (stars.length > 0) {
