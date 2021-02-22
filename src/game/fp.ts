@@ -7,12 +7,14 @@ import { Planet } from './stars/planet';
 import { Asteroid } from './stars/asteroid';
 import { Rectangle } from './engine/rectangle';
 import { Circle } from './engine/circle';
+import { Player } from './ships/player';
+import { ShipStatObject, ships } from './data/ships';
 
 export class FP {
     canvas: Canvas;
     stage: Stage;
     remotes: Set<unknown>;
-    user: any;
+    user: Player;
     boundary: Rectangle;
     map: {
         stars: Array<Star>;
@@ -39,18 +41,9 @@ export class FP {
         };
     }
 
-    // private scroller(e: WheelEvent) {
-    //     if (e.deltaY > 0) {
-    //         this.canvas.size(this.canvas.width + 100);
-    //         if (this.canvas.width >= this.stage.width) this.canvas.size(this.stage.width);
-    //     } else {
-    //         this.canvas.size(this.canvas.width - 100);
-    //         if (this.canvas.width <= 100) this.canvas.size(100);
-    //     }
-    // }
-
-    init(smap: string) {
+    init(smap: string, umap: string) {
         const m: MapItem = maps.find((m) => m.name === smap);
+        const u: ShipStatObject = ships.find((u) => u.name === umap);
 
         this.canvas.size(m.size);
         this.stage.width = m.size;
@@ -58,9 +51,11 @@ export class FP {
 
         this.boundary = new Rectangle(m.size, m.size / 2, '', {
             color: 'red',
-            thickness: 2,
+            thickness: 4,
         });
         this.stage.add(this.boundary);
+
+        this.user = new Player(this.stage, u);
 
         this.canvas.element.addEventListener(
             'wheel',
@@ -70,13 +65,15 @@ export class FP {
                     if (this.canvas.width >= this.stage.width) this.canvas.size(this.stage.width);
                 } else {
                     this.canvas.size(this.canvas.width - 100);
-                    if (this.canvas.width <= 100) this.canvas.size(100);
+                    if (this.canvas.width <= u.height * 10) this.canvas.size(u.height * 10);
                 }
             },
             { passive: true }
         );
 
-        if (!m) alert('broke');
+        this.canvas.element.addEventListener('contextmenu', (e: Event) => {
+            e.preventDefault();
+        });
 
         switch (m.version) {
             case 1.0:
@@ -206,8 +203,7 @@ export class FP {
                     }
                 });
             }
-            this.stage.x = -this.map.planets[0].x;
-            this.stage.y = -this.map.planets[0].y;
+
             if (this.map.asteroids.length > 0) {
                 this.map.asteroids.forEach((asteroid) => {
                     asteroid.x += asteroid.vx;
@@ -228,6 +224,9 @@ export class FP {
                     }
                 });
             }
+
+            this.stage.x = -this.user.x;
+            this.stage.y = -this.user.y;
         };
 
         this.canvas.start();

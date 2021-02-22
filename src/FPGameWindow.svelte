@@ -9,7 +9,7 @@
 
     const load = () => {
         game = new FP(m_e);
-        game.init('starsystem');
+        game.init('empty', 'Thumbtack');
     };
 
     onMount(load);

@@ -3,4 +3,6 @@
 
 .DS_Store
 
-/.firebase
+.firebase
+firebase.json
+.firebaserc

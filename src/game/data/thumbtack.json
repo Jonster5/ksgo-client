@@ -1,0 +1,43 @@
+{
+    "version": 1.0,
+    "name": "Thumbtack",
+    "width": 100,
+    "height": 100,
+
+    "max_energy": 200,
+    "energy_gain": 4,
+    "max_hull": 100,
+
+    "mass": 10,
+
+    "thrusters": [
+        {
+            "direction": "forward",
+            "size": 20,
+            "x": 0,
+            "y": 26,
+            "energy": 2,
+            "thrust": 5
+        },
+        {
+            "direction": "left",
+            "size": 10,
+            "x": 12,
+            "y": -5,
+            "energy": 0.5,
+            "thrust": 1
+        },
+        {
+            "direction": "right",
+            "size": 10,
+            "x": -12,
+            "y": -5,
+            "energy": 0.5,
+            "thrust": 1
+        }
+    ],
+
+    "weapons": [],
+
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAADb0lEQVR4Xu2bUU7tMAxEyz/rYQOsmw2wHv5BlQgKvje1E9vJNBp+3kONHWdOJnEr8XLwB0qBF6hqWMxBIGCbgEAIBEwBsHLoEAIBUwCsHDqEQMAUACuHDiEQMAXAyqFDCARMAbBy6BACAVMArBw6hEDAFAArhw4hEDAFwMqhQwgETAGwcugQAgFTAKwcOoRAwBQAK4cOIRAwBcDKoUMIBEwBsHLoEAIBUwCsHDqEQMAUACvnjg75Po59/4zibkBOGOfP3eo2+/BuCyMQM9o5Awlkjs6mWQoMHlkmufIHlcucl3q+1qYZCMQk05xB0hXbuuQuXRaBzNn4plmeuYEOMUmXM4hAcnQdytpyAh0yJKcv6OolkEB82g5FX4lOIEOSjgdpMLZ9W0dse7XvVdu6A2GX1d+nWn6Sm4ZAxk8eNdLywteChuhudcHagNWLGtnt9Tctub7V69H0Vp+vXoAHiFzcSC5VoNkDdgGyBQyUSz1iUxBIkJUjhNTa5KBS56SJ2J2eSqOArF6HR4N/sasXErG7I6CGCepNtBrIWb9XUG+8V8PQeAIJldOfjED8GoZmIJBQOf3JCMSvYWgGAgmV058MBcjDV4Ov97fv149PS30RrbNfyaAMlgUHTXWZ5qF1PYGcER1QUNbi0gtlEf+AFBgE4mI7Fvx7NB1f72/NBAaXbPNyuMQh0gH17zWVE4TRLQQy4oeW8PXRdDVGwvr9fRsYD53NiMjWmPqS1i7sK8ec81XxZfolTreuvWfclIVoAGTBrSNN3CVbtbtTd5YViHa3yMvdmrdnh64eO80hhk7p7yjqEcWStyff6rHpQLQ37vK8/reIUrqsutsqAHZ0x5RLvQXk6p54Jnar/dWAr97xvfNPd4gUWzqjdkDLDbJj2+nYmgrk2W6+Ele2v7Xw8qjr3Ymo46cAqe8ErcWtn1tfJOmQwO2l3Q3aHaE9Dyx1Sqp0h2iraHVLtdBXohOIpnDncwuQ+nPJ+f9nd0nntLDDb+EQea8QSPJ+ksdOzxHFIysBTi+QcmztBmPKm7qFn/UCL7l2fQeBA2Ld8bt+x4ICIrsni7N2HLO8y9pRVM+aCMSjXkIsgSSI6klJIB71EmIJJEFUT0oC8aiXEEsgCaJ6UhKIR72EWAJJENWTkkA86iXEEkiCqJ6UBOJRLyH2B8K8onRl6YoYAAAAAElFTkSuQmCC"
+}

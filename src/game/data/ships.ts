@@ -1,4 +1,5 @@
 import fighter from './fighter.json';
+import thumbtack from './thumbtack.json';
 
 export interface ShipStatObject {
     version: number;
@@ -20,7 +21,7 @@ export interface ShipStatObject {
 }
 
 export interface ShipThrustItem {
-    direction: 'forward' | 'reverse' | 'left' | 'right';
+    direction: string;
     size: number;
     x: number;
     y: number;
@@ -29,8 +30,8 @@ export interface ShipThrustItem {
 }
 
 export interface ShipWeaponItem {
-    type: 'red laser';
-    direction: 'forward' | 'reverse' | 'left' | 'right';
+    type: string;
+    direction: string;
     x: number;
     y: number;
 
@@ -38,6 +39,6 @@ export interface ShipWeaponItem {
     energy: number;
 }
 
-export const ships: Array<ShipStatObject> = [fighter as ShipStatObject];
+export const ships: Array<ShipStatObject> = [fighter, thumbtack];
 
 export default ships;
