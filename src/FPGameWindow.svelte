@@ -7,9 +7,12 @@
 
     let game: FP;
 
-    const load = () => {
+    async function p() {}
+
+    const load = async () => {
         game = new FP(m_e);
-        game.init('empty', 'Thumbtack');
+
+        game.init('asteroids', 'Frigate');
     };
 
     onMount(load);

@@ -1,5 +1,6 @@
 import fighter from './fighter.json';
 import thumbtack from './thumbtack.json';
+import frigate from './frigate.json';
 
 export interface ShipStatObject {
     version: number;
@@ -39,6 +40,6 @@ export interface ShipWeaponItem {
     energy: number;
 }
 
-export const ships: Array<ShipStatObject> = [fighter, thumbtack];
+export const ships: Array<ShipStatObject> = [fighter, thumbtack, frigate];
 
 export default ships;

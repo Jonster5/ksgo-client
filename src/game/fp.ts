@@ -45,7 +45,7 @@ export class FP {
         const m: MapItem = maps.find((m) => m.name === smap);
         const u: ShipStatObject = ships.find((u) => u.name === umap);
 
-        this.canvas.size(m.size);
+        this.canvas.size(u.height * 30);
         this.stage.width = m.size;
         this.stage.height = m.size / 2;
 
@@ -62,7 +62,7 @@ export class FP {
             (e: WheelEvent) => {
                 if (e.deltaY > 0) {
                     this.canvas.size(this.canvas.width + 100);
-                    if (this.canvas.width >= this.stage.width) this.canvas.size(this.stage.width);
+                    if (this.canvas.width >= u.height * 50) this.canvas.size(u.height * 50);
                 } else {
                     this.canvas.size(this.canvas.width - 100);
                     if (this.canvas.width <= u.height * 10) this.canvas.size(u.height * 10);
@@ -76,7 +76,7 @@ export class FP {
         });
 
         switch (m.version) {
-            case 1.0:
+            case 0.1:
                 m.stars.forEach((s) => {
                     const star_stats: StarItem = {
                         diameter: null,
