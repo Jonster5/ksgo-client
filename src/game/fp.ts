@@ -1,14 +1,14 @@
 'use strict';
 import { Canvas } from './engine/canvas';
 import { Stage } from './engine/stage';
-import { AsteroidItem, MapItem, maps, PlanetItem, SpawnItem, StarItem } from './data/maps';
+import type { AsteroidItem, MapItem, PlanetItem, SpawnItem, StarItem } from './data/maps';
+import type { ShipStatObject } from './data/ships';
 import { Star } from './stars/star';
 import { Planet } from './stars/planet';
 import { Asteroid } from './stars/asteroid';
 import { Rectangle } from './engine/rectangle';
 import { Circle } from './engine/circle';
-import { Player } from './ships/player';
-import { ShipStatObject, ships } from './data/ships';
+import type { Player } from './ships/player';
 
 export class FP {
     canvas: Canvas;
@@ -41,11 +41,8 @@ export class FP {
         };
     }
 
-    init(smap: string, umap: string) {
-        const m: MapItem = maps.find((m) => m.name === smap);
-        const u: ShipStatObject = ships.find((u) => u.name === umap);
-
-        this.canvas.size(u.height * 30);
+    async init(m: MapItem) {
+        this.canvas.size(m.size / 2);
         this.stage.width = m.size;
         this.stage.height = m.size / 2;
 
@@ -55,21 +52,21 @@ export class FP {
         });
         this.stage.add(this.boundary);
 
-        this.user = new Player(this.stage, u);
+        // this.user = new Player(this.stage, u);
 
-        this.canvas.element.addEventListener(
-            'wheel',
-            (e: WheelEvent) => {
-                if (e.deltaY > 0) {
-                    this.canvas.size(this.canvas.width + 100);
-                    if (this.canvas.width >= u.height * 50) this.canvas.size(u.height * 50);
-                } else {
-                    this.canvas.size(this.canvas.width - 100);
-                    if (this.canvas.width <= u.height * 10) this.canvas.size(u.height * 10);
-                }
-            },
-            { passive: true }
-        );
+        // this.canvas.element.addEventListener(
+        //     'wheel',
+        //     (e: WheelEvent) => {
+        //         if (e.deltaY > 0) {
+        //             this.canvas.size(this.canvas.width + 100);
+        //             if (this.canvas.width >= u.height * 50) this.canvas.size(u.height * 50);
+        //         } else {
+        //             this.canvas.size(this.canvas.width - 100);
+        //             if (this.canvas.width <= u.height * 10) this.canvas.size(u.height * 10);
+        //         }
+        //     },
+        //     { passive: true }
+        // );
 
         this.canvas.element.addEventListener('contextmenu', (e: Event) => {
             e.preventDefault();
@@ -225,8 +222,8 @@ export class FP {
                 });
             }
 
-            this.stage.x = -this.user.x;
-            this.stage.y = -this.user.y;
+            // this.stage.x = -this.user.x;
+            // this.stage.y = -this.user.y;
         };
 
         this.canvas.start();

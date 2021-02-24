@@ -177,7 +177,7 @@ export class Canvas {
     private render(timestamp?: number) {
         const lagOffset = this.getLagOffset(timestamp);
 
-        this.ctx.clearRect(0, 0, this.element.width, this.element.height);
+        this.ctx.clearRect(0, 0, this.width, this.height);
 
         this.ctx.save();
 

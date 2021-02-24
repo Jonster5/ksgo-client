@@ -19,7 +19,7 @@
 
     <article class="ui left" />
     <div>
-        <FPGameWindow />
+        <FPGameWindow m="starsystem" />
     </div>
     <article class="ui right" />
 

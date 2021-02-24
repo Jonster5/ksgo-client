@@ -2,7 +2,7 @@
     "version": 0.1,
     "name": "Frigate",
     "width": 35,
-    "height": 42,
+    "height": 80,
 
     "max_energy": 500,
     "energy_gain": 10,

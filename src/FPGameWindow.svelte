@@ -1,7 +1,8 @@
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte';
-
     import { FP } from './game/fp';
+
+    export let m: string;
 
     let m_e: HTMLElement;
 
@@ -12,7 +13,10 @@
     const load = async () => {
         game = new FP(m_e);
 
-        game.init('asteroids', 'Frigate');
+        const mapres = await fetch(`/data/${m}.json`);
+        const map = await mapres.json();
+
+        game.init(map);
     };
 
     onMount(load);
