@@ -1,25 +1,17 @@
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte';
+    import type { MapItem } from './game/data/maps';
     import { FP } from './game/fp';
 
-    export let m: string;
+    export let map: MapItem;
 
     let m_e: HTMLElement;
-
     let game: FP;
 
-    async function p() {}
-
-    const load = async () => {
+    onMount(() => {
         game = new FP(m_e);
-
-        const mapres = await fetch(`/data/${m}.json`);
-        const map = await mapres.json();
-
         game.init(map);
-    };
-
-    onMount(load);
+    });
     onDestroy(() => {
         game.kill();
     });

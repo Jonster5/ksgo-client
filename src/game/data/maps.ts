@@ -7,6 +7,8 @@ export interface MapItem {
     planets: Array<PlanetItem>;
     asteroids: Array<AsteroidItem>;
     spawn: Array<SpawnItem>;
+    thumb: string;
+    alt: string;
 }
 
 export interface StarItem {

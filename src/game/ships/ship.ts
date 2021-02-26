@@ -6,7 +6,7 @@ export class Ship {
     sprite: Sprite;
 
     constructor(stage: Stage, stats: ShipStatObject) {
-        const img = new Image(stats.width * 3, stats.height * 3);
+        const img = new Image(stats.width * 5, stats.height * 5);
         img.src = stats.image;
 
         this.sprite = new Sprite([img], stats.width, stats.height);

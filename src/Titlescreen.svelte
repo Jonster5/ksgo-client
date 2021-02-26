@@ -12,7 +12,7 @@
 
 <main>
     <div class="title">K S G O</div>
-    <div class="version">V1.0</div>
+    <div class="version">V0.1</div>
     <div class="button" on:click={() => click('join')}>Play Online</div>
     <div class="button" on:click={() => click('freeplay')}>Freeplay</div>
     <div class="button" on:click={() => click('more')}>More Stuff</div>
