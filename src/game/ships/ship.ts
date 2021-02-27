@@ -27,4 +27,18 @@ export class Ship {
     set y(val: number) {
         this.sprite.y = val;
     }
+
+    get vx(): number {
+        return this.sprite.vx;
+    }
+    set vx(val: number) {
+        this.sprite.vx = val;
+    }
+
+    get vy(): number {
+        return this.sprite.vy;
+    }
+    set vy(val: number) {
+        this.sprite.vy = val;
+    }
 }

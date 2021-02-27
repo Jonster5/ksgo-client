@@ -15,6 +15,7 @@ export interface ShipStatObject {
     weapons: Array<ShipWeaponItem>;
 
     image: string;
+    thumb: string;
 }
 
 export interface ShipThrustItem {
