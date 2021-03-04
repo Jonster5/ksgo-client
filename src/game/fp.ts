@@ -8,7 +8,6 @@ import { Star } from './stars/star';
 import { Planet } from './stars/planet';
 import { Asteroid } from './stars/asteroid';
 import { Rectangle } from './engine/rectangle';
-import { Circle } from './engine/circle';
 import { Player } from './ships/player';
 import type { Remote } from './ships/remote';
 
@@ -271,4 +270,6 @@ export class FP {
     }
 }
 
-export default FP;
+export const createFP = async () => {
+    const res = await fetch('data/assets.json');
+};

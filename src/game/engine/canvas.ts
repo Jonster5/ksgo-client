@@ -7,7 +7,7 @@ export class Canvas {
 
     ctx: CanvasRenderingContext2D;
 
-    update: () => void | null;
+    update: () => void;
 
     private rd: {
         timestamp: number;

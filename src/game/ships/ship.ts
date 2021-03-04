@@ -5,6 +5,11 @@ import type { Stage } from '../engine/stage';
 export class Ship {
     sprite: Sprite;
 
+    thrusters: Array<{
+        sprite: Sprite;
+    }>;
+    weapons: Array<{}>;
+
     constructor(stage: Stage, stats: ShipStatObject) {
         const img = new Image(stats.width * 5, stats.height * 5);
         img.src = stats.image;
