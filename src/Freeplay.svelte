@@ -1,6 +1,4 @@
 <script lang="ts">
-    import Backbutton from './Backbutton.svelte';
-    import FPGameWindow from './FPGame.svelte';
     import FPmapitem from './FPmapitem.svelte';
     import type { MapItem } from './game/data/maps';
     import { onDestroy, onMount } from 'svelte';
@@ -8,35 +6,39 @@
     import { fade } from 'svelte/transition';
     import { FP } from './game/fp';
     import SRPItem from './SRPItem.svelte';
+    import type { ShipStatObject } from './game/data/ships';
+    import { writable } from 'svelte/store';
 
-    let scene = 0;
+    interface Assets {
+        maps: MapItem[];
+        ships: ShipStatObject[];
+        ionthrust: string[];
+    }
 
     let s: HTMLElement;
     let m_e: HTMLElement;
 
-    export let map: string | MapItem;
-    export let assets: {
-        maps: Array<string>;
-        ships: Array<string>;
-        ionthrust: Array<string>;
-    };
+    export let assets: Assets;
 
     let game: FP;
-
+    let mapName: string;
     let showRespawnScreen: boolean;
+    let needsMapSelection = true;
     let srs: () => void;
 
-    const load = (async () => {})();
+    const selectMap = ({ detail }) => {
+        gameInit(detail);
+        needsMapSelection = false;
+    };
 
-    const select = ({ detail }) => {
+    const selectShip = ({ detail }) => {
         game.spawn(detail);
     };
 
-    const init = () => {
-        let game = new FP(m_e);
+    const gameInit = (mapName) => {
+        game = new FP(m_e, assets);
         srs = game.needsShipRespawn.subscribe((v) => (showRespawnScreen = v));
-        game.init(map as MapItem);
-        return game;
+        game.init(assets.maps.find((m: MapItem) => m.name === mapName));
     };
 
     onDestroy(() => {
@@ -45,59 +47,78 @@
     });
 </script>
 
-<main class="outer">
-    {#await promise}
-        <p>Loading...</p>
-    {:then value}
-        <!-- promise was fulfilled -->
-    {:catch error}
-        <!-- promise was rejected -->
-    {/await}
-</main>
+<main class="game" bind:this={m_e} />
 
-<!-- <Backbutton on:click target="title" />
-{#await loadAssets}
-    <main class="loading">Loading assets</main>
-{:then assets}
-    {#if scene === 0}
-        <main class="map">
-            <h1>Select a map</h1>
+{#if needsMapSelection}
+    <main class="map">
+        <h1>Select a map</h1>
 
-            <div class="maplist" bind:this={s} on:wheel|passive={scroll}>
-                {#each assets.maps as m}
-                    <FPmapitem name={m} on:select={select} />
-                {/each}
-            </div>
-        </main>
-    {:else if scene === 1}
-        <main class="game">
-            <header>KSGO Freeplay</header>
+        <div class="maplist" bind:this={s}>
+            {#each assets.maps as { name, thumb, alt }}
+                <FPmapitem {name} {thumb} {alt} on:select={selectMap} />
+            {/each}
+        </div>
+    </main>
+{/if}
 
-            <article class="ui left" />
-            <div>
-                {#if showRespawnScreen}
-                    <main
-                        class="popup"
-                        in:fade={{ duration: 100, delay: 1000 }}
-                        out:fade={{ duration: 100 }}
-                    >
-                        <h1>Respawn</h1>
-                        <div>
-                            {#each assets.ships as name}
-                                <SRPItem {name} on:select={select} />
-                            {/each}
-                        </div>
-                    </main>
-                {:else}
-                    <main bind:this={m_e} on:load={init} />
-                {/if}
-            </div>
-            <article class="ui right" />
+{#if showRespawnScreen}
+    <main class="popup">
+        <h1>Respawn</h1>
+        <div>
+            {#each assets.ships.map((x) => x.name) as name}
+                <SRPItem {name} on:select={selectShip} />
+            {/each}
+        </div>
+    </main>
+{/if}
 
-            <footer />
-        </main>
-    {/if}
-{/await} -->
 <style lang="scss">
     @import './styles/vars.scss';
+
+    main {
+        position: fixed;
+    }
+
+    .game {
+        background: url(/images/bg.png);
+    }
+
+    .map {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #000000aa;
+
+        h1 {
+            font-size: 3vw;
+            color: $title;
+            margin-bottom: 10vh;
+        }
+
+        div {
+            display: flex;
+            justify-content: center;
+        }
+    }
+
+    .popup {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        width: 50vw;
+        height: 50vh;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba($color: #000000, $alpha: 0.7);
+        h1 {
+            color: $title;
+        }
+        div {
+            display: flex;
+        }
+    }
 </style>

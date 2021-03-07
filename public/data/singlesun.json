@@ -1,7 +1,7 @@
 {
     "version": 0.1,
     "name": "Lone Star",
-    "size": 3000,
+    "size": 5000,
     "friction": 0.999,
     "stars": [
         {

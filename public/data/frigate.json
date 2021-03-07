@@ -8,7 +8,7 @@
     "energy_gain": 10,
     "max_hull": 400,
 
-    "mass": 30,
+    "mass": 2,
 
     "thrusters": [
         {
@@ -17,21 +17,37 @@
             "x": 0,
             "y": 30,
             "energy": 2,
-            "thrust": 3
+            "thrust": 1.5
+        },
+        {
+            "direction": "forward",
+            "size": 25,
+            "x": 10,
+            "y": 32,
+            "energy": 2,
+            "thrust": 1.5
+        },
+        {
+            "direction": "forward",
+            "size": 25,
+            "x": -10,
+            "y": 32,
+            "energy": 2,
+            "thrust": 1.5
         },
         {
             "direction": "left",
             "size": 15,
-            "x": 12,
-            "y": -5,
+            "x": 22,
+            "y": -10,
             "energy": 0.5,
             "thrust": 0.5
         },
         {
             "direction": "right",
             "size": 15,
-            "x": -12,
-            "y": -5,
+            "x": -22,
+            "y": -10,
             "energy": 0.5,
             "thrust": 0.5
         }

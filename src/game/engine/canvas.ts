@@ -4,6 +4,7 @@ import type { Stage } from './stage';
 export class Canvas {
     parent: HTMLElement;
     element: HTMLCanvasElement;
+    ar: number;
 
     ctx: CanvasRenderingContext2D;
 
@@ -36,8 +37,10 @@ export class Canvas {
 
         const dpr = window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
 
+        this.ar = window.innerWidth / window.innerHeight;
+
         this.w = size;
-        this.h = size / 2;
+        this.h = size / this.ar;
 
         this.element.width = this.w * dpr;
         this.element.height = this.h * dpr;
@@ -47,7 +50,7 @@ export class Canvas {
 
         this.element.setAttribute(
             'style',
-            `display: block; width: calc(100% - 4px); height: auto; border: 2px solid gold; background: 'url(../../images/game/backgr.png)';`
+            `display: block; width: 100vw; height: 100vh; border: none; background: black';`
         );
 
         target.appendChild(this.element);
@@ -86,14 +89,14 @@ export class Canvas {
         return this.h;
     }
 
-    size(width: number): void {
+    size(width?: number): void {
         const dpr = window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
 
         this.w = width;
-        this.h = width / 2;
+        this.h = width / this.ar;
 
         this.element.width = width * dpr;
-        this.element.height = (width / 2) * dpr;
+        this.element.height = (width / this.ar) * dpr;
 
         this.ctx.scale(dpr, dpr);
     }

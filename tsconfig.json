@@ -2,7 +2,8 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
 
   "compilerOptions": {
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "lib": ["DOM", "ESNext"]
   },
 
   "include": ["src/**/*"],

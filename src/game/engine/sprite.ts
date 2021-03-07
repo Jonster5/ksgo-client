@@ -3,24 +3,40 @@ import { DisplayObject } from './display';
 export class Sprite extends DisplayObject {
     frames: any[];
     frame: number;
+    frameShifter: number;
+
     constructor(frames = [], width = 0, height = 0, x = 0, y = 0) {
         super();
         this.frames = frames;
 
         this.frame = 0;
+        this.frameShifter = null;
 
         this.width = width;
         this.height = height;
         this.x = x;
         this.y = y;
     }
+
+    start(delay: number) {
+        this.frameShifter = setInterval(() => {
+            this.frame++;
+            if (this.frame >= this.frames.length) this.frame = 0;
+        }, delay);
+    }
+
+    stop() {
+        if (this.frameShifter) clearInterval(this.frameShifter);
+        this.frameShifter = null;
+    }
+
     render(ctx: CanvasRenderingContext2D, lagOffset: number): void {
         if (
-            !this.visible ||
-            this.x - this.halfWidth > this.parent.width / 2 ||
-            this.x + this.halfWidth < -this.parent.width / 2 ||
-            this.y - this.halfHeight > this.parent.height / 2 ||
-            this.y + this.halfHeight < -this.parent.height / 2
+            !this.visible //||
+            // this.x - this.halfWidth > this.parent.width / 2 ||
+            // this.x + this.halfWidth < -this.parent.width / 2 ||
+            // this.y - this.halfHeight > this.parent.height / 2 ||
+            // this.y + this.halfHeight < -this.parent.height / 2
         )
             return;
 

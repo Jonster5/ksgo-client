@@ -1,9 +1,9 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     import Backbutton from './Backbutton.svelte';
-    import Createlobby from './join/Createlobby.svelte';
-    import Joinlobby from './join/Joinlobby.svelte';
-    import { gserverlist } from './sockets/data';
+    import Createlobby from './Createlobby.svelte';
+    import Joinlobby from './Joinlobby.svelte';
+    import { gserverlist } from './game/sockets/data';
 
     let selectedServerID: string;
 

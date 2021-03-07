@@ -13,9 +13,9 @@
 <main>
     <div class="title">K S G O</div>
     <div class="version">V0.1</div>
-    <div class="button" on:click={() => click('join')}>Play Online</div>
-    <div class="button" on:click={() => click('freeplay')}>Freeplay</div>
-    <div class="button" on:click={() => click('more')}>More Stuff</div>
+    <div class="button" on:click={() => click('play')}>Play</div>
+    <div class="button" on:click={() => click('online')}>Play Online</div>
+    <div class="button" on:click={() => click('more')}>Shop</div>
 </main>
 
 <style lang="scss">

@@ -10,6 +10,7 @@ import { Asteroid } from './stars/asteroid';
 import { Rectangle } from './engine/rectangle';
 import { Player } from './ships/player';
 import type { Remote } from './ships/remote';
+import type { Assets } from './ships/ship';
 
 export class FP {
     canvas: Canvas;
@@ -26,12 +27,16 @@ export class FP {
     pause: boolean;
     mount: boolean;
 
+    assets: Assets;
+
     needsShipRespawn: Writable<boolean>;
 
-    constructor(p: HTMLElement) {
+    constructor(p: HTMLElement, assets) {
         this.canvas = new Canvas(p, 0);
         this.stage = new Stage(0, 0);
         this.canvas.add(this.stage);
+
+        this.assets = assets;
 
         this.canvas.UPS = 30;
 
@@ -54,16 +59,16 @@ export class FP {
     init(m: MapItem) {
         this.canvas.size(m.size / 2);
         this.stage.width = m.size;
-        this.stage.height = m.size / 2;
+        this.stage.height = m.size;
 
-        this.boundary = new Rectangle(m.size, m.size / 2, '', {
-            color: 'red',
-            thickness: 4,
-        });
+        this.boundary = new Rectangle(m.size, m.size, 'black', { color: 'red', thickness: 4 });
         this.stage.add(this.boundary);
 
-        this.canvas.element.addEventListener('contextmenu', (e: Event) => {
-            e.preventDefault();
+        this.canvas.element.addEventListener('contextmenu', (e: Event) => e.preventDefault());
+
+        window.addEventListener('resize', () => {
+            this.canvas.ar = window.innerWidth / window.innerHeight;
+            this.canvas.size(this.canvas.width);
         });
 
         switch (m.version) {
@@ -222,6 +227,23 @@ export class FP {
 
             this.user.update();
 
+            if (this.user.x > this.stage.halfWidth) {
+                this.user.sprite.setX(-this.stage.halfWidth);
+                this.stage.setX(-this.user.x);
+            }
+            if (this.user.x < -this.stage.halfWidth) {
+                this.user.sprite.setX(this.stage.halfWidth);
+                this.stage.setX(-this.user.x);
+            }
+            if (this.user.y > this.stage.halfHeight) {
+                this.user.sprite.setY(-this.stage.halfHeight);
+                this.stage.setY(-this.user.y);
+            }
+            if (this.user.y < -this.stage.halfHeight) {
+                this.user.sprite.setY(this.stage.halfHeight);
+                this.stage.setY(-this.user.y);
+            }
+
             this.stage.x = -this.user?.x ?? 0;
             this.stage.y = -this.user?.y ?? 0;
         };
@@ -229,32 +251,35 @@ export class FP {
         this.canvas.start();
 
         this.needsShipRespawn.set(true);
+
+        this.canvas.element.addEventListener(
+            'wheel',
+            (e) => {
+                if (e.deltaY > 0) {
+                    if (this.canvas.width + 100 >= this.user.sprite.height * 50) return;
+                    this.canvas.size(this.canvas.width + 100);
+                } else {
+                    if (this.canvas.width - 100 <= this.user.sprite.height * 10) return;
+                    this.canvas.size(this.canvas.width - 100);
+                }
+            },
+            { passive: true }
+        );
     }
 
     spawn(u: ShipStatObject) {
-        this.user = new Player(this.stage, u);
+        this.user = new Player(this.stage, u, this.assets);
+
+        const { x, y, size } = this.map.spawns[Math.floor(Math.random() * this.map.spawns.length)];
+
+        const sx = Math.floor(Math.random() * (x + size / 2 - x - size / 2 + 1) + x + size);
+        const sy = Math.floor(Math.random() * (y + size / 2 - y - size / 2 + 1) + y + size);
+
+        this.user.sprite.setX(sx);
+        this.user.sprite.setY(sy);
+
         this.needsShipRespawn.set(false);
         this.pause = false;
-
-        if (this.mount) {
-            this.canvas.element.addEventListener(
-                'wheel',
-                (e) => {
-                    if (e.deltaY > 0) {
-                        this.canvas.size(this.canvas.width + 100);
-                        if (this.canvas.width >= this.user.sprite.height * 50)
-                            this.canvas.size(this.user.sprite.height * 50);
-                    } else {
-                        this.canvas.size(this.canvas.width - 100);
-                        if (this.canvas.width <= this.user.sprite.height * 10)
-                            this.canvas.size(this.user.sprite.height * 10);
-                    }
-                },
-                { passive: true }
-            );
-
-            this.mount = false;
-        }
 
         this.canvas.size(this.user.sprite.height * 30);
     }
@@ -269,7 +294,3 @@ export class FP {
         this.canvas.stop();
     }
 }
-
-export const createFP = async () => {
-    const res = await fetch('data/assets.json');
-};

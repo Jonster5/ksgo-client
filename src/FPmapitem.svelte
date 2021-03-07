@@ -1,40 +1,20 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
 
-    import type { MapItem } from './game/data/maps';
-
     export let name: string;
+    export let thumb: string;
+    export let alt: string;
 
     const dispatch = createEventDispatcher();
 
-    let data: MapItem = null;
-
-    const load: Promise<MapItem> = (async () => {
-        const res = await fetch(`/data/${name}.json`);
-        const json = await res.json();
-
-        if (res.ok) {
-            data = json;
-            return json;
-        } else {
-            throw new Error(json);
-        }
-    })();
-
     const click = () => {
-        dispatch('select', data);
+        dispatch('select', name);
     };
 </script>
 
 <article on:click={click}>
-    {#await load}
-        <h2>Loading...</h2>
-    {:then d}
-        <h2>{d.name}</h2>
-        <img src={d.thumb} alt={d.alt} />
-    {:catch}
-        <h2>Something went wrong</h2>
-    {/await}
+    <h2>{name}</h2>
+    <img src={thumb} {alt} />
 </article>
 
 <style lang="scss">
