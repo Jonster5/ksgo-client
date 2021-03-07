@@ -21,7 +21,6 @@
     export let assets: Assets;
 
     let game: FP;
-    let mapName: string;
     let showRespawnScreen: boolean;
     let needsMapSelection = true;
     let srs: () => void;
@@ -32,7 +31,7 @@
     };
 
     const selectShip = ({ detail }) => {
-        game.spawn(detail);
+        game.spawn(assets.ships.find((s) => s.name === detail));
     };
 
     const gameInit = (mapName) => {
@@ -65,8 +64,8 @@
     <main class="popup">
         <h1>Respawn</h1>
         <div>
-            {#each assets.ships.map((x) => x.name) as name}
-                <SRPItem {name} on:select={selectShip} />
+            {#each assets.ships as { name, thumb }}
+                <SRPItem {name} {thumb} on:select={selectShip} />
             {/each}
         </div>
     </main>

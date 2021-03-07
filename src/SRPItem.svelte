@@ -1,40 +1,19 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import type { ShipStatObject } from './game/data/ships';
 
     export let name: string;
+    export let thumb: string;
 
     const dispatch = createEventDispatcher();
 
-    let data: ShipStatObject = null;
-
-    const load: Promise<ShipStatObject> = (async () => {
-        const res = await fetch(`/data/${name}.json`);
-        const json = await res.json();
-
-        if (res.ok) {
-            data = json;
-            return json;
-        } else {
-            throw new Error(json);
-        }
-    })();
-
     const click = () => {
-        dispatch('select', data);
+        dispatch('select', name);
     };
 </script>
 
 <article on:click={click}>
-    {#await load}
-        <h3>Loading</h3>
-        <img src="" alt="Loading" />
-    {:then ship}
-        <h3>{ship.name}</h3>
-        <img src={ship.thumb} alt={ship.name} />
-    {:catch}
-        <h3>Something went wrong</h3>
-    {/await}
+    <h3>{name}</h3>
+    <img src={thumb} alt={name} />
 </article>
 
 <style lang="scss">
