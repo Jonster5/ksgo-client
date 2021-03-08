@@ -4,7 +4,8 @@ import type { Stage } from '../engine/stage';
 import type { Asteroid } from '../stars/asteroid';
 import type { Planet } from '../stars/planet';
 import type { Star } from '../stars/star';
-import { Ship, Assets } from './ship';
+import { Ship } from './ship';
+import type { Assets } from '../data/assets';
 
 export class Player extends Ship {
     mass: number;

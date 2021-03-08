@@ -2,12 +2,7 @@ import type { MapItem } from '../data/maps';
 import type { ShipStatObject } from '../data/ships';
 import { Sprite } from '../engine/sprite';
 import type { Stage } from '../engine/stage';
-
-export interface Assets {
-    maps: MapItem[];
-    ships: ShipStatObject[];
-    ionthrust: HTMLImageElement[];
-}
+import type { Assets } from '../data/assets';
 
 export class Ship {
     sprite: Sprite;

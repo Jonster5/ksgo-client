@@ -8,12 +8,7 @@
     import SRPItem from './SRPItem.svelte';
     import type { ShipStatObject } from './game/data/ships';
     import { writable } from 'svelte/store';
-
-    interface Assets {
-        maps: MapItem[];
-        ships: ShipStatObject[];
-        ionthrust: string[];
-    }
+    import type { Assets } from './game/data/assets';
 
     let s: HTMLElement;
     let m_e: HTMLElement;

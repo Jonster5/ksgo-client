@@ -50,7 +50,7 @@ export class Canvas {
 
         this.element.setAttribute(
             'style',
-            `display: block; width: 100vw; height: 100vh; border: none; background: black';`
+            `display: block; width: 100vw; height: 100vh; border: none; background: transparent;';`
         );
 
         target.appendChild(this.element);

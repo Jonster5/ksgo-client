@@ -7,18 +7,13 @@
     import type { MapItem } from './game/data/maps';
     import type { ShipStatObject } from './game/data/ships';
     import Multiplayer from './Multiplayer.svelte';
+    import type { Assets } from './game/data/assets';
 
     let screen = 'title';
 
     const click = ({ detail }) => {
         screen = detail.screen;
     };
-
-    interface Assets {
-        maps: MapItem[];
-        ships: ShipStatObject[];
-        ionthrust: string[];
-    }
 
     const getAssets = async () => {
         const res = await fetch('/data/assets.json');
@@ -42,6 +37,11 @@
             ionthrust: json.ionthrust.map((t: string) => {
                 const i = new Image();
                 i.src = t;
+                return i;
+            }),
+            gamebg: json.gamebg.map((b: string) => {
+                const i = new Image(500, 500);
+                i.src = b;
                 return i;
             }),
         };
