@@ -1,7 +1,6 @@
-import { set_svg_attributes } from 'svelte/internal';
-import type { AsteroidItem, PlanetItem, StarItem } from '../data/maps';
-import { Circle } from '../engine/circle';
-import type { Stage } from '../engine/stage';
+import type { AsteroidItem, PlanetItem, StarItem } from '@data/types';
+import { Circle } from '@lib/circle';
+import type { Stage } from '@lib/stage';
 
 export class StellarObject {
     sprite: Circle;

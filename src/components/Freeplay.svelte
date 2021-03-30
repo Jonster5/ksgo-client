@@ -1,14 +1,15 @@
 <script lang="ts">
-    import FPmapitem from './FPmapitem.svelte';
-    import type { MapItem } from './game/data/maps';
+    import FPmapitem from '@components/FPmapitem.svelte';
+    import UIRight from '@components/UI/UIRight.svelte';
+    import type { MapItem } from '@data/types';
     import { onDestroy, onMount } from 'svelte';
     import { cubicOut } from 'svelte/easing';
     import { fade } from 'svelte/transition';
-    import { FP } from './game/fp';
-    import SRPItem from './SRPItem.svelte';
-    import type { ShipStatObject } from './game/data/ships';
+    import { FP } from '@lib/fp';
+    import SRPItem from '@components/SRPItem.svelte';
+    import type { ShipStatObject } from '@data/types';
     import { writable } from 'svelte/store';
-    import type { Assets } from './game/data/assets';
+    import type { ParsedAssets as Assets } from '@data/assets';
 
     let s: HTMLElement;
     let m_e: HTMLElement;
@@ -18,7 +19,9 @@
     let game: FP;
     let showRespawnScreen: boolean;
     let needsMapSelection = true;
+    let UIVisible = false;
     let srs: () => void;
+    let pe: () => void;
 
     const selectMap = ({ detail }) => {
         gameInit(detail);
@@ -27,6 +30,7 @@
 
     const selectShip = ({ detail }) => {
         game.spawn(assets.ships.find((s) => s.name === detail));
+        UIVisible = true;
     };
 
     const gameInit = (mapName) => {
@@ -42,6 +46,10 @@
 </script>
 
 <main class="game" bind:this={m_e} />
+
+{#if UIVisible}
+    <UIRight energy={game.user.energy} maxEnergy={game.user.maxEnergy} />
+{/if}
 
 {#if needsMapSelection}
     <main class="map">
@@ -67,14 +75,14 @@
 {/if}
 
 <style lang="scss">
-    @import './styles/vars.scss';
+    @import '../styles/vars';
 
     main {
         position: fixed;
     }
 
     .game {
-        background: url(/images/bg.png);
+        background: black;
     }
 
     .map {

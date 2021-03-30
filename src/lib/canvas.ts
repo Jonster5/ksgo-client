@@ -1,5 +1,5 @@
-import type { DisplayObject } from './display';
-import type { Stage } from './stage';
+import type { DisplayObject } from '@lib/display';
+import type { Stage } from '@lib/stage';
 
 export class Canvas {
     parent: HTMLElement;
@@ -186,7 +186,8 @@ export class Canvas {
 
         this.ctx.translate(this.w / 2, this.h / 2);
 
-        for (let stage of this.children) stage.render(this.ctx, lagOffset);
+        for (let stage of this.children)
+            stage.render(this.ctx, lagOffset, { w: this.width, h: this.height });
 
         this.ctx.restore();
 

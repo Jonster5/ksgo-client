@@ -1,7 +1,7 @@
 {
     "version": 0.1,
     "name": "Empty Map",
-    "size": 5000,
+    "size": 8000,
     "friction": 0.999,
     "stars": [],
     "planets": [],

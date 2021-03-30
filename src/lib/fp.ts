@@ -1,23 +1,23 @@
 'use strict';
 import { writable, Writable } from 'svelte/store';
-import { Canvas } from './engine/canvas';
-import { Stage } from './engine/stage';
-import type { AsteroidItem, MapItem, PlanetItem, SpawnItem, StarItem } from './data/maps';
-import type { ShipStatObject } from './data/ships';
-import { Star } from './stars/star';
-import { Planet } from './stars/planet';
-import { Asteroid } from './stars/asteroid';
-import { Rectangle } from './engine/rectangle';
-import { Player } from './ships/player';
-import type { Remote } from './ships/remote';
-import type { Assets } from './data/assets';
-import { Sprite } from './engine/sprite';
+import { Canvas } from '@lib/canvas';
+import { Stage } from '@lib/stage';
+import type { AsteroidItem, MapItem, PlanetItem, SpawnItem, StarItem } from '@data/types';
+import type { ShipStatObject } from '@data/types';
+import { Star } from '@lib/star';
+import { Planet } from '@lib/planet';
+import { Asteroid } from '@lib/asteroid';
+import { Rectangle } from '@lib/rectangle';
+import type { Remote } from '@lib/remote';
+import type { ParsedAssets, RawAssets } from '@data/assets';
+import { Sprite } from '@lib/sprite';
+import { ship, ShipObject } from './ship';
 
 export class FP {
     canvas: Canvas;
     stage: Stage;
     remotes: Set<Remote>;
-    user: Player;
+    user: ShipObject;
     boundary: Rectangle;
     background: {
         sprites: Sprite[];
@@ -31,11 +31,11 @@ export class FP {
     };
     pause: boolean;
 
-    assets: Assets;
+    assets: ParsedAssets;
 
     needsShipRespawn: Writable<boolean>;
 
-    constructor(p: HTMLElement, assets: Assets) {
+    constructor(p: HTMLElement, assets: ParsedAssets) {
         this.canvas = new Canvas(p, 0);
         this.stage = new Stage(0, 0);
         this.canvas.add(this.stage);
@@ -68,31 +68,21 @@ export class FP {
         this.stage.width = m.size;
         this.stage.height = m.size;
 
-        let col = 0;
-        let row = 0;
-        this.background.count = Math.ceil(m.size / 500);
-        for (let i = 0; i < this.background.count ** 2; i++) {
-            console.log(
-                row * 500 - this.stage.halfWidth + 250,
-                col * 500 - this.stage.halfHeight + 250
-            );
-            const s = new Sprite(
-                this.assets.gamebg,
-                500,
-                500,
-                row * 500 - this.stage.halfWidth + 250,
-                col * 500 - this.stage.halfHeight + 250
-            );
+        this.background.count = Math.ceil(m.size / 2000);
+        for (let col = 0; col < this.background.count; col++) {
+            for (let row = 0; row < this.background.count; row++) {
+                const s = new Sprite(
+                    this.assets.gamebg,
+                    2000,
+                    2000,
+                    row * 2000 - this.stage.halfWidth + 1000,
+                    col * 2000 - this.stage.halfHeight + 1000
+                );
 
-            row += 1;
-            if (i % this.background.count === 9) {
-                col += 1;
-                row = 0;
+                s.r = [0, Math.PI / 2, Math.PI, -Math.PI / 2][Math.floor(Math.random() * 4)];
+
+                this.background.sprites.push(s);
             }
-
-            s.r = [0, Math.PI / 2, Math.PI, -Math.PI / 2][Math.floor(Math.random() * 4)];
-
-            this.background.sprites.push(s);
         }
 
         this.boundary = new Rectangle(m.size, m.size, '', { color: 'red', thickness: 4 });
@@ -303,7 +293,7 @@ export class FP {
     }
 
     spawn(u: ShipStatObject) {
-        this.user = new Player(this.stage, u, this.assets);
+        this.user = ship(u.name, this.stage, u, this.assets);
 
         const { x, y, size } = this.map.spawns[Math.floor(Math.random() * this.map.spawns.length)];
 

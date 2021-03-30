@@ -1,12 +1,11 @@
-import type { AsteroidItem } from '../data/maps';
-import { Circle } from '../engine/circle';
-import type { Stage } from '../engine/stage';
-import type { Planet } from './planet';
-import type { Star } from './star';
-import { StellarObject } from './stellar';
+import type { PlanetItem } from '@data/types';
+import { Circle } from '@lib/circle';
+import type { Stage } from '@lib/stage';
+import type { Star } from '@lib/star';
+import { StellarObject } from '@lib/stellar';
 
-export class Asteroid extends StellarObject {
-    constructor(stage: Stage, stats: AsteroidItem) {
+export class Planet extends StellarObject {
+    constructor(stage: Stage, stats: PlanetItem) {
         const { x, y, vx, vy, mass, diameter, color } = stats;
         super(stage, { diameter, color });
 
@@ -18,8 +17,8 @@ export class Asteroid extends StellarObject {
         this.mass = (mass as number) / 10;
     }
 
-    updateGravity(stars: Array<Star>, planets: Array<Planet>, asteroids: Array<Asteroid>) {
-        let gravity_modifier = { x: 0, y: 0 };
+    updateGravity(stars: Array<Star>, planets: Array<Planet>) {
+        const gravity_modifier = { x: 0, y: 0 };
 
         if (stars.length > 0) {
             for (let star of stars) {
@@ -37,6 +36,7 @@ export class Asteroid extends StellarObject {
         }
         if (planets.length > 0) {
             for (let planet of planets) {
+                if (planet === this) continue;
                 let vx = planet.x - this.x,
                     vy = planet.y - this.y;
 
@@ -47,21 +47,6 @@ export class Asteroid extends StellarObject {
 
                 gravity_modifier.x += (dx * (planet.mass * this.mass)) / m;
                 gravity_modifier.y += (dy * (planet.mass * this.mass)) / m;
-            }
-        }
-        if (asteroids.length > 0) {
-            for (let asteroid of asteroids) {
-                if (asteroid === this) continue;
-                let vx = asteroid.x - this.x,
-                    vy = asteroid.y - this.y;
-
-                let m = Math.sqrt(vx * vx + vy * vy);
-
-                let dx = vx / m,
-                    dy = vy / m;
-
-                gravity_modifier.x += (dx * (asteroid.mass * this.mass)) / m;
-                gravity_modifier.y += (dy * (asteroid.mass * this.mass)) / m;
             }
         }
 

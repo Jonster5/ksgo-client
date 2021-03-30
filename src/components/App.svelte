@@ -1,13 +1,17 @@
 <script lang="ts">
-    import Titlescreen from './Titlescreen.svelte';
-    import Freeplay from './Freeplay.svelte';
-    import Morestuff from './Morestuff.svelte';
+    /**
+     * 420 (Blaze it)
+     * - Charle
+     */
+    import Titlescreen from '@components/Titlescreen.svelte';
+    import Freeplay from '@components/Freeplay.svelte';
+    import Morestuff from '@components/Morestuff.svelte';
     import { fly, fade } from 'svelte/transition';
     import { cubicOut } from 'svelte/easing';
-    import type { MapItem } from './game/data/maps';
-    import type { ShipStatObject } from './game/data/ships';
-    import Multiplayer from './Multiplayer.svelte';
-    import type { Assets } from './game/data/assets';
+    import type { MapItem } from '@data/types';
+    import type { ShipStatObject } from '@data/types';
+    import Multiplayer from '@components/Multiplayer.svelte';
+    import type { ParsedAssets as Assets, RawAssets } from '@data/assets';
 
     let screen = 'title';
 
@@ -15,7 +19,7 @@
         screen = detail.screen;
     };
 
-    const getAssets = async () => {
+    const getAssets = async (): Promise<Assets> => {
         const res = await fetch('/data/assets.json');
 
         if (!res.ok) throw new Error(res.statusText);
@@ -88,7 +92,7 @@
 {/await}
 
 <style lang="scss">
-    @import './styles/vars.scss';
+    @import '../styles/vars';
 
     div {
         width: 100%;

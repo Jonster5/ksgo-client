@@ -38,7 +38,7 @@
 </div>
 
 <style lang="scss">
-    @import 'styles/vars';
+    @import '../styles/vars';
 
     .c {
         width: 25vw;

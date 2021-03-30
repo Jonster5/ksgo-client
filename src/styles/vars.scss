@@ -2,6 +2,8 @@ $title: gold;
 $subtitle: lightblue;
 $text: white;
 
+$UIBarBG: #808080;
+
 @mixin Button {
     font-family: 'Trispace';
     color: $text;

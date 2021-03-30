@@ -15,7 +15,7 @@
 <div on:click={() => click(target)}>Back</div>
 
 <style lang="scss">
-    @import 'styles/vars.scss';
+    @import '../styles/vars';
     div {
         @include Button;
         display: block;

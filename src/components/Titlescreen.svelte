@@ -19,9 +19,11 @@
 </main>
 
 <style lang="scss">
-    @import 'styles/vars';
+    @import '../styles/vars';
 
     main {
+        width: 100%;
+        height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -35,7 +37,7 @@
         color: $title;
         font-size: 10vw;
         margin: 4vh 4vw;
-        margin-bottom: 1vh;
+        margin-bottom: 2vh;
     }
 
     .version {

@@ -1,46 +1,84 @@
-import type { ShipStatObject } from '../data/ships';
-import type { Sprite } from '../engine/sprite';
-import type { Stage } from '../engine/stage';
-import type { Asteroid } from '../stars/asteroid';
-import type { Planet } from '../stars/planet';
-import type { Star } from '../stars/star';
-import { Ship } from './ship';
-import type { Assets } from '../data/assets';
+import type { MapItem, ShipStatObject } from '@data/types';
+import { Sprite } from './sprite';
+import type { Stage } from './stage';
+import type { ParsedAssets } from '@data/assets';
+import type { Asteroid } from './asteroid';
+import type { Planet } from './planet';
+import type { Star } from './star';
+import { writable, Writable } from 'svelte/store';
 
-export class Player extends Ship {
-    mass: number;
-    isAlive: boolean;
+export function ship(name: string, stage: Stage, stats: ShipStatObject, assets: ParsedAssets) {
+    switch (name) {
+        case 'Fighter':
+            return new Fighter(stage, stats, assets);
+        case 'Frigate':
+        case 'Cruiser':
+        default:
+            return new Fighter(stage, stats, assets);
+    }
+}
 
-    boost: boolean;
+export type ShipObject = Fighter;
+
+class Fighter implements Ship {
+    sprite: Sprite;
+    thrusters: { sprite: Sprite; energy: number; thrust: number; direction: string }[];
+    weapons: {}[];
     forward: boolean;
-    reverse: boolean;
     left: boolean;
     right: boolean;
-    strafe: boolean;
-
-    primary: boolean;
-
+    mass: number;
     maxEnergy: number;
-    energy: number;
+    energy: Writable<number>;
     energyGain: number;
 
-    constructor(stage: Stage, stats: ShipStatObject, assets: Assets) {
-        super(stage, stats, assets);
-        this.isAlive = true;
-        this.mass = stats.mass;
+    boost: boolean;
+    strafe: boolean;
 
-        this.boost = false;
-        this.forward = false;
-        this.reverse = false;
-        this.left = false;
-        this.right = false;
-        this.strafe = false;
-        this.primary = false;
+    constructor(stage: Stage, stats: ShipStatObject, assets: ParsedAssets) {
+        const img = new Image(stats.width * 5, stats.height * 5);
+        img.src = stats.image;
 
-        window.addEventListener('keydown', (e: KeyboardEvent) => {
-            e.preventDefault();
+        this.sprite = new Sprite([img], stats.width, stats.height);
+        this.thrusters = [];
 
-            switch (e.key) {
+        stats.thrusters.forEach(({ size, x, y, direction, thrust, energy }) => {
+            const sprite = new Sprite([...assets.ionthrust], size / 2, size, x, y);
+            sprite.r =
+                direction === 'forward'
+                    ? 0
+                    : direction === 'reverse'
+                    ? Math.PI
+                    : direction === 'right'
+                    ? Math.PI / 2
+                    : direction === 'left'
+                    ? -Math.PI / 2
+                    : Math.PI;
+
+            this.thrusters.push({ sprite, energy, thrust, direction });
+
+            sprite.visible = false;
+
+            this.mass = stats.mass;
+            this.maxEnergy = stats.max_energy;
+            this.energy = writable(0);
+            this.energyGain = stats.energy_gain;
+
+            this.forward = false;
+            this.left = false;
+            this.right = false;
+
+            this.boost = false;
+            this.strafe = false;
+        });
+
+        this.sprite.add(...this.thrusters.map((t) => t.sprite));
+        stage.add(this.sprite);
+
+        window.addEventListener('keydown', (event: KeyboardEvent) => {
+            event.preventDefault();
+
+            switch (event.key) {
                 case 'W':
                     this.boost = true;
                 case 'w':
@@ -49,48 +87,45 @@ export class Player extends Ship {
                     this.thrusters
                         .filter(({ direction }) => direction === 'forward')
                         .forEach(({ sprite }) => {
+                            sprite.start(100);
                             sprite.visible = true;
-                            sprite.start(50);
                         });
                     break;
-                case 's':
                 case 'S':
-                    this.reverse = true;
+                case 's':
                     break;
                 case 'A':
                     this.strafe = true;
                 case 'a':
+                    this.left = true;
+
                     this.thrusters
                         .filter(({ direction }) => direction === 'left')
                         .forEach(({ sprite }) => {
+                            sprite.start(100);
                             sprite.visible = true;
-                            sprite.start(50);
                         });
-
-                    this.left = true;
                     break;
                 case 'D':
                     this.strafe = true;
                 case 'd':
+                    this.right = true;
+
                     this.thrusters
                         .filter(({ direction }) => direction === 'right')
                         .forEach(({ sprite }) => {
+                            sprite.start(100);
                             sprite.visible = true;
-                            sprite.start(50);
                         });
-                    this.right = true;
                     break;
                 case 'Shift':
                     this.boost = true;
                     this.strafe = true;
-                    break;
             }
         });
-
-        window.addEventListener('keyup', (e: KeyboardEvent) => {
-            e.preventDefault();
-
-            switch (e.key) {
+        window.addEventListener('keyup', (event: KeyboardEvent) => {
+            event.preventDefault();
+            switch (event.key) {
                 case 'W':
                     this.boost = false;
                 case 'w':
@@ -103,37 +138,36 @@ export class Player extends Ship {
                             sprite.visible = false;
                         });
                     break;
-                case 's':
                 case 'S':
-                    this.reverse = false;
+                case 's':
                     break;
                 case 'A':
                     this.strafe = false;
                 case 'a':
+                    this.left = false;
+
                     this.thrusters
                         .filter(({ direction }) => direction === 'left')
                         .forEach(({ sprite }) => {
                             sprite.stop();
                             sprite.visible = false;
                         });
-
-                    this.left = false;
                     break;
                 case 'D':
                     this.strafe = false;
                 case 'd':
+                    this.right = false;
+
                     this.thrusters
                         .filter(({ direction }) => direction === 'right')
                         .forEach(({ sprite }) => {
                             sprite.stop();
                             sprite.visible = false;
                         });
-
-                    this.right = false;
                     break;
                 case 'Shift':
-                    this.boost = false;
                     this.strafe = false;
+                    this.boost = false;
                     break;
             }
         });
@@ -143,8 +177,8 @@ export class Player extends Ship {
         let cost = -this.energyGain;
         let forwardThrust = 0;
 
-        let sideThrust = { l: 0, r: 0 };
         let turnThrust = { l: 0, r: 0 };
+        let sideThrust = { l: 0, r: 0 };
 
         if (this.forward) {
             this.thrusters
@@ -160,9 +194,8 @@ export class Player extends Ship {
                 .filter(({ direction }) => direction === 'left')
                 .forEach(({ energy, thrust }) => {
                     cost += energy;
-
-                    if (this.strafe) sideThrust.l += thrust;
-                    else turnThrust.l += thrust;
+                    if (!this.strafe) turnThrust.l += thrust;
+                    else sideThrust.l += thrust;
                 });
         }
 
@@ -171,14 +204,17 @@ export class Player extends Ship {
                 .filter(({ direction }) => direction === 'right')
                 .forEach(({ energy, thrust }) => {
                     cost += energy;
-
-                    if (this.strafe) sideThrust.r += thrust;
-                    else turnThrust.r += thrust;
+                    if (!this.strafe) turnThrust.r += thrust;
+                    else sideThrust.r += thrust;
                 });
         }
 
-        this.rotation -= turnThrust.l * 0.1;
-        this.rotation += turnThrust.r * 0.1;
+        this.energy.update((e) =>
+            e - cost < 0 ? 0 : e - cost > this.maxEnergy ? this.maxEnergy : e - cost
+        );
+
+        this.r -= turnThrust.l * 0.1;
+        this.r += turnThrust.r * 0.1;
 
         this.vx += sideThrust.r * Math.sin(this.rotation + Math.PI / 2) * 0.1;
         this.vy += sideThrust.r * -Math.cos(this.rotation + Math.PI / 2) * 0.1;
@@ -188,8 +224,8 @@ export class Player extends Ship {
         this.vx += forwardThrust * Math.sin(this.rotation) * 0.1;
         this.vy += forwardThrust * -Math.cos(this.rotation) * 0.1;
 
-        this.x += this.vx;
-        this.y += this.vy;
+        this.x += this.vx / this.mass;
+        this.y += this.vy / this.mass;
     }
 
     updateGravity(stars: Array<Star>, planets: Array<Planet>, asteroids: Array<Asteroid>) {
@@ -242,4 +278,66 @@ export class Player extends Ship {
         this.vx += gravity_modifier.x;
         this.vy += gravity_modifier.y;
     }
+
+    get rotation(): number {
+        return this.sprite.r;
+    }
+    set rotation(value: number) {
+        this.sprite.r = value;
+    }
+
+    get r(): number {
+        return this.sprite.r;
+    }
+    set r(value: number) {
+        this.sprite.r = value;
+    }
+
+    get x(): number {
+        return this.sprite.x;
+    }
+    set x(val: number) {
+        this.sprite.x = val;
+    }
+
+    get y(): number {
+        return this.sprite.y;
+    }
+    set y(val: number) {
+        this.sprite.y = val;
+    }
+
+    get vx(): number {
+        return this.sprite.vx;
+    }
+    set vx(val: number) {
+        this.sprite.vx = val;
+    }
+
+    get vy(): number {
+        return this.sprite.vy;
+    }
+    set vy(val: number) {
+        this.sprite.vy = val;
+    }
+}
+
+interface Ship {
+    sprite: Sprite;
+    thrusters: Array<{
+        sprite: Sprite;
+        energy: number;
+        thrust: number;
+        direction: string;
+    }>;
+    weapons: Array<{}>;
+
+    forward: boolean;
+    left: boolean;
+    right: boolean;
+    mass: number;
+
+    maxEnergy: number;
+    energy: Writable<number>;
+    energyGain: number;
 }

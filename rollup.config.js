@@ -7,8 +7,11 @@ import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 import json from 'rollup-plugin-json';
+import alias from '@rollup/plugin-alias';
+import path from 'path';
 
 const production = !process.env.ROLLUP_WATCH;
+const projectRootDir = path.resolve(__dirname);
 
 function serve() {
     let server;
@@ -32,7 +35,7 @@ function serve() {
 }
 
 export default {
-    input: 'src/main.ts',
+    input: 'src\\main.ts',
     output: {
         sourcemap: true,
         format: 'iife',
@@ -65,6 +68,27 @@ export default {
         typescript({
             sourceMap: !production,
             inlineSources: !production,
+        }),
+
+        alias({
+            entries: [
+                {
+                    find: '@components',
+                    replacement: path.resolve(projectRootDir, 'src/components'),
+                },
+                {
+                    find: '@lib',
+                    replacement: path.resolve(projectRootDir, 'src/lib'),
+                },
+                {
+                    find: '@data',
+                    replacement: path.resolve(projectRootDir, 'src/data'),
+                },
+                {
+                    find: '@styles',
+                    replacement: path.resolve(projectRootDir, 'src/styles'),
+                },
+            ],
         }),
 
         // In dev mode, call `npm run start` once

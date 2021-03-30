@@ -5,7 +5,7 @@
 </div>
 
 <style lang="scss">
-    @import 'styles/vars.scss';
+    @import '../styles/vars.scss';
 
     .c {
         width: 25vw;

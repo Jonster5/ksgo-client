@@ -1,7 +1,7 @@
-import type { StarItem } from '../data/maps';
-import { Circle } from '../engine/circle';
-import type { Stage } from '../engine/stage';
-import { StellarObject } from './stellar';
+import type { StarItem } from '@data/types';
+import { Circle } from '@lib/circle';
+import type { Stage } from '@lib/stage';
+import { StellarObject } from '@lib/stellar';
 
 export class Star extends StellarObject {
     constructor(stage: Stage, stats: StarItem) {

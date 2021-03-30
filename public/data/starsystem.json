@@ -7,7 +7,7 @@
         {
             "x": 0,
             "y": 0,
-            "diameter": 100,
+            "diameter": 400,
             "mass": 400,
             "color": "gold"
         }
@@ -16,7 +16,7 @@
         {
             "x": -600,
             "y": 0,
-            "diameter": 30,
+            "diameter": 100,
             "mass": 9,
             "color": "skyblue",
             "vx": 0,
@@ -25,7 +25,7 @@
         {
             "x": 600,
             "y": 0,
-            "diameter": 30,
+            "diameter": 100,
             "mass": 9,
             "color": "saddlebrown",
             "vx": 0,
@@ -34,7 +34,7 @@
         {
             "x": 0,
             "y": -600,
-            "diameter": 30,
+            "diameter": 100,
             "mass": 9,
             "color": "lime",
             "vx": 7.35,
@@ -43,7 +43,7 @@
         {
             "x": 0,
             "y": 600,
-            "diameter": 30,
+            "diameter": 100,
             "mass": 9,
             "color": "indigo",
             "vx": -7.35,
