@@ -56,7 +56,7 @@
         <h1>Select a map</h1>
 
         <div class="maplist" bind:this={s}>
-            {#each assets.maps as { name, thumb, alt }}
+            {#each assets.maps as { name, thumb, alt}}
                 <FPmapitem {name} {thumb} {alt} on:select={selectMap} />
             {/each}
         </div>
@@ -100,7 +100,9 @@
         }
 
         div {
+            width: 80%;
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
         }
     }
