@@ -5,7 +5,6 @@ How to contribute:
 - Make a pull request
 - Join [our Discord server](https://discord.gg/A2F5XP9wwN)
 - Join [our subreddit r/ksgo](https://reddit.com/r/ksgo)
-- seduice
 
 We hope you enjoy playing it, even if it is not yet finished
 
