@@ -1,6 +1,5 @@
 {
-  "hosting": {
-    "public": "dist",
-    "ignore": []
+  "projects": {
+    "default": "ksgo-client"
   }
 }
