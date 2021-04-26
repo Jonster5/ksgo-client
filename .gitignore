@@ -3,6 +3,4 @@
 /.vscode/
 .DS_Store
 
-firebase.json
-.firebaserc
 /.firebase
