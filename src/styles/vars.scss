@@ -1,0 +1,35 @@
+$title: gold;
+$subtitle: lightblue;
+$text: white;
+
+$titleFont: 'Righteous';
+$textFont: 'Trispace';
+
+$UIBarBG: #303030;
+$UIBoxBG: #000000aa;
+
+@mixin Button {
+	font-family: $textFont;
+	color: $text;
+	background: black;
+	// border: 0.1vh solid white;
+	text-align: center;
+	padding: 1%;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	box-shadow: 0vh 0vh 0vh 0.4vh #ffffffaa;
+	border-radius: 0.1vh;
+
+	&:hover {
+		cursor: pointer;
+		background: white;
+		color: black;
+	}
+
+	&:active {
+		background: grey;
+		box-shadow: 0vh 0vh 0vh 0.4vh grey;
+		color: black;
+		cursor: pointer;
+	}
+}
