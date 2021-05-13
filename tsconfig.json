@@ -22,8 +22,11 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["src/components/*"],
-      "@lib/*": ["src/lib/*"],
-      "@data/*": ["src/data/*"],
+      "@utils/*": ["src/lib/utils/*"],
+      "@api/*": ["src/lib/api/*"],
+      "@data/*": ["src/lib/data/*"],
+      "@classes/*": ["src/lib/classes/*"],
+      "@styles/*": ["src/styles"]
     },
     /**
      * Typecheck JS in `.svelte` and `.js` files by default.

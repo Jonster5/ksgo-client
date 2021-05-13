@@ -1,11 +1,11 @@
-import type { RemoteShipObject } from '@lib/ship';
-import type Peer from 'simple-peer';
+import type { RemoteShipObject } from '@classes/ship';
+import type Peer from 'peerjs';
 
 export interface ServerObject {
-    clients: RemoteShipObject[];
-    host: Peer;
+	clients: RemoteShipObject[];
+	host: Peer;
 
-    ID: string;
+	ID: string;
 }
 
 export class ServerUtils {}

@@ -21,12 +21,23 @@ const config = {
 					replacement: path.resolve(projectRootDir, 'src/components'),
 				},
 				{
-					find: '@lib',
-					replacement: path.resolve(projectRootDir, 'src/lib'),
+					find: '@api',
+					replacement: path.resolve(projectRootDir, 'src/lib/api'),
 				},
 				{
 					find: '@data',
-					replacement: path.resolve(projectRootDir, 'src/data'),
+					replacement: path.resolve(projectRootDir, 'src/lib/data'),
+				},
+				{
+					find: '@utils',
+					replacement: path.resolve(projectRootDir, 'src/lib/utils'),
+				},
+				{
+					find: '@classes',
+					replacement: path.resolve(
+						projectRootDir,
+						'src/lib/classes'
+					),
 				},
 				{
 					find: '@styles',

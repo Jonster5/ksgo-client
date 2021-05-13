@@ -11,12 +11,13 @@
 		"@rollup/plugin-alias": "^3.1.2",
 		"@sveltejs/vite-plugin-svelte": "^1.0.0-next.7",
 		"node-sass": "^5.0.0",
+		"peerjs": "^1.3.2",
 		"sass": "^1.32.11",
-		"simple-peer": "^9.11.0",
 		"svelte": "^3.37.0",
 		"svelte-preprocess": "^4.7.2",
 		"typescript": "^4.2.4",
 		"vite": "^2.2.3",
 		"vite-aliases": "^0.6.2"
-	}
+	},
+	"dependencies": {}
 }
