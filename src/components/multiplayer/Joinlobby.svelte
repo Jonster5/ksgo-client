@@ -1,23 +1,48 @@
-<script lang="ts"></script>
+<script lang="ts">
+	import type { FireStore } from '@/src/lib/data/multiplayer';
+	import type firebase from 'firebase';
+	import { onMount } from 'svelte';
 
-<div class="c">
-    <div class="title">Join Lobby</div>
-</div>
+	import Lobbycard from './Lobbycard.svelte';
+
+	export let FS: FireStore;
+
+	let docs: firebase.firestore.DocumentData[];
+
+	onMount(async () => {
+		await FS.collection('test')
+			.get()
+			.then((q) => {
+				docs = q.docs.map((doc) => doc.data());
+			});
+	});
+</script>
+
+<main>
+	<h2 class="title">Join Lobby</h2>
+	<div class="c" />
+</main>
 
 <style lang="scss">
-    @import '../../styles/vars.scss';
+	@import '../../styles/vars.scss';
 
-    .c {
-        width: 25vw;
-        height: 80vh;
-    }
+	main {
+		width: 25vw;
+		height: 80vh;
+	}
 
-    .title {
-        width: 100%;
-        color: $title;
-        text-align: center;
-        font-family: 'Righteous';
-        font-size: 2vw;
-        margin: 2vh auto 5vh auto;
-    }
+	h2 {
+		width: 100%;
+		color: $title;
+		text-align: center;
+		font-family: 'Righteous';
+		font-size: 2vw;
+		margin: 2vh auto 5vh auto;
+	}
+
+	.c {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 </style>

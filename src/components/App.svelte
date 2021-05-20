@@ -11,8 +11,12 @@
 	import type { MapItem, ShipStatObject } from '@data/types';
 	import Multiplayer from '@components/Multiplayer.svelte';
 	import type { ParsedAssets } from '@data/assets';
+	import { GET_KSGO_FIREBASE } from '../lib/data/multiplayer';
+	import config from '@/credentials.json';
 
 	let screen = 'title';
+
+	const FS = GET_KSGO_FIREBASE(config);
 
 	const click = ({ detail }) => {
 		screen = detail.screen;
@@ -78,7 +82,7 @@
 			in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: -100 }}
 			out:fly={{ easing: cubicOut, duration: 250, y: -100 }}
 		>
-			<Multiplayer on:click={click} {assets} />
+			<Multiplayer on:click={click} {assets} {FS} />
 		</div>
 	{:else if screen === 'more'}
 		<Morestuff />

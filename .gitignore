@@ -4,3 +4,4 @@
 .DS_Store
 
 /.firebase
+/credentials.json

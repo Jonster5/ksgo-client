@@ -1,12 +1,11 @@
 import { Canvas } from '@api/canvas';
 import { Stage } from '@api/stage';
 import type { ParsedAssets } from '@data/assets';
-import { RemoteSendInfo, GET_KSGO_ID } from '@data/multiplayer';
+import { RemoteSendInfo, GET_KSGO_ID, FireStore } from '@data/multiplayer';
 import type { MapItem, ShipStatObject, GameOptions } from '@data/types';
 import { GameUtils, Game, HostedGame } from '@utils/gameUtils';
 import { Writable, writable } from 'svelte/store';
 import { GameMap } from './map';
-import { Server } from './server';
 import {
 	PlayerShipObject,
 	EnemyShipObject,
@@ -15,6 +14,7 @@ import {
 	EnemyShip,
 	RemoteShipObject,
 } from './ship';
+import { Server } from './socket';
 
 export class FreeplayGame extends GameUtils implements Game {
 	assets: ParsedAssets;
@@ -176,13 +176,14 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 
 	queue: RemoteSendInfo[];
 	ID: string;
-	server: Server;
 	open: Writable<boolean>;
 
 	playerCount: number;
 	maxPlayers: number;
 
 	map: GameMap;
+
+	server: Server;
 
 	user: PlayerShipObject;
 	enemies: Set<EnemyShipObject>;
@@ -191,7 +192,12 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 	pause: boolean;
 	needsShipRespawn: Writable<boolean>;
 
-	constructor(p: HTMLElement, assets: ParsedAssets, options: GameOptions) {
+	constructor(
+		p: HTMLElement,
+		assets: ParsedAssets,
+		options: GameOptions,
+		FS: FireStore
+	) {
 		super();
 		this.assets = assets;
 
@@ -205,6 +211,8 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 		this.user = null;
 
 		this.queue = [];
+
+		this.server = new Server(FS);
 
 		this.ID = GET_KSGO_ID('HOST');
 		this.open = writable(false);
@@ -226,6 +234,8 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 		this.map.setupBackground(m, this.stage);
 		this.map.setupMap(m, this.stage);
 
+		this.server.init(this.ID, m);
+
 		this.canvas.element.addEventListener('contextmenu', (e: Event) =>
 			e.preventDefault()
 		);
@@ -234,8 +244,6 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 			this.canvas.ar = window.innerWidth / window.innerHeight;
 			this.canvas.size(this.canvas.width);
 		});
-
-		this.server = new Server(this.ID);
 
 		this.canvas.update = () => {
 			if (this.pause) return;
@@ -327,6 +335,8 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 	kill(): void {
 		this.user.kill();
 		this.canvas.stop();
+		this.server.destroy();
+		this.server.remove();
 	}
 
 	addRemote(): void {}

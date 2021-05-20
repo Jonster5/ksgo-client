@@ -1,13 +1,13 @@
 import type { Canvas } from '@api/canvas';
 import type { Stage } from '@api/stage';
 import type { GameMap } from '@classes/map';
-import type { Server } from '@classes/server';
 import type {
 	PlayerShipObject,
 	EnemyShipObject,
 	RemoteShipObject,
 	PlayerShip,
 } from '@classes/ship';
+import type { Server } from '@classes/socket';
 import type { ParsedAssets } from '@data/assets';
 import type { RemoteSendInfo } from '@data/multiplayer';
 import type { MapItem, ShipStatObject } from '@data/types';
@@ -35,15 +35,17 @@ export interface Game {
 }
 
 export interface HostedGame {
+	server: Server;
+
 	remotes: Set<RemoteShipObject>;
 
-	queue: RemoteSendInfo[];
-	readonly ID: string;
-	server: Server;
-	open: Writable<boolean>;
+	maxPlayers: number;
+	ID: string;
 
 	playerCount: number;
-	readonly maxPlayers: number;
+
+	queue: RemoteSendInfo[];
+	open: Writable<boolean>;
 
 	addRemote(): void;
 	removeRemote(): void;

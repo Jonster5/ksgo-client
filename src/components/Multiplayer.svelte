@@ -4,9 +4,12 @@
 	import Joinlobby from '@components/multiplayer/Joinlobby.svelte';
 	import type { ParsedAssets } from '@data/assets';
 	import type { GameOptions } from '@data/types';
+	import type { FireStore } from '../lib/data/multiplayer';
 	import Host from './multiplayer/Host.svelte';
 
 	export let assets: ParsedAssets;
+
+	export let FS: FireStore;
 
 	enum Screen {
 		setup,
@@ -30,9 +33,9 @@
 		<Backbutton target="title" on:click />
 
 		<Createlobby {assets} on:select={create} />
-		<Joinlobby />
+		<Joinlobby {FS} />
 	{:else if screen === Screen.host}
-		<Host {options} {assets} />
+		<Host {options} {assets} {FS} />
 	{/if}
 </main>
 

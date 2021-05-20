@@ -5,16 +5,18 @@
 	import { onDestroy, onMount } from 'svelte';
 	import UI from '@components/UI.svelte';
 	import SrpItem from '@components/Srpitem.svelte';
+	import type { FireStore } from '@/src/lib/data/multiplayer';
+	import type { Writable } from 'svelte/store';
 
 	export let options: GameOptions;
 	export let assets: ParsedAssets;
+	export let FS: FireStore;
 
 	let gameElement: HTMLElement;
 
 	let game: HostGame;
-	let showRespawnScreen: boolean;
 	let UIVisible = false;
-	let srs: () => void;
+	let srs: Writable<boolean>;
 
 	const selectShip = ({ detail }) => {
 		game.spawnPlayer(assets.ships.find((s) => s.name === detail));
@@ -22,16 +24,19 @@
 	};
 
 	onMount(() => {
-		game = new HostGame(gameElement, assets, options);
-		srs = game.needsShipRespawn.subscribe((v) => (showRespawnScreen = v));
+		game = new HostGame(gameElement, assets, options, FS);
+		srs = game.needsShipRespawn;
 		game.init(assets.maps.find((m: MapItem) => m.name === options.map));
 	});
 
 	onDestroy(() => {
 		try {
 			game.kill();
-			srs();
 		} catch {}
+	});
+
+	window.addEventListener('unload', () => {
+		game.kill();
 	});
 </script>
 
@@ -41,7 +46,7 @@
 	<UI {...game.getUIProps()} />
 {/if}
 
-{#if showRespawnScreen}
+{#if $srs}
 	<main class="popup">
 		<h1>Respawn</h1>
 		<div>
