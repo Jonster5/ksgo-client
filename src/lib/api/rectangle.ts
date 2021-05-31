@@ -3,10 +3,11 @@ import type {
 	DisplayObject,
 	ColorProperties,
 	DimensionProperties,
-} from './display';
+} from './utils';
 
 export class Rectangle
-	implements DisplayProperties, ColorProperties, DimensionProperties {
+	implements DisplayProperties, ColorProperties, DimensionProperties
+{
 	x: number;
 	y: number;
 	r: number;
@@ -100,7 +101,7 @@ export class Rectangle
 
 	setY(v: number) {
 		this.y = v;
-		this.prevy;
+		this.prevy = v;
 	}
 
 	setR(v: number) {
@@ -143,20 +144,9 @@ export class Rectangle
 
 		ctx.save();
 
-		const renderX =
-			this.prevx !== undefined
-				? (this.x - this.prevx) * lagOffset + this.prevx
-				: this.x;
-
-		const renderY =
-			this.prevy !== undefined
-				? (this.y - this.prevy) * lagOffset + this.prevy
-				: this.y;
-
-		const renderR =
-			this.prevr !== undefined
-				? (this.r - this.prevr) * lagOffset + this.prevr
-				: this.r;
+		const renderX = (this.x - this.prevx) * lagOffset + this.prevx;
+		const renderY = (this.y - this.prevy) * lagOffset + this.prevy;
+		const renderR = (this.r - this.prevr) * lagOffset + this.prevr;
 
 		ctx.translate(renderX, renderY);
 		ctx.rotate(renderR);

@@ -4,12 +4,12 @@
 	import Joinlobby from '@components/multiplayer/Joinlobby.svelte';
 	import type { ParsedAssets } from '@data/assets';
 	import type { GameOptions } from '@data/types';
-	import type { FireStore } from '../lib/data/multiplayer';
+	import type { Database } from '../lib/data/multiplayer';
 	import Host from './multiplayer/Host.svelte';
 
 	export let assets: ParsedAssets;
 
-	export let FS: FireStore;
+	export let FS: Database;
 
 	enum Screen {
 		setup,

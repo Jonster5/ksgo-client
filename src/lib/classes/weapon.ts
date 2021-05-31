@@ -1,5 +1,5 @@
 import { Rectangle } from '@api/rectangle';
-import { Point } from '@api/vec';
+import { Vec } from '@api/vec';
 import type { ParsedAssets } from '@data/assets';
 import type { Direction, ShipWeaponItem } from '@data/types';
 import { WeaponUtils, Weapon, Laser } from '@utils/weaponUtils';
@@ -13,7 +13,7 @@ export class ShipLaser extends WeaponUtils implements Weapon, Laser {
 	damage: number;
 	firing: boolean;
 
-	points: [Point, Point];
+	points: [Vec, Vec];
 	length: number;
 
 	constructor(ship: ShipObject, stats: ShipWeaponItem, assets: ParsedAssets) {
@@ -45,7 +45,7 @@ export class ShipLaser extends WeaponUtils implements Weapon, Laser {
 		this.length = length;
 		this.firing = false;
 
-		this.points = [new Point(x, y), new Point(x, y + length)];
+		this.points = [new Vec(x, y), new Vec(x, y + length)];
 	}
 
 	on() {

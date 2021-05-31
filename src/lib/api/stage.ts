@@ -2,7 +2,7 @@ import type {
 	DisplayObject,
 	DisplayProperties,
 	DimensionProperties,
-} from './display';
+} from './utils';
 
 export class Stage implements DisplayProperties, DimensionProperties {
 	x: number;
@@ -89,7 +89,7 @@ export class Stage implements DisplayProperties, DimensionProperties {
 
 	setY(v: number) {
 		this.y = v;
-		this.prevy;
+		this.prevy = v;
 	}
 
 	setR(v: number) {
@@ -133,9 +133,7 @@ export class Stage implements DisplayProperties, DimensionProperties {
 		ctx.save();
 
 		const renderX = (this.x - this.prevx) * lagOffset + this.prevx;
-
 		const renderY = (this.y - this.prevy) * lagOffset + this.prevy;
-
 		const renderR = (this.r - this.prevr) * lagOffset + this.prevr;
 
 		ctx.translate(renderX, renderY);

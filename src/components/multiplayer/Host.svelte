@@ -5,12 +5,12 @@
 	import { onDestroy, onMount } from 'svelte';
 	import UI from '@components/UI.svelte';
 	import SrpItem from '@components/Srpitem.svelte';
-	import type { FireStore } from '@/src/lib/data/multiplayer';
+	import type { Database } from '@/src/lib/data/multiplayer';
 	import type { Writable } from 'svelte/store';
 
 	export let options: GameOptions;
 	export let assets: ParsedAssets;
-	export let FS: FireStore;
+	export let FS: Database;
 
 	let gameElement: HTMLElement;
 

@@ -1,4 +1,4 @@
-import type { DisplayObject } from './display';
+import type { DisplayObject } from './utils';
 import type { Stage } from './stage';
 
 export class Canvas {

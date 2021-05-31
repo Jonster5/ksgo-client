@@ -3,10 +3,11 @@ import type {
 	DisplayProperties,
 	ColorProperties,
 	CircularProperties,
-} from './display';
+} from './utils';
 
 export class Circle
-	implements DisplayProperties, CircularProperties, ColorProperties {
+	implements DisplayProperties, CircularProperties, ColorProperties
+{
 	x: number;
 	y: number;
 	r: number;
@@ -117,7 +118,7 @@ export class Circle
 
 	setY(v: number) {
 		this.y = v;
-		this.prevy;
+		this.prevy = v;
 	}
 
 	setR(v: number) {
@@ -150,30 +151,19 @@ export class Circle
 		dm: { w: number; h: number }
 	) {
 		if (
-			!this.visible // ||
-			// this.x - this.halfWidth > this.parent.width / 2 ||
-			// this.x + this.halfWidth < -this.parent.width / 2 ||
-			// this.y - this.halfHeight > this.parent.height / 2 ||
-			// this.y + this.halfHeight < -this.parent.height / 2
+			!this.visible ||
+			this.gx - this.halfWidth > dm.w / 2 ||
+			this.gx + this.halfWidth < -dm.w / 2 ||
+			this.gy - this.halfHeight > dm.h / 2 ||
+			this.gy + this.halfHeight < -dm.h / 2
 		)
 			return;
 
 		ctx.save();
 
-		const renderX =
-			this.prevx !== undefined
-				? (this.x - this.prevx) * lagOffset + this.prevx
-				: this.x;
-
-		const renderY =
-			this.prevy !== undefined
-				? (this.y - this.prevy) * lagOffset + this.prevy
-				: this.y;
-
-		const renderR =
-			this.prevr !== undefined
-				? (this.r - this.prevr) * lagOffset + this.prevr
-				: this.r;
+		const renderX = (this.x - this.prevx) * lagOffset + this.prevx;
+		const renderY = (this.y - this.prevy) * lagOffset + this.prevy;
+		const renderR = (this.r - this.prevr) * lagOffset + this.prevr;
 
 		ctx.translate(renderX, renderY);
 		ctx.rotate(renderR);

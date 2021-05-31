@@ -3,10 +3,11 @@ import type {
 	DimensionProperties,
 	DisplayProperties,
 	FrameProperties,
-} from './display';
+} from './utils';
 
 export class Sprite
-	implements DisplayProperties, FrameProperties, DimensionProperties {
+	implements DisplayProperties, FrameProperties, DimensionProperties
+{
 	frames: HTMLImageElement[];
 	frame: number;
 	frameShifter: number;
@@ -103,7 +104,7 @@ export class Sprite
 
 	setY(v: number) {
 		this.y = v;
-		this.prevy;
+		this.prevy = v;
 	}
 
 	setR(v: number) {
@@ -131,10 +132,10 @@ export class Sprite
 	}
 
 	start(delay: number) {
-		this.frameShifter = (setInterval(() => {
+		this.frameShifter = setInterval(() => {
 			this.frame++;
 			if (this.frame >= this.frames.length) this.frame = 0;
-		}, delay) as unknown) as number;
+		}, delay) as unknown as number;
 	}
 
 	stop() {
@@ -158,20 +159,9 @@ export class Sprite
 
 		ctx.save();
 
-		const renderX =
-			this.prevx !== undefined
-				? (this.x - this.prevx) * lagOffset + this.prevx
-				: this.x;
-
-		const renderY =
-			this.prevy !== undefined
-				? (this.y - this.prevy) * lagOffset + this.prevy
-				: this.y;
-
-		const renderR =
-			this.prevr !== undefined
-				? (this.r - this.prevr) * lagOffset + this.prevr
-				: this.r;
+		const renderX = (this.x - this.prevx) * lagOffset + this.prevx;
+		const renderY = (this.y - this.prevy) * lagOffset + this.prevy;
+		const renderR = (this.r - this.prevr) * lagOffset + this.prevr;
 
 		ctx.translate(renderX, renderY);
 		ctx.rotate(renderR);

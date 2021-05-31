@@ -5,37 +5,39 @@ import {
 	SocketProperties,
 } from '@utils/socketUtils';
 import Peer from 'peerjs';
-import type { FireStore } from '../data/multiplayer';
+import { Database, DocRef, GET_KSGO_ID } from '../data/multiplayer';
 import type { MapItem } from '../data/types';
 
 export class Server
 	extends ServerUtils
 	implements SocketProperties, ServerProperties
 {
-	readonly ID: string;
+	ID: string;
 	connection: Peer;
 
-	fs: FireStore;
+	ref: DocRef;
 
-	constructor(fs: FireStore) {
-		super(fs);
+	constructor(ref: DocRef) {
+		super();
+
+		this.ref = ref;
 	}
 
-	init(ID: string, m: MapItem) {
+	async init(ID: string, m: MapItem, info: { mp: number; private: boolean }) {
 		this.destroy();
+
+		this.ID = GET_KSGO_ID('HOST', ID);
+
+		await this.ref.set({
+			KSGO_ID: this.ID,
+			name: m.name,
+			maxPlayers: info.mp,
+			private: info.private,
+		});
 
 		this.connection = new Peer(ID);
 
-		this.connection.on('open', (id) => {
-			this.fs
-				.collection('test')
-				.doc(this.ID)
-				.set({
-					id,
-					name: prompt("Enter this game's name"),
-					map: m.name,
-				});
-		});
+		this.connection.on('open', (id) => {});
 
 		this.connection.on('error', (err) => {
 			throw new Error(err);
@@ -43,38 +45,38 @@ export class Server
 	}
 
 	remove() {
-		this.fs.collection('test').doc(this.ID).delete();
+		this.ref.delete();
 	}
 }
 
-export class Client
-	extends ServerUtils
-	implements SocketProperties, ClientProperties
-{
-	readonly ID: string;
-	connection: Peer;
+// export class Client
+// 	extends ServerUtils
+// 	implements SocketProperties, ClientProperties
+// {
+// 	readonly ID: string;
+// 	connection: Peer;
 
-	fs: FireStore;
+// 	fs: FireStore;
 
-	constructor(fs: FireStore) {
-		super(fs);
-	}
+// 	constructor(fs: FireStore) {
+// 		super(fs);
+// 	}
 
-	init(ID: string) {
-		this.destroy();
+// 	init(ID: string) {
+// 		this.destroy();
 
-		this.connection = new Peer(ID);
+// 		this.connection = new Peer(ID);
 
-		this.connection.on('open', (id) => {
-			console.log(id);
+// 		this.connection.on('open', (id) => {
+// 			console.log(id);
 
-			this.fs.collection('test').doc().set({
-				id,
-			});
-		});
+// 			this.fs.collection('test').doc().set({
+// 				id,
+// 			});
+// 		});
 
-		this.connection.on('error', (err) => {
-			throw new Error(err);
-		});
-	}
-}
+// 		this.connection.on('error', (err) => {
+// 			throw new Error(err);
+// 		});
+// 	}
+// }

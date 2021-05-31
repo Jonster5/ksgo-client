@@ -1,26 +1,36 @@
 <script lang="ts">
-	import type { FireStore } from '@/src/lib/data/multiplayer';
+	import type { Database } from '@/src/lib/data/multiplayer';
 	import type firebase from 'firebase';
 	import { onMount } from 'svelte';
+	import App from '../App.svelte';
 
 	import Lobbycard from './Lobbycard.svelte';
 
-	export let FS: FireStore;
+	export let FS: Database;
 
-	let docs: firebase.firestore.DocumentData[];
+	interface GameInfo {
+		KSGO_ID: string;
+		maxPlayers: number;
+		name: string;
+		private: boolean;
+	}
 
-	onMount(async () => {
-		await FS.collection('test')
-			.get()
-			.then((q) => {
-				docs = q.docs.map((doc) => doc.data());
-			});
-	});
+	const games = FS.collection('public-games')
+		.get()
+		.then((q) => q.docs.map((doc) => doc.data()) as GameInfo[]);
 </script>
 
 <main>
 	<h2 class="title">Join Lobby</h2>
-	<div class="c" />
+	<div class="c">
+		{#await games}
+			Loading...
+		{:then docs}
+			{#each docs as { KSGO_ID, maxPlayers, name }}
+				<Lobbycard {KSGO_ID} {maxPlayers} {name} />
+			{/each}
+		{/await}
+	</div>
 </main>
 
 <style lang="scss">

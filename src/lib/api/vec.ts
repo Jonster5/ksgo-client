@@ -1,79 +1,141 @@
-export class Point {
-    x: number;
-    y: number;
-
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-}
-
 export class Vec {
-    x: number;
-    y: number;
+	x: number;
+	y: number;
 
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
+	constructor(x: number | Vec, y?: number) {
+		if (x instanceof Vec) {
+			this.x = x.x;
+			this.y = x.y;
+		} else if (typeof x === 'number') {
+			if (!y) {
+				this.x = x;
+				this.y = x;
+			} else {
+				this.x = x;
+				this.y = y;
+			}
+		} else {
+			throw new Error(`${x} is an invalid input`);
+		}
+	}
 
-    clone(): Vec {
-        return new Vec(this.x, this.y);
-    }
+	clone(): Vec {
+		return new Vec(this.x, this.y);
+	}
 
-    add(n: Vec | number): this {
-        if (typeof n === 'number') {
-            this.x += n;
-            this.y += n;
-        } else if (n instanceof Vec) {
-            this.x += n.x;
-            this.y += n.y;
-        }
-        return this;
-    }
+	set(x: number | Vec, y?: number): this {
+		if (x instanceof Vec) {
+			this.x = x.x;
+			this.y = x.y;
+		} else if (typeof x === 'number') {
+			if (!y) {
+				this.x = x;
+				this.y = x;
+			} else {
+				this.x = x;
+				this.y = y;
+			}
+		} else {
+			throw new Error(`${x} is an invalid input`);
+		}
+		return this;
+	}
 
-    subtract(n: Vec | number): this {
-        if (typeof n === 'number') {
-            this.x -= n;
-            this.y -= n;
-        } else if (n instanceof Vec) {
-            this.x -= n.x;
-            this.y -= n.y;
-        }
-        return this;
-    }
+	add(x: number | Vec, y?: number): this {
+		if (x instanceof Vec) {
+			this.x += x.x;
+			this.y += x.y;
+		} else if (typeof x === 'number') {
+			if (!y) {
+				this.x += x;
+				this.y += x;
+			} else {
+				this.x += x;
+				this.y += y;
+			}
+		} else {
+			throw new Error(`${x} is an invalid input`);
+		}
+		return this;
+	}
 
-    multiply(n: Vec | number): this {
-        if (typeof n === 'number') {
-            this.x *= n;
-            this.y *= n;
-        } else if (n instanceof Vec) {
-            this.x *= n.x;
-            this.y *= n.y;
-        }
-        return this;
-    }
+	subtract(x: number | Vec, y?: number): this {
+		if (x instanceof Vec) {
+			this.x -= x.x;
+			this.y -= x.y;
+		} else if (typeof x === 'number') {
+			if (!y) {
+				this.x -= x;
+				this.y -= x;
+			} else {
+				this.x -= x;
+				this.y -= y;
+			}
+		} else {
+			throw new Error(`${x} is an invalid input`);
+		}
+		return this;
+	}
 
-    divide(n: Vec | number): this {
-        if (typeof n === 'number') {
-            this.x /= n;
-            this.y /= n;
-        } else if (n instanceof Vec) {
-            this.x /= n.x;
-            this.y /= n.y;
-        }
-        return this;
-    }
+	multiply(x: number | Vec, y?: number): this {
+		if (x instanceof Vec) {
+			this.x *= x.x;
+			this.y *= x.y;
+		} else if (typeof x === 'number') {
+			if (!y) {
+				this.x *= x;
+				this.y *= x;
+			} else {
+				this.x *= x;
+				this.y *= y;
+			}
+		} else {
+			throw new Error(`${x} is an invalid input`);
+		}
+		return this;
+	}
 
-    normalize(): this {
-        return this.divide(this.magnitude);
-    }
+	divide(x: number | Vec, y?: number): this {
+		if (x instanceof Vec) {
+			this.x /= x.x;
+			this.y /= x.y;
+		} else if (typeof x === 'number') {
+			if (!y) {
+				this.x /= x;
+				this.y /= x;
+			} else {
+				this.x /= x;
+				this.y /= y;
+			}
+		} else {
+			throw new Error(`${x} is an invalid input`);
+		}
+		return this;
+	}
 
-    get magnitude(): number {
-        return Math.hypot(this.x, this.y);
-    }
+	print(name?: string): this {
+		if (name)
+			console.log(
+				`${name} { x: ${this.x} y: ${this.y} r: ${this.angle} }`
+			);
+		else console.log(`x: ${this.x} y: ${this.y} r: ${this.angle}`);
+		return this;
+	}
 
-    get angle(): number {
-        return Math.atan2(this.y, this.x);
-    }
+	normalize(): this {
+		return this.divide(this.magnitude);
+	}
+
+	get magnitude(): number {
+		return Math.hypot(this.y, this.x);
+	}
+
+	get angle(): number {
+		return Math.atan2(this.y, this.x);
+	}
+
+	set angle(v: number) {
+		this.x = -Math.cos(v);
+		this.y = Math.sin(v);
+	}
 }

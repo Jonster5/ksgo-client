@@ -1,7 +1,7 @@
 import { Canvas } from '@api/canvas';
 import { Stage } from '@api/stage';
 import type { ParsedAssets } from '@data/assets';
-import { RemoteSendInfo, GET_KSGO_ID, FireStore } from '@data/multiplayer';
+import type { RemoteSendInfo, DocRef, Database } from '@data/multiplayer';
 import type { MapItem, ShipStatObject, GameOptions } from '@data/types';
 import { GameUtils, Game, HostedGame } from '@utils/gameUtils';
 import { Writable, writable } from 'svelte/store';
@@ -183,6 +183,7 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 
 	map: GameMap;
 
+	ref: DocRef;
 	server: Server;
 
 	user: PlayerShipObject;
@@ -196,7 +197,7 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 		p: HTMLElement,
 		assets: ParsedAssets,
 		options: GameOptions,
-		FS: FireStore
+		FS: Database
 	) {
 		super();
 		this.assets = assets;
@@ -212,9 +213,12 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 
 		this.queue = [];
 
-		this.server = new Server(FS);
+		this.ref = FS.collection('public-games').doc();
 
-		this.ID = GET_KSGO_ID('HOST');
+		this.ID = this.ref.id;
+
+		this.server = new Server(this.ref);
+
 		this.open = writable(false);
 
 		this.playerCount = 1;
@@ -234,11 +238,7 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 		this.map.setupBackground(m, this.stage);
 		this.map.setupMap(m, this.stage);
 
-		this.server.init(this.ID, m);
-
-		this.canvas.element.addEventListener('contextmenu', (e: Event) =>
-			e.preventDefault()
-		);
+		this.server.init(this.ID, m, { mp: this.maxPlayers, private: false });
 
 		window.addEventListener('resize', () => {
 			this.canvas.ar = window.innerWidth / window.innerHeight;

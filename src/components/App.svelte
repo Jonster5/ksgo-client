@@ -58,6 +58,8 @@
 	};
 </script>
 
+<svelte:window on:contextmenu={(e) => e.preventDefault()} />
+
 {#await getAssets()}
 	<main>
 		<h2>Loading...</h2>

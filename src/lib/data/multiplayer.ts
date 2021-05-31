@@ -3,17 +3,19 @@ import 'firebase/firestore';
 
 export type KSGO_ID_TYPE = 'HOST' | 'CLIENT';
 
-export const GET_KSGO_ID = (type: KSGO_ID_TYPE, n?: number) =>
-	`KSGO_${type}_${n ?? window.crypto.getRandomValues(new Uint32Array(1))[0]}`;
+export const GET_KSGO_ID = (type: KSGO_ID_TYPE, value: string) =>
+	`KSGO_${type}_${value}`;
 
-export const GET_KSGO_FIREBASE = (config: Object): FireStore => {
+export const GET_KSGO_FIREBASE = (config: Object): Database => {
 	if (!firebase.apps.length) {
 		firebase.initializeApp(config);
 	}
 	return firebase.firestore();
 };
 
-export type FireStore = firebase.firestore.Firestore;
+export type Database = firebase.firestore.Firestore;
+export type CollectionRef = firebase.firestore.CollectionReference;
+export type DocRef = firebase.firestore.DocumentReference;
 
 export interface RemoteSendInfo {
 	id: string;
