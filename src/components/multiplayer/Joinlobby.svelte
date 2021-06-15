@@ -1,23 +1,18 @@
 <script lang="ts">
-	import type { Database } from '@/src/lib/data/multiplayer';
-	import type firebase from 'firebase';
-	import { onMount } from 'svelte';
-	import App from '../App.svelte';
+	import type { Database, DBGameInfo } from '@/src/lib/data/multiplayer';
 
 	import Lobbycard from './Lobbycard.svelte';
 
 	export let FS: Database;
 
-	interface GameInfo {
-		KSGO_ID: string;
-		maxPlayers: number;
-		name: string;
-		private: boolean;
-	}
-
 	const games = FS.collection('public-games')
 		.get()
-		.then((q) => q.docs.map((doc) => doc.data()) as GameInfo[]);
+		.then(
+			(q) =>
+				q.docs
+					.map((doc) => doc.data())
+					.sort((a, b) => a.time - b.time) as DBGameInfo[]
+		);
 </script>
 
 <main>
@@ -26,9 +21,13 @@
 		{#await games}
 			Loading...
 		{:then docs}
-			{#each docs as { KSGO_ID, maxPlayers, name }}
-				<Lobbycard {KSGO_ID} {maxPlayers} {name} />
-			{/each}
+			{#if docs.length > 0}
+				{#each docs as { KSGO_ID, maxPlayers, name }}
+					<Lobbycard {KSGO_ID} {maxPlayers} {name} />
+				{/each}
+			{:else}
+				No Games Available
+			{/if}
 		{/await}
 	</div>
 </main>

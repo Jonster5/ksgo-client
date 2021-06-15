@@ -1,10 +1,24 @@
 <script lang="ts">
+	import Peer from 'peerjs';
+
 	export let KSGO_ID: string;
 	export let maxPlayers: number;
 	export let name: string;
+
+	const test = () => {
+		const peer = new Peer();
+
+		const conn = peer.connect(KSGO_ID);
+
+		conn.on('open', () => {
+			console.log('open');
+		});
+
+		conn.on('error', console.error);
+	};
 </script>
 
-<article title={KSGO_ID}>
+<article title={KSGO_ID} on:click={test}>
 	<h3>{name}</h3>
 	<p>{maxPlayers} players max</p>
 </article>

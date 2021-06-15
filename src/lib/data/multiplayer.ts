@@ -17,6 +17,14 @@ export type Database = firebase.firestore.Firestore;
 export type CollectionRef = firebase.firestore.CollectionReference;
 export type DocRef = firebase.firestore.DocumentReference;
 
+export interface DBGameInfo {
+	KSGO_ID: string;
+	maxPlayers: number;
+	name: string;
+	private: boolean;
+	timeOfCreation: number;
+}
+
 export interface RemoteSendInfo {
 	id: string;
 	x: number;

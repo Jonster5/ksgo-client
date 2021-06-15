@@ -7,7 +7,7 @@ import type {
 	RemoteShipObject,
 	PlayerShip,
 } from '@classes/ship';
-import type { Server } from '@classes/socket';
+import type { Client, Server } from '@classes/socket';
 import type { ParsedAssets } from '@data/assets';
 import type { RemoteSendInfo } from '@data/multiplayer';
 import type { MapItem, ShipStatObject } from '@data/types';
@@ -34,7 +34,7 @@ export interface Game {
 	spawnEnemy(u: ShipStatObject): void;
 }
 
-export interface HostedGame {
+export interface HostedGameProperties {
 	server: Server;
 
 	remotes: Set<RemoteShipObject>;
@@ -51,8 +51,10 @@ export interface HostedGame {
 	removeRemote(): void;
 }
 
-export interface ClientGame {
+export interface ClientGameProperties {
 	remotes: Set<RemoteShipObject>;
+
+	connection: Client;
 
 	init(m: MapItem, remotes: any[]): void;
 

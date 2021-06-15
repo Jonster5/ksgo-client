@@ -3,7 +3,12 @@ import { Stage } from '@api/stage';
 import type { ParsedAssets } from '@data/assets';
 import type { RemoteSendInfo, DocRef, Database } from '@data/multiplayer';
 import type { MapItem, ShipStatObject, GameOptions } from '@data/types';
-import { GameUtils, Game, HostedGame } from '@utils/gameUtils';
+import {
+	GameUtils,
+	Game,
+	HostedGameProperties,
+	ClientGameProperties,
+} from '@utils/gameUtils';
 import { Writable, writable } from 'svelte/store';
 import { GameMap } from './map';
 import {
@@ -13,8 +18,9 @@ import {
 	PlayerShip,
 	EnemyShip,
 	RemoteShipObject,
+	RemoteShip,
 } from './ship';
-import { Server } from './socket';
+import { Client, Server } from './socket';
 
 export class FreeplayGame extends GameUtils implements Game {
 	assets: ParsedAssets;
@@ -168,7 +174,7 @@ export class FreeplayGame extends GameUtils implements Game {
 	}
 }
 
-export class HostGame extends GameUtils implements Game, HostedGame {
+export class HostGame extends GameUtils implements Game, HostedGameProperties {
 	assets: ParsedAssets;
 
 	canvas: Canvas;
@@ -230,7 +236,7 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 		this.needsShipRespawn = writable(false);
 	}
 
-	init(m: MapItem) {
+	async init(m: MapItem) {
 		this.canvas.size(m.size / 2);
 		this.stage.width = m.size;
 		this.stage.height = m.size;
@@ -238,7 +244,10 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 		this.map.setupBackground(m, this.stage);
 		this.map.setupMap(m, this.stage);
 
-		this.server.init(this.ID, m, { mp: this.maxPlayers, private: false });
+		await this.server.init(this.ID, m, {
+			mp: this.maxPlayers,
+			private: false,
+		});
 
 		window.addEventListener('resize', () => {
 			this.canvas.ar = window.innerWidth / window.innerHeight;
@@ -342,4 +351,87 @@ export class HostGame extends GameUtils implements Game, HostedGame {
 	addRemote(): void {}
 
 	removeRemote(): void {}
+}
+
+export class ClientGame
+	extends GameUtils
+	implements Game, ClientGameProperties
+{
+	assets: ParsedAssets;
+
+	canvas: Canvas;
+	stage: Stage;
+
+	queue: RemoteSendInfo[];
+	ID: string;
+	open: Writable<boolean>;
+
+	playerCount: number;
+	maxPlayers: number;
+
+	map: GameMap;
+
+	ref: DocRef;
+	connection: Client;
+
+	user: PlayerShipObject;
+	enemies: Set<EnemyShipObject>;
+	remotes: Set<RemoteShipObject>;
+
+	pause: boolean;
+	needsShipRespawn: Writable<boolean>;
+
+	constructor(
+		p: HTMLElement,
+		assets: ParsedAssets,
+		options: GameOptions,
+		FS: Database
+	) {
+		super();
+		this.assets = assets;
+
+		this.canvas = new Canvas(p, 0);
+		this.stage = new Stage(0, 0);
+		this.canvas.add(this.stage);
+
+		this.canvas.UPS = 30;
+
+		this.enemies = new Set();
+		this.user = null;
+
+		this.queue = [];
+
+		this.ref = FS.collection('public-games').doc();
+
+		this.ID = this.ref.id;
+
+		this.connection = new Client(this.ref);
+
+		this.open = writable(false);
+
+		this.playerCount = 1;
+		this.maxPlayers = options.players;
+
+		this.map = new GameMap(this.assets);
+
+		this.pause = true;
+		this.needsShipRespawn = writable(false);
+	}
+	addRemote(): void {
+		throw new Error('Method not implemented.');
+	}
+	removeRemote(): void {
+		throw new Error('Method not implemented.');
+	}
+
+	init(m: MapItem): void {}
+	kill(): void {
+		throw new Error('Method not implemented.');
+	}
+	spawnPlayer(u: ShipStatObject): void {
+		throw new Error('Method not implemented.');
+	}
+	spawnEnemy(u: ShipStatObject): void {
+		throw new Error('Method not implemented.');
+	}
 }
