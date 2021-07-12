@@ -1,0 +1,142 @@
+{
+	"version": 0.1,
+	"name": "Cruiser",
+	"faction": "SL",
+	"width": 46,
+	"height": 70,
+
+	"max_energy": 500,
+	"energy_gain": 5,
+	"max_hull": 350,
+	"max_speed": 30,
+
+	"mass": 5,
+
+	"thrusters": [
+		{
+			"direction": "forward",
+			"size": 17,
+			"x": 0,
+			"y": 42,
+			"energy": 4,
+			"thrust": 3
+		},
+		{
+			"direction": "forward",
+			"size": 10,
+			"x": 7,
+			"y": 38,
+			"energy": 1.3,
+			"thrust": 2
+		},
+		{
+			"direction": "forward",
+			"size": 10,
+			"x": -7,
+			"y": 38,
+			"energy": 1.3,
+			"thrust": 2
+		},
+		{
+			"direction": "left",
+			"size": 8,
+			"x": 19,
+			"y": -22,
+			"energy": 1,
+			"thrust": 0.4
+		},
+		{
+			"direction": "left",
+			"size": 9,
+			"x": 20,
+			"y": -17,
+			"energy": 1,
+			"thrust": 0.4
+		},
+		{
+			"direction": "right",
+			"size": 8,
+			"x": -19,
+			"y": -22,
+			"energy": 1,
+			"thrust": 0.4
+		},
+		{
+			"direction": "right",
+			"size": 9,
+			"x": -20,
+			"y": -17,
+			"energy": 1,
+			"thrust": 0.4
+		}
+	],
+
+	"weapons": [
+		{
+			"type": "ion_laser",
+			"direction": "forward",
+			"x": 0,
+			"y": -33,
+
+			"damage": 15,
+			"energy": 4
+		},
+		{
+			"type": "laser",
+			"direction": "forward",
+			"x": -2,
+			"y": -35,
+
+			"damage": 3,
+			"energy": 1
+		},
+		{
+			"type": "laser",
+			"direction": "forward",
+			"x": 2,
+			"y": -35,
+
+			"damage": 3,
+			"energy": 1
+		},
+		{
+			"type": "laser",
+			"direction": "forward",
+			"x": -3,
+			"y": -34,
+
+			"damage": 3,
+			"energy": 1
+		},
+		{
+			"type": "laser",
+			"direction": "forward",
+			"x": 3,
+			"y": -34,
+
+			"damage": 3,
+			"energy": 1
+		},
+		{
+			"type": "laser",
+			"direction": "forward",
+			"x": -4,
+			"y": -33,
+
+			"damage": 3,
+			"energy": 1
+		},
+		{
+			"type": "laser",
+			"direction": "forward",
+			"x": 4,
+			"y": -33,
+
+			"damage": 3,
+			"energy": 1
+		}
+	],
+
+	"image": "/data/ships/images/[SL] cruiser.png",
+	"thumb": "/data/ships/images/[SL] cruiserThumb.png"
+}

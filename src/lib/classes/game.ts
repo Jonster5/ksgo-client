@@ -1,37 +1,26 @@
 import { Canvas } from '@api/canvas';
-import { Stage } from '@api/stage';
-import type { ParsedAssets } from '@data/assets';
-import type { RemoteSendInfo, DocRef, Database } from '@data/multiplayer';
-import type { MapItem, ShipStatObject, GameOptions } from '@data/types';
-import {
-	GameUtils,
-	Game,
-	HostedGameProperties,
-	ClientGameProperties,
-} from '@utils/gameUtils';
+import { Stage } from '@api/material';
+import { Sprite } from '@api/sprite';
+import { Vec2 } from '@api/vec2';
+import { GameMap } from '@classes/map';
+import { PlayerShip, PlayerShipObject } from '@classes/ship';
+import type {
+	ParsedAssets,
+	ParsedMapItem,
+	ParsedShipItem,
+} from '@data/assetTypes';
+import { GameUtils, PeacefulGameProperties } from '@utils/gameUtils';
 import { Writable, writable } from 'svelte/store';
-import { GameMap } from './map';
-import {
-	PlayerShipObject,
-	EnemyShipObject,
-	PlayerSpectator,
-	PlayerShip,
-	EnemyShip,
-	RemoteShipObject,
-	RemoteShip,
-} from './ship';
-import { Client, Server } from './socket';
 
-export class FreeplayGame extends GameUtils implements Game {
+export class PeacefulGame extends GameUtils implements PeacefulGameProperties {
 	assets: ParsedAssets;
 
 	canvas: Canvas;
-	stage: Stage;
+	stage: Sprite<Stage>;
 
 	map: GameMap;
 
-	user: PlayerShipObject;
-	enemies: Set<EnemyShipObject>;
+	player!: PlayerShipObject;
 
 	pause: boolean;
 	needsShipRespawn: Writable<boolean>;
@@ -40,14 +29,13 @@ export class FreeplayGame extends GameUtils implements Game {
 		super();
 		this.assets = assets;
 
-		this.canvas = new Canvas(p, 0);
-		this.stage = new Stage(0, 0);
+		this.canvas = new Canvas(p, window.innerWidth);
+		this.stage = new Sprite(new Stage(), new Vec2(0));
 		this.canvas.add(this.stage);
 
 		this.canvas.UPS = 30;
 
-		this.enemies = new Set();
-		this.user = null;
+		this.player = null;
 
 		this.map = new GameMap(this.assets);
 
@@ -55,10 +43,9 @@ export class FreeplayGame extends GameUtils implements Game {
 		this.needsShipRespawn = writable(false);
 	}
 
-	init(m: MapItem) {
-		this.canvas.size(m.size / 2);
-		this.stage.width = m.size;
-		this.stage.height = m.size;
+	init(m: ParsedMapItem) {
+		this.canvas.setSize(m.size / 2);
+		this.stage.size.set(m.size);
 
 		this.map.setupBackground(m, this.stage);
 		this.map.setupMap(m, this.stage);
@@ -69,7 +56,7 @@ export class FreeplayGame extends GameUtils implements Game {
 
 		window.addEventListener('resize', () => {
 			this.canvas.ar = window.innerWidth / window.innerHeight;
-			this.canvas.size(this.canvas.width);
+			this.canvas.setSize(this.canvas.width);
 		});
 
 		this.canvas.update = () => {
@@ -77,30 +64,15 @@ export class FreeplayGame extends GameUtils implements Game {
 
 			this.map.updateGravity();
 
-			this.user?.updateGravity(
+			this.player.updateGravity(
 				this.map.stars,
 				this.map.planets,
 				this.map.asteroids
 			);
 
-			this.enemies.forEach((e) =>
-				e.updateGravity(
-					this.map.stars,
-					this.map.planets,
-					this.map.asteroids
-				)
-			);
-
 			this.map.updatePosition(this.stage);
 
-			this.user.update(this.stage);
-
-			this.enemies.forEach((e) =>
-				e.AI([this.user, ...Array.from(this.enemies)], {
-					size: this.stage.width,
-				})
-			);
-			this.enemies.forEach((e) => e.update(this.stage));
+			this.player.update(this.stage);
 		};
 
 		this.canvas.start();
@@ -111,69 +83,49 @@ export class FreeplayGame extends GameUtils implements Game {
 			'wheel',
 			(e) => {
 				if (e.deltaY > 0) {
-					if (this.canvas.width + 100 >= this.user.sprite.height * 50)
+					if (
+						this.canvas.width + 100 >=
+						this.player.sprite.size.y * 50
+					)
 						return;
-					this.canvas.size(this.canvas.width + 100);
+					this.canvas.setSize(this.canvas.width + 100);
 				} else {
-					if (this.canvas.width - 100 <= this.user.sprite.height * 10)
+					if (
+						this.canvas.width - 100 <=
+						this.player.sprite.size.y * 10
+					)
 						return;
-					this.canvas.size(this.canvas.width - 100);
+					this.canvas.setSize(this.canvas.width - 100);
 				}
 			},
 			{ passive: true }
 		);
 	}
 
-	spawnPlayer(u: ShipStatObject) {
-		if (this.user) {
-			this.user.kill();
-			this.enemies.forEach((e) => e.kill());
+	spawnPlayer(u: ParsedShipItem) {
+		if (this.player) {
+			this.player.kill();
 		}
 
-		this.user =
-			u.name === 'Spectator'
-				? new PlayerSpectator(this.stage, u, this.assets)
-				: new PlayerShip(this.stage, u, this.assets);
+		this.player = new PlayerShip(this.stage, u, this.assets);
 
-		const { x, y, r } = this.map.getSpawnCoords();
+		const { p, r } = this.map.getSpawnCoords();
 
-		this.user.sprite.setX(x);
-		this.user.sprite.setY(y);
-		this.user.sprite.setR(r);
+		this.player.sprite.setPosition(p, r);
 
 		this.needsShipRespawn.set(false);
 		this.pause = false;
 
-		this.canvas.size(this.user.sprite.height * 30);
-	}
-
-	spawnEnemy(u: ShipStatObject) {
-		const newEnemy = new EnemyShip(this.stage, u, this.assets);
-
-		const { x, y, size } =
-			this.map.spawns[Math.floor(Math.random() * this.map.spawns.length)];
-
-		const sx = Math.floor(
-			Math.random() * (x + size / 2 - x - size / 2 + 1) + x + size
-		);
-		const sy = Math.floor(
-			Math.random() * (y + size / 2 - y - size / 2 + 1) + y + size
-		);
-		const sr = Math.floor((Math.random() * 360 * Math.PI) / 180);
-
-		newEnemy.sprite.setX(sx);
-		newEnemy.sprite.setY(sy);
-		newEnemy.sprite.setR(sr);
-
-		this.enemies.add(newEnemy);
+		this.canvas.setSize(this.player.sprite.size.y * 30);
 	}
 
 	kill(): void {
-		this.user.kill();
+		this.player.kill();
 		this.canvas.stop();
 	}
 }
 
+/*
 export class HostGame extends GameUtils implements Game, HostedGameProperties {
 	assets: ParsedAssets;
 
@@ -435,3 +387,4 @@ export class ClientGame
 		throw new Error('Method not implemented.');
 	}
 }
+*/

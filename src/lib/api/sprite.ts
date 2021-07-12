@@ -1,244 +1,145 @@
-import type {
-	DisplayObject,
-	DimensionProperties,
-	DisplayProperties,
-	FrameProperties,
-} from './utils';
+import type { Canvas } from '@api/canvas';
+import type { Stage, Texture, Rectangle, Ellipse, Blank } from '@api/material';
+import type { MaterialProperties, SpriteProperties } from '@api/utils';
+import { Vec2 } from '@api/vec2';
 
-export class Sprite
-	implements DisplayProperties, FrameProperties, DimensionProperties
+export class Sprite<Material extends MaterialProperties = Blank>
+	implements SpriteProperties
 {
-	frames: HTMLImageElement[];
-	frame: number;
-	frameShifter: number;
+	material: Material;
 
-	x: number;
-	y: number;
-	r: number;
-	w: number;
-	h: number;
-	vx: number;
-	vy: number;
-	vr: number;
-	prevx: number;
-	prevy: number;
+	position: Vec2;
+	size: Vec2;
+	rotation: number;
+
+	velocity: Vec2;
+	rotationVelocity: number;
+
+	prev: Vec2;
 	prevr: number;
 
 	visible: boolean;
-	parent: any;
-	children: Set<any>;
+	parent!: Sprite | Canvas | null;
+	children: Sprite[];
 
 	constructor(
-		frames: HTMLImageElement[],
-		width: number,
-		height: number,
-		x?: number,
-		y?: number
+		material: Material,
+		size: Vec2,
+		position?: Vec2,
+		rotation?: number
 	) {
-		this.frames = frames;
+		this.material = material;
 
-		this.frame = 0;
-		this.frameShifter = null;
+		this.size = size.clone();
 
-		this.w = width;
-		this.h = height;
-		this.x = x ?? 0;
-		this.prevx = x ?? 0;
-		this.y = y ?? 0;
-		this.prevy = x ?? 0;
-		this.r = this.rotation ?? 0;
-		this.prevr = this.rotation ?? 0;
+		this.position = position !== undefined ? position.clone() : new Vec2(0);
+		this.rotation = rotation ?? 0;
 
-		this.vx = 0;
-		this.vy = 0;
-		this.vr = 0;
+		this.velocity = new Vec2(0);
+		this.rotationVelocity = 0;
+
+		this.prev = this.position.clone();
+		this.prevr = rotation ?? 0;
 
 		this.visible = true;
-		this.children = new Set();
+		this.children = [];
+
+		this.parent = null;
 	}
 
-	get width(): number {
-		return this.w;
+	get globalPosition(): Vec2 {
+		if (this.parent) {
+			return this.parent.globalPosition.clone().add(this.position);
+		} else {
+			return this.position.clone();
+		}
 	}
 
-	set width(v: number) {
-		this.w = v;
+	get halfSize(): Vec2 {
+		return this.size.clone().divide(2);
 	}
 
-	get height(): number {
-		return this.h;
-	}
-
-	set height(v: number) {
-		this.h = v;
-	}
-
-	get halfWidth(): number {
-		return this.w / 2;
-	}
-
-	get halfHeight(): number {
-		return this.h / 2;
-	}
-
-	get gx(): number {
-		return (this.parent.gx ?? 0) + this.x;
-	}
-
-	get gy(): number {
-		return (this.parent.gy ?? 0) + this.y;
-	}
-
-	get rotation(): number {
-		return this.r;
-	}
-
-	set rotation(v: number) {
-		this.r = v;
-	}
-
-	setX(v: number) {
-		this.x = v;
-		this.prevx = v;
-	}
-
-	setY(v: number) {
-		this.y = v;
-		this.prevy = v;
-	}
-
-	setR(v: number) {
-		this.r = v;
-		this.prevr = v;
-	}
-
-	add(...sprites: Array<DisplayObject>): void {
-		if (sprites.length < 1) return;
+	add(...sprites: Sprite[]): void {
 		for (let sprite of sprites) {
 			if (sprite.parent) sprite.parent.remove(sprite);
-			if (sprite.parent === this) continue;
+
 			sprite.parent = this;
-			this.children.add(sprite);
+			this.children.push(sprite);
 		}
 	}
-	remove(...sprites: Array<DisplayObject>): void {
-		if (sprites.length < 1) return;
+	remove(...sprites: Sprite[]): void {
 		for (let sprite of sprites) {
-			if (sprite.parent !== this)
+			if (sprite.parent !== this) {
 				throw new Error('Sprite must already be a child');
-			this.children.delete(sprite);
+			}
+
 			sprite.parent = null;
+			this.children.splice(
+				this.children.findIndex((s) => s === sprite),
+				1
+			);
 		}
 	}
 
-	start(delay: number) {
-		this.frameShifter = setInterval(() => {
-			this.frame++;
-			if (this.frame >= this.frames.length) this.frame = 0;
-		}, delay) as unknown as number;
-	}
-
-	stop() {
-		if (this.frameShifter) clearInterval(this.frameShifter);
-		this.frameShifter = null;
-	}
-
-	render(
-		ctx: CanvasRenderingContext2D,
-		lagOffset: number,
-		dm: { w: number; h: number }
-	): void {
+	render(ctx: CanvasRenderingContext2D, lagOffset: number, dm: Vec2) {
 		if (
 			!this.visible ||
-			this.gx - this.halfWidth > dm.w / 2 ||
-			this.gx + this.halfWidth < -dm.w / 2 ||
-			this.gy - this.halfHeight > dm.h / 2 ||
-			this.gy + this.halfHeight < -dm.h / 2
+			this.globalPosition.x - this.halfSize.x > dm.x / 2 ||
+			this.globalPosition.x + this.halfSize.x < -dm.x / 2 ||
+			this.globalPosition.y - this.halfSize.y > dm.y / 2 ||
+			this.globalPosition.y + this.halfSize.y < -dm.y / 2
 		)
 			return;
 
-		ctx.save();
+		const save = ctx.getTransform();
 
-		const renderX = (this.x - this.prevx) * lagOffset + this.prevx;
-		const renderY = (this.y - this.prevy) * lagOffset + this.prevy;
-		const renderR = (this.r - this.prevr) * lagOffset + this.prevr;
+		const renderPos = this.position
+			.clone()
+			.subtract(this.prev)
+			.multiply(lagOffset)
+			.add(this.prev);
+		const renderR = (this.rotation - this.prevr) * lagOffset + this.prevr;
 
-		ctx.translate(renderX, renderY);
+		ctx.translate(...renderPos.get());
 		ctx.rotate(renderR);
 
-		ctx.drawImage(
-			this.frames[this.frame],
-			-this.halfWidth,
-			-this.halfHeight,
-			this.width,
-			this.height
-		);
+		if (this.material.draw) this.material.draw(ctx, this.halfSize);
 
-		if (this.children.size > 0)
+		if (this.children.length > 0)
 			for (let child of this.children) child.render(ctx, lagOffset, dm);
 
-		ctx.restore();
+		ctx.setTransform(save);
+	}
+
+	setPosition(pos: Vec2, R?: number) {
+		this.position.set(pos);
+		this.prev.set(pos);
+		if (R !== undefined) this.rotation = R;
+	}
+	setX(X: number) {
+		this.position.x = X;
+		this.prev.x = X;
+	}
+	setY(Y: number) {
+		this.position.y = Y;
+		this.prev.y = Y;
+	}
+	setR(R: number) {
+		this.rotation = R;
+		this.prevr = R;
+	}
+
+	setVelocity(vel: Vec2, R?: number) {
+		this.velocity.set(vel);
+		if (R !== undefined) this.rotationVelocity = R;
+	}
+	setVX(X: number) {
+		this.velocity.x = X;
+	}
+	setVY(Y: number) {
+		this.velocity.y = Y;
+	}
+	setVR(R: number) {
+		this.rotationVelocity = R;
 	}
 }
-
-// export class Text extends displayObject {
-// 	constructor(content = '', font = '', ctx) {
-// 		super();
-// 		this._c = content;
-// 		this.font = font;
-// 		// this.color = color;
-// 		this.ctx = ctx;
-
-// 		this.textBaseline = 'top';
-// 		this.strokeText = 'none';
-
-// 		this._w = 0;
-// 		this._h = 0;
-
-// 		this.ctx.font = this.font;
-// 		this.ctx.strokeStyle = 'none';
-// 		this.ctx.lineWidth = 0;
-// 		// this.ctx.fillStyle = this.color;
-
-// 		this._w = this.ctx.measureText(this._c).width;
-// 		this._h = this.ctx.measureText('M').width;
-// 	}
-// 	get Width() {
-// 		return this._w;
-// 	}
-// 	get Height() {
-// 		return this._h;
-// 	}
-// 	get halfWidth() {
-// 		return this._w / 2;
-// 	}
-// 	get halfHeight() {
-// 		return this._h / 2;
-// 	}
-
-// 	get content() {
-// 		return this._c;
-// 	}
-// 	set content(value) {
-// 		this.ctx.font = this.font;
-// 		this.ctx.strokeStyle = 'none';
-// 		this.ctx.lineWidth = 0;
-// 		// this.ctx.fillStyle = this.color;
-
-// 		this._w = this.ctx.measureText(this._c).width;
-// 		this._h = this.ctx.measureText('M').width;
-
-// 		this._c = value;
-// 	}
-
-// 	render(ctx) {
-// 		ctx.font = this.font;
-// 		ctx.fillStyle = this.color;
-// 		ctx.strokeStyle = 'none';
-// 		ctx.lineWidth = 0;
-// 		ctx.fillStyle = this.color;
-
-// 		ctx.translate(-this.halfWidth, -this.halfHeight);
-// 		ctx.fillText(this.content, 0, 0);
-// 	}
-// }

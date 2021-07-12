@@ -1,0 +1,42 @@
+{
+	"version": 0.1,
+	"name": "Lone Star",
+	"size": 6000,
+	"friction": 0.999,
+	"stars": [
+		{
+			"x": 0,
+			"y": 0,
+			"diameter": 500,
+			"mass": 500,
+			"color": "gold"
+		}
+	],
+	"planets": [],
+	"asteroids": [],
+	"spawn": [
+		{
+			"x": 1000,
+			"y": 1000,
+			"size": 500
+		},
+		{
+			"x": 5000,
+			"y": 1000,
+			"size": 500
+		},
+		{
+			"x": 5000,
+			"y": 1000,
+			"size": 500
+		},
+		{
+			"x": 5000,
+			"y": 5000,
+			"size": 500
+		}
+	],
+
+	"thumb": "/data/maps/images/singlesunThumb.png",
+	"alt": "A single sun"
+}

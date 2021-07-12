@@ -1,30 +1,18 @@
+import { Stage, Texture } from '@api/material';
 import { Sprite } from '@api/sprite';
-import type { Stage } from '@api/stage';
-import { Vec } from '@api/vec';
-import type { ParsedAssets } from '@data/assets';
-import type { RemoteSendInfo } from '@data/multiplayer';
-import type { ShipStatObject } from '@data/types';
-import { ShipUtils, Ship, Player, AI, Remote, Client } from '@utils/shipUtils';
+import { Vec2 } from '@api/vec2';
+import type { Star, Planet, Asteroid } from '@classes/stellar';
+import { ShipThruster } from '@classes/thruster';
+import type { ParsedShipItem, ParsedAssets } from '@data/assetTypes';
+import type { Ship, Player } from '@utils/shipUtils';
 import { Writable, writable } from 'svelte/store';
-import type { Star, Planet, Asteroid } from './stellar';
-import { ShipThruster } from './thruster';
-import { ShipLaser } from './weapon';
 
-export type ShipObject =
-	| PlayerShip
-	| EnemyShip
-	| RemoteShip
-	| ClientShip
-	| PlayerSpectator
-	| ClientSpectator;
+export type ShipObject = PlayerShip;
 
-export type PlayerShipObject = PlayerShip | PlayerSpectator;
-export type EnemyShipObject = EnemyShip;
-export type RemoteShipObject = RemoteShip;
-export type ClientShipObject = ClientShip | ClientSpectator;
+export type PlayerShipObject = PlayerShip;
 
-export class PlayerShip extends ShipUtils implements Ship, Player {
-	sprite: Sprite;
+export class PlayerShip implements Ship, Player {
+	sprite: Sprite<Texture>;
 	thrusters: ShipThruster[];
 	weapons: ShipLaser[];
 
@@ -54,12 +42,15 @@ export class PlayerShip extends ShipUtils implements Ship, Player {
 	uh: () => void;
 	uc: () => void;
 
-	constructor(stage: Stage, stats: ShipStatObject, assets: ParsedAssets) {
-		super();
-		const img = new Image(stats.width * 5, stats.height * 5);
-		img.src = stats.image;
-
-		this.sprite = new Sprite([img], stats.width, stats.height);
+	constructor(
+		stage: Sprite<Stage>,
+		stats: ParsedShipItem,
+		assets: ParsedAssets
+	) {
+		this.sprite = new Sprite(
+			new Texture({ frames: [stats.image] }),
+			stats.size.clone().divide(5)
+		);
 		this.thrusters = [];
 
 		this.thrusters = stats.thrusters.map(
@@ -75,16 +66,16 @@ export class PlayerShip extends ShipUtils implements Ship, Player {
 
 		this.s = writable(0);
 		this.e = writable(0);
-		this.h = writable(stats.max_hull);
+		this.h = writable(stats.maxHull);
 		this.c = writable(false);
 
 		this.mass = stats.mass;
-		this.maxSpeed = stats.max_speed;
+		this.maxSpeed = stats.maxSpeed;
 
-		this.maxEnergy = stats.max_energy;
-		this.energyGain = stats.energy_gain;
+		this.maxEnergy = stats.maxEnergy;
+		this.energyGain = stats.energyGain;
 
-		this.maxHull = stats.max_hull;
+		this.maxHull = stats.maxHull;
 
 		this.forward = false;
 		this.left = false;
@@ -177,12 +168,10 @@ export class PlayerShip extends ShipUtils implements Ship, Player {
 		});
 	}
 
-	update(stage: Stage) {
+	update(stage: Sprite<Stage>) {
 		let cost = -this.energyGain;
 
 		let fv = 0;
-		let lv = 0;
-		let rv = 0;
 
 		if (this.energy <= 0) this.c.set(true);
 
@@ -192,8 +181,9 @@ export class PlayerShip extends ShipUtils implements Ship, Player {
 				.forEach((t) => {
 					cost += t.energy;
 					if (t.direction === 'forward') fv += t.thrust;
-					if (t.direction === 'right') rv += t.thrust;
-					if (t.direction === 'left') lv += t.thrust;
+					if (t.direction === 'right')
+						this.rotation += t.thrust * 0.1;
+					if (t.direction === 'left') this.rotation -= t.thrust * 0.1;
 				});
 			this.weapons.forEach((w) => w.fire(this));
 		} else {
@@ -209,102 +199,70 @@ export class PlayerShip extends ShipUtils implements Ship, Player {
 				: e - cost
 		);
 
-		this.r -= lv * 0.1;
-		this.r += rv * 0.1;
+		const dif = this.velocity
+			.clone()
+			.add(fv / this.mass)
+			.rotate(this.rotation)
+			.divide(10);
 
-		let d = fv / this.mass;
-
-		let dx = this.vx + d * Math.sin(this.r) * 0.1;
-		let dy = this.vy + d * -Math.cos(this.r) * 0.1;
-
-		this.s.set(Math.hypot(dx, dy));
+		this.s.set(dif.magnitude);
 
 		if (this.speed > this.maxSpeed) {
-			let lx = isNaN(dx / this.speed) ? 0 : dx / this.speed;
-			let ly = isNaN(dy / this.speed) ? 0 : dy / this.speed;
-
-			this.vx = lx * this.maxSpeed;
-			this.vy = ly * this.maxSpeed;
-		} else {
-			this.vx = dx;
-			this.vy = dy;
+			dif.magnitude = this.maxSpeed;
+			this.s.set(this.maxSpeed);
 		}
 
-		this.x += this.vx;
-		this.y += this.vy;
-
-		if (this.x > stage.halfWidth) {
-			this.sprite.setX(-stage.halfWidth);
-			stage.setX(-this.x);
-		} else if (this.x < -stage.halfWidth) {
-			this.sprite.setX(stage.halfWidth);
-			stage.setX(-this.x);
-		}
-
-		if (this.y > stage.halfHeight) {
-			this.sprite.setY(-stage.halfHeight);
-			stage.setY(-this.y);
-		} else if (this.y < -stage.halfHeight) {
-			this.sprite.setY(stage.halfHeight);
-			stage.setY(-this.y);
-		}
-
-		stage.x = -this.x ?? 0;
-		stage.y = -this.y ?? 0;
+		this.position.add(this.velocity);
+		stage.position.set(this.position.clone().negate());
 	}
 
-	updateGravity(
-		stars: Array<Star>,
-		planets: Array<Planet>,
-		asteroids: Array<Asteroid>
-	) {
-		let gm = new Vec(0, 0);
+	updateGravity(stars: Star[], planets: Planet[], asteroids: Asteroid[]) {
+		const gm = new Vec2(0);
 
 		if (stars.length > 0) {
 			for (let star of stars) {
-				const v = new Vec(star.x - this.x, star.y - this.y);
+				const v = star.position.clone().subtract(this.position);
 
 				const m = v.magnitude;
 
-				v.normalize()
-					.multiply(star.mass * this.mass)
-					.divide(m);
-
-				gm.add(v);
+				gm.add(
+					v
+						.normalize()
+						.multiply(star.mass * this.mass)
+						.divide(m)
+				);
 			}
 		}
 		if (planets.length > 0) {
 			for (let planet of planets) {
-				let vx = planet.x - this.x,
-					vy = planet.y - this.y;
+				const v = planet.position.clone().subtract(this.position);
 
-				let m = Math.sqrt(vx * vx + vy * vy);
+				const m = v.magnitude;
 
-				let dx = vx / m,
-					dy = vy / m;
-
-				gm.x += (dx * (planet.mass * this.mass)) / m;
-				gm.y += (dy * (planet.mass * this.mass)) / m;
+				gm.add(
+					v
+						.normalize()
+						.multiply(planet.mass * this.mass)
+						.divide(m)
+				);
 			}
 		}
-
 		if (asteroids.length > 0) {
 			for (let asteroid of asteroids) {
-				let vx = asteroid.x - this.x,
-					vy = asteroid.y - this.y;
+				const v = asteroid.position.clone().subtract(this.position);
 
-				let m = Math.sqrt(vx * vx + vy * vy);
+				const m = v.magnitude;
 
-				let dx = vx / m,
-					dy = vy / m;
-
-				gm.x += (dx * (asteroid.mass * this.mass)) / m;
-				gm.y += (dy * (asteroid.mass * this.mass)) / m;
+				gm.add(
+					v
+						.normalize()
+						.multiply(asteroid.mass * this.mass)
+						.divide(m)
+				);
 			}
 		}
 
-		this.vx += gm.x;
-		this.vy += gm.y;
+		this.sprite.velocity.add(gm);
 	}
 
 	kill() {
@@ -314,576 +272,308 @@ export class PlayerShip extends ShipUtils implements Ship, Player {
 		this.ue();
 		this.uh();
 	}
-}
 
-export class EnemyShip extends ShipUtils implements Ship, AI {
-	sprite: Sprite;
-	thrusters: ShipThruster[];
-	weapons: ShipLaser[];
-
-	forward: boolean;
-	left: boolean;
-	right: boolean;
-	mass: number;
-	boost: boolean;
-
-	e: Writable<number>;
-	h: Writable<number>;
-	s: Writable<number>;
-
-	maxEnergy: number;
-	energyGain: number;
-	maxSpeed: number;
-	maxHull: number;
-
-	energy: number;
-	speed: number;
-	hull: number;
-
-	ai: {
-		target: ShipObject;
-	};
-
-	us: () => void;
-	ue: () => void;
-	uh: () => void;
-
-	constructor(stage: Stage, stats: ShipStatObject, assets: ParsedAssets) {
-		super();
-		const img = new Image(stats.width * 5, stats.height * 5);
-		img.src = stats.enemy;
-
-		this.sprite = new Sprite([img], stats.width, stats.height);
-		this.thrusters = [];
-
-		this.thrusters = stats.thrusters.map(
-			(stats) => new ShipThruster(this, stats, assets)
-		);
-		this.weapons = stats.weapons.map(
-			(stats) => new ShipLaser(this, stats, assets)
-		);
-
-		this.sprite.add(...this.thrusters.map((t) => t.sprite));
-		stage.add(this.sprite);
-
-		this.s = writable(0);
-		this.e = writable(0);
-		this.h = writable(stats.max_hull);
-
-		this.mass = stats.mass;
-		this.maxSpeed = stats.max_speed;
-
-		this.maxEnergy = stats.max_energy;
-		this.energyGain = stats.energy_gain;
-
-		this.maxHull = stats.max_hull;
-
-		this.forward = false;
-		this.left = false;
-		this.right = false;
-		this.boost = false;
-
-		this.energy = 0;
-		this.speed = 0;
-		this.hull = this.maxHull;
-
-		this.ai = {
-			target: null,
-		};
-
-		this.us = this.s.subscribe((v) => (this.speed = v));
-		this.ue = this.e.subscribe((e) => (this.energy = e));
-		this.uh = this.h.subscribe((h) => (this.hull = h));
+	get position(): Vec2 {
+		return this.sprite.position;
 	}
-
-	AItarget(entities: Array<ShipObject>) {
-		this.ai.target = entities[Math.floor(Math.random() * entities.length)];
+	get rotation(): number {
+		return this.sprite.rotation;
 	}
-
-	AIturn(distance: number, dr: number) {
-		const margin = Math.log(distance) / Math.log(this.sprite.w);
-
-		console.log(dr - margin, dr + margin);
-
-		if (dr > dr - margin && dr < dr + margin) {
-			this.r = dr;
-		}
-
-		this.thrusters
-			.filter(({ direction: d }) => d === 'left' || d === 'right')
-			.forEach(({ sprite }) => (sprite.visible = false));
-
-		return false;
+	set rotation(v: number) {
+		this.sprite.rotation = v;
 	}
-
-	AImove(distance: number, size: number, facingTarget: boolean) {
-		if (
-			distance < size / 3 &&
-			facingTarget &&
-			this.speed < this.ai.target.speed * 2
-		) {
-			this.forward = true;
-			this.thrusters
-				.filter(({ direction: d }) => d === 'forward')
-				.forEach(({ sprite }) => (sprite.visible = true));
-		} else {
-			this.forward = false;
-			this.thrusters
-				.filter(({ direction: d }) => d === 'forward')
-				.forEach(({ sprite }) => (sprite.visible = false));
-		}
+	get velocity(): Vec2 {
+		return this.sprite.velocity;
 	}
-
-	AIcruise() {}
-
-	AIfire(distance: number) {
-		if (distance <= this.weapons.reduce((a, b) => Math.max(a, b.length), 0))
-			this.weapons.forEach((w) => w.on());
-		else this.weapons.forEach((w) => w.on());
+	get rotationalVelocity(): number {
+		return this.sprite.rotationVelocity;
 	}
-
-	AI(entities: Array<ShipObject>, { size }) {
-		entities = entities.filter((e) => e !== this);
-		if (!this.ai.target) this.AItarget(entities);
-
-		const { x, y, w, h } = this.ai.target.sprite;
-
-		const dy = x - this.x;
-		const dx = y - this.y;
-		const theta = Math.atan2(dy, dx);
-
-		const dr =
-			((theta + Math.PI + (this.r % (2 * Math.PI))) % (2 * Math.PI)) -
-			Math.PI;
-		const distance = Math.hypot(dy, dx);
-
-		const facingTarget = this.AIturn(distance, dr);
-		this.AImove(distance, size, facingTarget);
-		this.AIfire(distance);
-	}
-
-	update(stage: Stage) {
-		let cost = -this.energyGain;
-		let forwardThrust = 0;
-
-		let lv = 0;
-		let rv = 0;
-
-		if (this.forward) {
-			this.thrusters
-				.filter(({ direction }) => direction === 'forward')
-				.forEach(({ energy, thrust }) => {
-					cost += energy;
-					forwardThrust += thrust;
-				});
-		}
-
-		if (this.left) {
-			this.thrusters
-				.filter(({ direction }) => direction === 'left')
-				.forEach(({ energy, thrust, sprite }) => {
-					sprite.visible = true;
-					cost += energy;
-					lv += thrust;
-				});
-		}
-
-		if (this.right) {
-			this.thrusters
-				.filter(({ direction }) => direction === 'right')
-				.forEach(({ energy, thrust, sprite }) => {
-					sprite.visible = true;
-					cost += energy;
-					rv += thrust;
-				});
-		}
-
-		this.weapons.forEach((w) => w.fire(this));
-
-		this.e.update((e) =>
-			e - cost < 0
-				? 0
-				: e - cost > this.maxEnergy
-				? this.maxEnergy
-				: e - cost
-		);
-
-		this.r -= lv * 0.1;
-		this.r += rv * 0.1;
-
-		let d = forwardThrust / this.mass;
-
-		let dx = this.vx + d * Math.sin(this.r) * 0.1;
-		let dy = this.vy + d * -Math.cos(this.r) * 0.1;
-
-		this.s.set(Math.hypot(dx, dy));
-
-		if (this.speed > this.maxSpeed) {
-			let lx = isNaN(dx / this.speed) ? 0 : dx / this.speed;
-			let ly = isNaN(dy / this.speed) ? 0 : dy / this.speed;
-
-			this.vx = lx * this.maxSpeed;
-			this.vy = ly * this.maxSpeed;
-		} else {
-			this.vx = dx;
-			this.vy = dy;
-		}
-
-		this.x += this.vx;
-		this.y += this.vy;
-
-		if (this.x > stage.halfWidth) this.sprite.setX(-stage.halfWidth);
-		else if (this.x < -stage.halfWidth) this.sprite.setX(stage.halfWidth);
-
-		if (this.y > stage.halfHeight) this.sprite.setY(-stage.halfHeight);
-		else if (this.y < -stage.halfHeight) this.sprite.setY(stage.halfHeight);
-	}
-
-	updateGravity(
-		stars: Array<Star>,
-		planets: Array<Planet>,
-		asteroids: Array<Asteroid>
-	) {
-		const gravity_modifier = { x: 0, y: 0 };
-
-		if (stars.length > 0) {
-			for (let star of stars) {
-				let vx = star.x - this.x,
-					vy = star.y - this.y;
-
-				let m = Math.sqrt(vx * vx + vy * vy);
-
-				let dx = vx / m,
-					dy = vy / m;
-
-				gravity_modifier.x += (dx * (star.mass * this.mass)) / m;
-				gravity_modifier.y += (dy * (star.mass * this.mass)) / m;
-			}
-		}
-		if (planets.length > 0) {
-			for (let planet of planets) {
-				let vx = planet.x - this.x,
-					vy = planet.y - this.y;
-
-				let m = Math.sqrt(vx * vx + vy * vy);
-
-				let dx = vx / m,
-					dy = vy / m;
-
-				gravity_modifier.x += (dx * (planet.mass * this.mass)) / m;
-				gravity_modifier.y += (dy * (planet.mass * this.mass)) / m;
-			}
-		}
-
-		if (asteroids.length > 0) {
-			for (let asteroid of asteroids) {
-				let vx = asteroid.x - this.x,
-					vy = asteroid.y - this.y;
-
-				let m = Math.sqrt(vx * vx + vy * vy);
-
-				let dx = vx / m,
-					dy = vy / m;
-
-				gravity_modifier.x += (dx * (asteroid.mass * this.mass)) / m;
-				gravity_modifier.y += (dy * (asteroid.mass * this.mass)) / m;
-			}
-		}
-
-		this.vx += gravity_modifier.x;
-		this.vy += gravity_modifier.y;
-	}
-
-	kill() {
-		this.sprite.parent.remove(this.sprite);
-
-		this.us();
-		this.ue();
-		this.uh();
+	set rotationVelocity(v: number) {
+		this.sprite.rotationVelocity = v;
 	}
 }
 
-export class RemoteShip extends ShipUtils implements Ship, Remote {
-	thrusters: ShipThruster[];
-	weapons: ShipLaser[];
-	forward: boolean;
-	left: boolean;
-	right: boolean;
-	mass: number;
-	boost: boolean;
-	e: Writable<number>;
-	h: Writable<number>;
-	s: Writable<number>;
-	maxEnergy: number;
-	energyGain: number;
-	maxSpeed: number;
-	maxHull: number;
-	energy: number;
-	speed: number;
-	hull: number;
-	us: () => void;
-	ue: () => void;
-	uh: () => void;
-	kill(): void {
-		throw new Error('Method not implemented.');
-	}
-	update(info: RemoteSendInfo): void {
-		throw new Error('Method not implemented.');
-	}
-}
+// export class EnemyShip implements Ship, AI {
+// 	sprite: Sprite<Texture>;
+// 	thrusters: ShipThruster[];
+// 	weapons: ShipLaser[];
 
-export class ClientShip extends ShipUtils implements Ship, Player, Client {
-	thrusters: ShipThruster[];
-	weapons: ShipLaser[];
-	forward: boolean;
-	left: boolean;
-	right: boolean;
-	mass: number;
-	boost: boolean;
-	e: Writable<number>;
-	h: Writable<number>;
-	s: Writable<number>;
-	maxEnergy: number;
-	energyGain: number;
-	maxSpeed: number;
-	maxHull: number;
-	energy: number;
-	speed: number;
-	hull: number;
-	us: () => void;
-	ue: () => void;
-	uh: () => void;
-	kill(): void {
-		throw new Error('Method not implemented.');
-	}
-	c: Writable<boolean>;
-	cooldown: boolean;
-	uc: () => void;
-	update(stage: Stage): void {
-		throw new Error('Method not implemented.');
-	}
-	updateGravity(
-		stars: Star[],
-		planets: Planet[],
-		asteroids: Asteroid[]
-	): void {
-		throw new Error('Method not implemented.');
-	}
-	sendInfo(): void {
-		throw new Error('Method not implemented.');
-	}
-}
+// 	forward: boolean;
+// 	left: boolean;
+// 	right: boolean;
+// 	mass: number;
+// 	boost: boolean;
 
-export class PlayerSpectator extends ShipUtils implements Ship, Player {
-	sprite: Sprite;
-	thrusters: ShipThruster[];
-	weapons: ShipLaser[];
+// 	e: Writable<number>;
+// 	h: Writable<number>;
+// 	s: Writable<number>;
 
-	forward: boolean;
-	left: boolean;
-	right: boolean;
-	mass: number;
-	boost: boolean;
+// 	maxEnergy: number;
+// 	energyGain: number;
+// 	maxSpeed: number;
+// 	maxHull: number;
 
-	e: Writable<number>;
-	h: Writable<number>;
-	s: Writable<number>;
+// 	energy: number;
+// 	speed: number;
+// 	hull: number;
 
-	maxEnergy: number;
-	energyGain: number;
-	maxSpeed: number;
+// 	ai: {
+// 		target: ShipObject;
+// 	};
 
-	energy: number;
-	speed: number;
-	hull: number;
+// 	us: () => void;
+// 	ue: () => void;
+// 	uh: () => void;
 
-	us: () => void;
-	ue: () => void;
-	uh: () => void;
-	up: boolean;
-	down: boolean;
-	constructor(stage: Stage, stats: ShipStatObject, assets: ParsedAssets) {
-		super();
-		const img = new Image(stats.width * 5, stats.height * 5);
-		img.src = stats.image;
+// 	constructor(stage: Stage, stats: ParsedShipItem, assets: ParsedAssets) {
+// 		super();
 
-		this.sprite = new Sprite([img], stats.width, stats.height);
+// 		this.sprite = new Sprite([stats.image], ...stats.size.get());
+// 		this.thrusters = [];
 
-		stage.add(this.sprite);
+// 		this.thrusters = stats.thrusters.map(
+// 			(stats) => new ShipThruster(this, stats, assets)
+// 		);
+// 		this.weapons = stats.weapons.map(
+// 			(stats) => new ShipLaser(this, stats, assets)
+// 		);
 
-		this.s = writable(1);
-		this.e = writable(1);
-		this.h = writable(1);
-		this.c = writable(false);
+// 		this.sprite.add(...this.thrusters.map((t) => t.sprite));
+// 		stage.add(this.sprite);
 
-		this.maxSpeed = stats.max_speed;
+// 		this.s = writable(0);
+// 		this.e = writable(0);
+// 		this.h = writable(stats.maxHull);
 
-		this.up = false;
-		this.left = false;
-		this.right = false;
-		this.down = false;
-		this.boost = false;
+// 		this.mass = stats.mass;
+// 		this.maxSpeed = stats.maxSpeed;
 
-		window.addEventListener('keydown', (event: KeyboardEvent) => {
-			event.preventDefault();
+// 		this.maxEnergy = stats.maxEnergy;
+// 		this.energyGain = stats.energyGain;
 
-			switch (event.key) {
-				case 'W':
-					this.boost = true;
-				case 'w':
-					this.up = true;
-					break;
-				case 'S':
-					this.boost = true;
-				case 's':
-					this.down = true;
-					break;
-				case 'A':
-					this.boost = true;
-				case 'a':
-					this.left = true;
-					break;
-				case 'D':
-					this.boost = true;
-				case 'd':
-					this.right = true;
-					break;
-				case 'Shift':
-					this.boost = true;
-					break;
-			}
-		});
-		window.addEventListener('keyup', (event: KeyboardEvent) => {
-			event.preventDefault();
-			switch (event.key) {
-				case 'W':
-					this.boost = false;
-				case 'w':
-					this.up = false;
-					break;
-				case 'S':
-					this.boost = false;
-				case 's':
-					this.down = false;
-					break;
-				case 'A':
-					this.boost = false;
-				case 'a':
-					this.left = false;
-					break;
-				case 'D':
-					this.boost = false;
-				case 'd':
-					this.right = false;
-					break;
-				case 'Shift':
-					this.boost = false;
-					break;
-			}
-		});
-	}
-	c: Writable<boolean>;
-	cooldown: boolean;
-	uc: () => void;
-	maxHull: number;
+// 		this.maxHull = stats.maxHull;
 
-	update(stage: Stage) {
-		this.r = 0;
-		this.vx = 0;
-		this.vy = 0;
+// 		this.forward = false;
+// 		this.left = false;
+// 		this.right = false;
+// 		this.boost = false;
 
-		if (this.up) this.vy += -this.maxSpeed;
-		if (this.down) this.vy += this.maxSpeed;
-		if (this.left) this.vx += -this.maxSpeed;
-		if (this.right) this.vx += this.maxSpeed;
+// 		this.energy = 0;
+// 		this.speed = 0;
+// 		this.hull = this.maxHull;
 
-		if (this.boost) this.vx *= 2;
-		if (this.boost) this.vy *= 2;
+// 		this.ai = {
+// 			target: null,
+// 		};
 
-		this.s.set(Math.hypot(this.vx, this.vy));
+// 		this.us = this.s.subscribe((v) => (this.speed = v));
+// 		this.ue = this.e.subscribe((e) => (this.energy = e));
+// 		this.uh = this.h.subscribe((h) => (this.hull = h));
+// 	}
 
-		this.x += this.vx;
-		this.y += this.vy;
+// 	AItarget(entities: Array<ShipObject>) {
+// 		this.ai.target = entities[Math.floor(Math.random() * entities.length)];
+// 	}
 
-		if (this.x > stage.halfWidth) {
-			this.sprite.setX(-stage.halfWidth);
-			stage.setX(-this.x);
-		} else if (this.x < -stage.halfWidth) {
-			this.sprite.setX(stage.halfWidth);
-			stage.setX(-this.x);
-		}
+// 	AIturn(distance: number, dr: number) {
+// 		const margin = Math.log(distance) / Math.log(this.sprite.w);
 
-		if (this.y > stage.halfHeight) {
-			this.sprite.setY(-stage.halfHeight);
-			stage.setY(-this.y);
-		} else if (this.y < -stage.halfHeight) {
-			this.sprite.setY(stage.halfHeight);
-			stage.setY(-this.y);
-		}
+// 		console.log(dr - margin, dr + margin);
 
-		stage.x = -this.x ?? 0;
-		stage.y = -this.y ?? 0;
-	}
+// 		if (dr > dr - margin && dr < dr + margin) {
+// 			this.r = dr;
+// 		}
 
-	updateGravity(
-		stars: Array<Star>,
-		planets: Array<Planet>,
-		asteroids: Array<Asteroid>
-	) {}
+// 		this.thrusters
+// 			.filter(({ direction: d }) => d === 'left' || d === 'right')
+// 			.forEach(({ sprite }) => (sprite.visible = false));
 
-	kill() {
-		this.sprite.parent.remove(this.sprite);
-		this.us();
-		this.ue();
-		this.uh();
-	}
-}
+// 		return false;
+// 	}
 
-export class ClientSpectator extends ShipUtils implements Ship, Player, Client {
-	thrusters: ShipThruster[];
-	weapons: ShipLaser[];
-	forward: boolean;
-	left: boolean;
-	right: boolean;
+// 	AImove(distance: number, size: number, facingTarget: boolean) {
+// 		if (
+// 			distance < size / 3 &&
+// 			facingTarget &&
+// 			this.speed < this.ai.target.speed * 2
+// 		) {
+// 			this.forward = true;
+// 			this.thrusters
+// 				.filter(({ direction: d }) => d === 'forward')
+// 				.forEach(({ sprite }) => (sprite.visible = true));
+// 		} else {
+// 			this.forward = false;
+// 			this.thrusters
+// 				.filter(({ direction: d }) => d === 'forward')
+// 				.forEach(({ sprite }) => (sprite.visible = false));
+// 		}
+// 	}
 
-	mass: number;
-	boost: boolean;
-	e: Writable<number>;
-	h: Writable<number>;
-	s: Writable<number>;
-	maxEnergy: number;
-	energyGain: number;
-	maxSpeed: number;
-	maxHull: number;
-	energy: number;
-	speed: number;
-	hull: number;
-	us: () => void;
-	ue: () => void;
-	uh: () => void;
+// 	AIcruise() {}
 
-	constructor() {
-		super();
-	}
-	c: Writable<boolean>;
-	cooldown: boolean;
-	uc: () => void;
-	info: { fd: boolean; rt: boolean; lt: boolean; rn: number };
+// 	AIfire(distance: number) {
+// 		if (distance <= this.weapons.reduce((a, b) => Math.max(a, b.length), 0))
+// 			this.weapons.forEach((w) => w.on());
+// 		else this.weapons.forEach((w) => w.on());
+// 	}
 
-	update(): void {
-		throw new Error('Method not implemented.');
-	}
-	updateGravity(
-		stars: Star[],
-		planets: Planet[],
-		asteroids: Asteroid[]
-	): void {
-		throw new Error('Method not implemented.');
-	}
-	sendInfo(): void {
-		throw new Error('Method not implemented.');
-	}
-	kill(): void {
-		throw new Error('Method not implemented.');
-	}
-}
+// 	AI(entities: Array<ShipObject>, { size }) {
+// 		entities = entities.filter((e) => e !== this);
+// 		if (!this.ai.target) this.AItarget(entities);
+
+// 		const { x, y, w, h } = this.ai.target.sprite;
+
+// 		const dy = x - this.x;
+// 		const dx = y - this.y;
+// 		const theta = Math.atan2(dy, dx);
+
+// 		const dr =
+// 			((theta + Math.PI + (this.r % (2 * Math.PI))) % (2 * Math.PI)) -
+// 			Math.PI;
+// 		const distance = Math.hypot(dy, dx);
+
+// 		const facingTarget = this.AIturn(distance, dr);
+// 		this.AImove(distance, size, facingTarget);
+// 		this.AIfire(distance);
+// 	}
+
+// 	update(stage: Stage) {
+// 		let cost = -this.energyGain;
+// 		let forwardThrust = 0;
+
+// 		let lv = 0;
+// 		let rv = 0;
+
+// 		if (this.forward) {
+// 			this.thrusters
+// 				.filter(({ direction }) => direction === 'forward')
+// 				.forEach(({ energy, thrust }) => {
+// 					cost += energy;
+// 					forwardThrust += thrust;
+// 				});
+// 		}
+
+// 		if (this.left) {
+// 			this.thrusters
+// 				.filter(({ direction }) => direction === 'left')
+// 				.forEach(({ energy, thrust, sprite }) => {
+// 					sprite.visible = true;
+// 					cost += energy;
+// 					lv += thrust;
+// 				});
+// 		}
+
+// 		if (this.right) {
+// 			this.thrusters
+// 				.filter(({ direction }) => direction === 'right')
+// 				.forEach(({ energy, thrust, sprite }) => {
+// 					sprite.visible = true;
+// 					cost += energy;
+// 					rv += thrust;
+// 				});
+// 		}
+
+// 		this.weapons.forEach((w) => w.fire(this));
+
+// 		this.e.update((e) =>
+// 			e - cost < 0
+// 				? 0
+// 				: e - cost > this.maxEnergy
+// 				? this.maxEnergy
+// 				: e - cost
+// 		);
+
+// 		this.r -= lv * 0.1;
+// 		this.r += rv * 0.1;
+
+// 		let d = forwardThrust / this.mass;
+
+// 		let dx = this.vx + d * Math.sin(this.r) * 0.1;
+// 		let dy = this.vy + d * -Math.cos(this.r) * 0.1;
+
+// 		this.s.set(Math.hypot(dx, dy));
+
+// 		if (this.speed > this.maxSpeed) {
+// 			let lx = isNaN(dx / this.speed) ? 0 : dx / this.speed;
+// 			let ly = isNaN(dy / this.speed) ? 0 : dy / this.speed;
+
+// 			this.vx = lx * this.maxSpeed;
+// 			this.vy = ly * this.maxSpeed;
+// 		} else {
+// 			this.vx = dx;
+// 			this.vy = dy;
+// 		}
+
+// 		this.x += this.vx;
+// 		this.y += this.vy;
+
+// 		if (this.x > stage.halfWidth) this.sprite.setX(-stage.halfWidth);
+// 		else if (this.x < -stage.halfWidth) this.sprite.setX(stage.halfWidth);
+
+// 		if (this.y > stage.halfHeight) this.sprite.setY(-stage.halfHeight);
+// 		else if (this.y < -stage.halfHeight) this.sprite.setY(stage.halfHeight);
+// 	}
+
+// 	updateGravity(
+// 		stars: Array<Star>,
+// 		planets: Array<Planet>,
+// 		asteroids: Array<Asteroid>
+// 	) {
+// 		const gravity_modifier = { x: 0, y: 0 };
+
+// 		if (stars.length > 0) {
+// 			for (let star of stars) {
+// 				let vx = star.x - this.x,
+// 					vy = star.y - this.y;
+
+// 				let m = Math.sqrt(vx * vx + vy * vy);
+
+// 				let dx = vx / m,
+// 					dy = vy / m;
+
+// 				gravity_modifier.x += (dx * (star.mass * this.mass)) / m;
+// 				gravity_modifier.y += (dy * (star.mass * this.mass)) / m;
+// 			}
+// 		}
+// 		if (planets.length > 0) {
+// 			for (let planet of planets) {
+// 				let vx = planet.x - this.x,
+// 					vy = planet.y - this.y;
+
+// 				let m = Math.sqrt(vx * vx + vy * vy);
+
+// 				let dx = vx / m,
+// 					dy = vy / m;
+
+// 				gravity_modifier.x += (dx * (planet.mass * this.mass)) / m;
+// 				gravity_modifier.y += (dy * (planet.mass * this.mass)) / m;
+// 			}
+// 		}
+
+// 		if (asteroids.length > 0) {
+// 			for (let asteroid of asteroids) {
+// 				let vx = asteroid.x - this.x,
+// 					vy = asteroid.y - this.y;
+
+// 				let m = Math.sqrt(vx * vx + vy * vy);
+
+// 				let dx = vx / m,
+// 					dy = vy / m;
+
+// 				gravity_modifier.x += (dx * (asteroid.mass * this.mass)) / m;
+// 				gravity_modifier.y += (dy * (asteroid.mass * this.mass)) / m;
+// 			}
+// 		}
+
+// 		this.vx += gravity_modifier.x;
+// 		this.vy += gravity_modifier.y;
+// 	}
+
+// 	kill() {
+// 		this.sprite.parent.remove(this.sprite);
+
+// 		this.us();
+// 		this.ue();
+// 		this.uh();
+// 	}
+// }

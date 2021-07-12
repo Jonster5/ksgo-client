@@ -1,0 +1,57 @@
+{
+	"version": 0.1,
+	"name": "Fighter",
+	"faction": "SL",
+	"width": 21,
+	"height": 31.5,
+	"max_energy": 100,
+	"energy_gain": 1.5,
+	"max_hull": 50,
+	"max_speed": 100,
+	"mass": 1,
+
+	"thrusters": [
+		{
+			"direction": "forward",
+			"size": 15,
+			"x": 0,
+			"y": 22,
+			"energy": 2.5,
+			"thrust": 6
+		},
+
+		{
+			"direction": "left",
+			"size": 8,
+			"x": 13,
+			"y": -8,
+			"energy": 0.8,
+			"thrust": 2
+		},
+
+		{
+			"direction": "right",
+			"size": 8,
+			"x": -13,
+			"y": -8,
+			"energy": 0.8,
+			"thrust": 2
+		}
+	],
+
+	"weapons": [
+		{
+			"type": "laser",
+			"direction": "forward",
+			"length": 150,
+			"width": 1,
+			"x": 0,
+			"y": -15,
+			"damage": 3,
+			"energy": 1
+		}
+	],
+
+	"image": "/data/ships/images/[SL] fighter.png",
+	"thumb": "/data/ships/images/[SL] fighterThumb.png"
+}

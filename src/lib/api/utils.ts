@@ -1,89 +1,44 @@
-import type { Rectangle } from './rectangle';
-import type { Sprite } from './sprite';
-import type { Circle } from './circle';
-import type { Stage } from './stage';
+import type { Canvas } from '@api/canvas';
+import type { Blank } from '@api/material';
+import type { Sprite } from '@api/sprite';
+import type { Vec2 } from '@api/vec2';
 
-export type DisplayObject = Stage | Rectangle | Sprite | Circle;
-
-export interface SpriteObject {}
-
-export interface DisplayProperties {
+export interface SpriteProperties<Material extends MaterialProperties = Blank> {
 	visible: boolean;
-	parent: any;
-	children: Set<DisplayObject>;
-	render(
-		ctx: CanvasRenderingContext2D,
-		lagOffset: number,
-		dm: { w: number; h: number }
-	): void;
+	parent: Sprite | Canvas | null;
 
-	add(...sprites: Array<DisplayObject>): void;
-	remove(...sprites: Array<DisplayObject>): void;
-}
+	material: Material;
+	children: Sprite[];
 
-export interface ColorProperties {
-	color: string;
-	border: { color: string; thickness: number };
-}
-
-export interface DimensionProperties {
-	x: number;
-	y: number;
-	r: number;
-	w: number;
-	h: number;
-	vx: number;
-	vy: number;
-	vr: number;
-	prevx: number;
-	prevy: number;
-	prevr: number;
-
-	width: number;
-	height: number;
-	gx: number;
-	gy: number;
-	halfWidth: number;
-	halfHeight: number;
+	position: Vec2;
+	size: Vec2;
 	rotation: number;
 
+	velocity: Vec2;
+	rotationVelocity: number;
+
+	prev: Vec2;
+	prevr: number;
+
+	add(...sprites: Sprite[]): void;
+	remove(...sprites: Sprite[]): void;
+
+	render(ctx: CanvasRenderingContext2D, lagOffset: number, dm: Vec2): void;
+
+	get globalPosition(): Vec2;
+	get halfSize(): Vec2;
+
+	setPosition(pos: Vec2, R?: number): void;
 	setX(X: number): void;
 	setY(Y: number): void;
 	setR(R: number): void;
+
+	setVelocity(vel: Vec2, R?: number): void;
+	setVX(X: number): void;
+	setVY(Y: number): void;
+	setVR(R: number): void;
 }
 
-export interface CircularProperties {
-	x: number;
-	y: number;
-	r: number;
-	ra: number;
-	vx: number;
-	vy: number;
-	vr: number;
-	prevx: number;
-	prevy: number;
-	prevr: number;
-
-	width: number;
-	height: number;
-	gx: number;
-	gy: number;
-	halfWidth: number;
-	halfHeight: number;
-	rotation: number;
-	radius: number;
-	diameter: number;
-
-	setX(X: number): void;
-	setY(Y: number): void;
-	setR(R: number): void;
-}
-
-export interface FrameProperties {
-	frames: HTMLImageElement[];
-	frame: number;
-	frameShifter: number;
-
-	start(delay: number): void;
-	stop(): void;
+export interface MaterialProperties {
+	draw(ctx: CanvasRenderingContext2D, hs: Vec2): void;
 }

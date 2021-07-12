@@ -1,52 +1,17 @@
-import type { Rectangle } from '@api/rectangle';
-import type { Point } from '@api/vec';
+import type { Rectangle } from '@api/material';
+import type { Sprite } from '@api/sprite';
+import type { Vec2 } from '@api/vec2';
 import type { ShipObject } from '@classes/ship';
-import type { Direction } from '@data/types';
+import type { Direction } from '@data/assetTypes';
 
-export interface Weapon {
+export interface LauncherProperties<Weapon extends WeaponProperties = any> {}
+
+export interface WeaponProperties {
+	hitboxes: [];
 	damage: number;
-	sprite: Rectangle;
-	firing: boolean;
-
-	direction: Direction;
-
-	on(ship: ShipObject): void;
-	off(ship: ShipObject): void;
-	fire(ship: ShipObject): void;
-
-	x: number;
-	y: number;
-	r: number;
-	length: number;
 }
 
-export interface Laser {
-	points: [Point, Point];
-}
-
-export abstract class WeaponUtils {
-	sprite: Rectangle;
-	get x(): number {
-		return this.sprite.x;
-	}
-
-	set x(v: number) {
-		this.sprite.x = v;
-	}
-
-	get y(): number {
-		return this.sprite.y;
-	}
-
-	set y(v: number) {
-		this.sprite.y = v;
-	}
-
-	get r(): number {
-		return this.sprite.r;
-	}
-
-	set r(v: number) {
-		this.sprite.r = v;
-	}
+export interface WeaponInstanceProperties {
+	points: [Vec2, Vec2];
+	thickness: number;
 }

@@ -1,78 +1,86 @@
 import type { Canvas } from '@api/canvas';
-import type { Stage } from '@api/stage';
+import type { Stage } from '@api/material';
+import type { Sprite } from '@api/sprite';
 import type { GameMap } from '@classes/map';
+import type { PlayerShipObject, PlayerShip } from '@classes/ship';
 import type {
-	PlayerShipObject,
-	EnemyShipObject,
-	RemoteShipObject,
-	PlayerShip,
-} from '@classes/ship';
-import type { Client, Server } from '@classes/socket';
-import type { ParsedAssets } from '@data/assets';
-import type { RemoteSendInfo } from '@data/multiplayer';
-import type { MapItem, ShipStatObject } from '@data/types';
+	ParsedAssets,
+	ParsedMapItem,
+	ParsedShipItem,
+} from '@data/assetTypes';
 import type { Writable } from 'svelte/store';
 
-export interface Game {
+export interface PeacefulGameProperties {
 	assets: ParsedAssets;
 
 	canvas: Canvas;
-	stage: Stage;
+	stage: Sprite<Stage>;
 
 	map: GameMap;
 
-	user: PlayerShipObject;
-	enemies: Set<EnemyShipObject>;
+	player: PlayerShipObject;
 
 	pause: boolean;
 	needsShipRespawn: Writable<boolean>;
 
-	init(m: MapItem): void;
+	init(m: ParsedMapItem): void;
 	kill(): void;
 
-	spawnPlayer(u: ShipStatObject): void;
-	spawnEnemy(u: ShipStatObject): void;
+	spawnPlayer(u: ParsedShipItem): void;
 }
 
-export interface HostedGameProperties {
-	server: Server;
+// export interface HostedGameProperties {
+// 	server: Server;
 
-	remotes: Set<RemoteShipObject>;
+// 	remotes: Set<RemoteShipObject>;
 
-	maxPlayers: number;
-	ID: string;
+// 	maxPlayers: number;
+// 	ID: string;
 
-	playerCount: number;
+// 	playerCount: number;
 
-	queue: RemoteSendInfo[];
-	open: Writable<boolean>;
+// 	queue: RemoteSendInfo[];
+// 	open: Writable<boolean>;
 
-	addRemote(): void;
-	removeRemote(): void;
-}
+// 	addRemote(): void;
+// 	removeRemote(): void;
+// }
 
-export interface ClientGameProperties {
-	remotes: Set<RemoteShipObject>;
+// export interface ClientGameProperties {
+// 	remotes: Set<RemoteShipObject>;
 
-	connection: Client;
+// 	connection: Client;
 
-	init(m: MapItem, remotes: any[]): void;
+// 	init(m: MapItem, remotes: any[]): void;
 
-	addRemote(): void;
-	removeRemote(): void;
-}
+// 	addRemote(): void;
+// 	removeRemote(): void;
+// }
 
 export abstract class GameUtils {
-	user: PlayerShip;
+	player: PlayerShip;
 	getUIProps() {
 		return {
-			energy: this.user.e,
-			maxEnergy: this.user.maxEnergy,
-			speed: this.user.s,
-			maxSpeed: this.user.maxSpeed,
-			hull: this.user.h,
-			maxHull: this.user.maxHull,
-			cooldown: this.user.c,
+			energy: this.player.e,
+			maxEnergy: this.player.maxEnergy,
+			speed: this.player.s,
+			maxSpeed: this.player.maxSpeed,
+			hull: this.player.h,
+			maxHull: this.player.maxHull,
+			cooldown: this.player.c,
 		};
 	}
 }
+
+interface PersonProperties {
+	firstName: string;
+	lastName: string;
+	age?: number;
+}
+
+const Chuckie: PersonProperties = {
+	firstName: 'Chuckie',
+	lastName: 'Call',
+};
+
+const Nick = {};

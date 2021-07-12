@@ -10,15 +10,11 @@ const config = {
 	resolve: {
 		alias: [
 			{
-				find: '@',
-				replacement: path.resolve(projectRootDir, '.'),
-			},
-			{
 				find: '@assets',
 				replacement: path.resolve(projectRootDir, 'src/assets'),
 			},
 			{
-				find: '@components',
+				find: '@comp',
 				replacement: path.resolve(projectRootDir, 'src/components'),
 			},
 			{

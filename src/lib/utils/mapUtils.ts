@@ -1,28 +1,27 @@
-import type { Rectangle } from '@api/rectangle';
+import type { Rectangle } from '@api/material';
 import type { Sprite } from '@api/sprite';
-import type { Stage } from '@api/stage';
+import type { Vec2 } from '@api/vec2';
 import type { Star, Planet, Asteroid, Spawn } from '@classes/stellar';
-import type { ParsedAssets } from '@data/assets';
-import type { MapItem } from '@data/types';
+import type { ParsedAssets, ParsedMapItem } from '@data/assetTypes';
 
 export interface GameMapObject {
 	assets: ParsedAssets;
+
+	tctx: CanvasRenderingContext2D;
 
 	stars: Star[];
 	planets: Planet[];
 	asteroids: Asteroid[];
 	spawns: Spawn[];
 
-	bgSprites: Sprite[];
-	bgCount: number;
+	bgMaterial: Rectangle;
+	bgSprite: Sprite;
 
-	boundary: Rectangle;
-
-	setupBackground(m: MapItem, stage: Stage): void;
-	setupMap(m: MapItem, stage: Stage): void;
+	setupBackground(m: ParsedMapItem, stage: Sprite): void;
+	setupMap(m: ParsedMapItem, stage: Sprite): void;
 
 	updateGravity(): void;
-	updatePosition(stage: Stage): void;
+	updatePosition(stage: Sprite): void;
 
-	getSpawnCoords(): { x: number; y: number; r: number };
+	getSpawnCoords(): { p: Vec2; r: number };
 }

@@ -3,64 +3,28 @@
 	 * 420 (Blaze it)
 	 * - Charle
 	 */
-	import Titlescreen from '@components/Titlescreen.svelte';
-	import Freeplay from '@components/Freeplay.svelte';
-	import Morestuff from '@components/Morestuff.svelte';
+	import Titlescreen from './titlescreen/Titlescreen.svelte';
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import type { MapItem, ShipStatObject } from '@data/types';
-	import Multiplayer from '@components/Multiplayer.svelte';
-	import type { ParsedAssets } from '@data/assets';
-	import { GET_KSGO_FIREBASE } from '../lib/data/multiplayer';
-	import config from '@/credentials.json';
+
+	import { GET_KSGO_FIREBASE } from '@data/multiplayerTypes';
+	import config from 'credentials.json';
+	import Singleplayer from './singleplayer/Singleplayer.svelte';
+
+	import { LoadAssets } from '@classes/assets';
 
 	let screen = 'title';
 
-	const FS = GET_KSGO_FIREBASE(config);
+	const db = GET_KSGO_FIREBASE(config);
 
 	const click = ({ detail }) => {
 		screen = detail.screen;
-	};
-
-	const getAssets = async (): Promise<ParsedAssets> => {
-		const res = await fetch('/data/assets.json');
-
-		if (!res.ok) throw new Error(res.statusText);
-
-		const json = await res.json();
-
-		const ret: ParsedAssets = {
-			maps: await Promise.all(
-				json.maps.map(
-					(m: string): Promise<MapItem> =>
-						fetch(`/data/${m}.json`).then((r) => r.json())
-				)
-			),
-			ships: await Promise.all(
-				json.ships.map(
-					(s: string): Promise<ShipStatObject> =>
-						fetch(`/data/${s}.json`).then((r) => r.json())
-				)
-			),
-			ionthrust: json.ionthrust.map((t: string) => {
-				const i = new Image();
-				i.src = t;
-				return i;
-			}),
-			gamebg: json.gamebg.map((b: string) => {
-				const i = new Image(500, 500);
-				i.src = b;
-				return i;
-			}),
-		};
-
-		return ret;
 	};
 </script>
 
 <svelte:window on:contextmenu={(e) => e.preventDefault()} />
 
-{#await getAssets()}
+{#await LoadAssets('/data/assets.json')}
 	<main>
 		<h2>Loading...</h2>
 	</main>
@@ -77,17 +41,13 @@
 			in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: -100 }}
 			out:fly={{ easing: cubicOut, duration: 250, y: -100 }}
 		>
-			<Freeplay on:click={click} {assets} />
+			<Singleplayer on:click={click} {assets} />
 		</div>
 	{:else if screen === 'online'}
 		<div
 			in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: -100 }}
 			out:fly={{ easing: cubicOut, duration: 250, y: -100 }}
-		>
-			<Multiplayer on:click={click} {assets} {FS} />
-		</div>
-	{:else if screen === 'more'}
-		<Morestuff />
+		/>
 	{:else}
 		<Titlescreen on:click={click} />
 	{/if}

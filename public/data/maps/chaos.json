@@ -1,0 +1,199 @@
+{
+	"version": 0.1,
+	"name": "Chaos",
+	"size": 2000,
+	"friction": 0.999,
+	"stars": [],
+	"planets": [
+		{
+			"x": 0,
+			"y": 0,
+			"diameter": 400,
+			"mass": 400,
+			"color": "gold",
+			"vx": 0,
+			"vy": 0
+		},
+		{
+			"x": -600,
+			"y": 0,
+			"diameter": 100,
+			"mass": 9,
+			"color": "skyblue",
+			"vx": 0,
+			"vy": -7.35
+		},
+		{
+			"x": 600,
+			"y": 0,
+			"diameter": 100,
+			"mass": 9,
+			"color": "saddlebrown",
+			"vx": 0,
+			"vy": 7.35
+		},
+		{
+			"x": 0,
+			"y": -600,
+			"diameter": 100,
+			"mass": 9,
+			"color": "lime",
+			"vx": 7.35,
+			"vy": 0
+		},
+		{
+			"x": 0,
+			"y": 600,
+			"diameter": 100,
+			"mass": 9,
+			"color": "indigo",
+			"vx": -7.35,
+			"vy": 0
+		},
+		{
+			"x": 0,
+			"y": 1000,
+			"diameter": 300,
+			"mass": 9,
+			"color": "#ff4444",
+			"vx": -17.35,
+			"vy": 0
+		}
+	],
+	"asteroids": [
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "10 20",
+			"mass": "15 25",
+			"color": "saddlebrown",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "10 20",
+			"mass": "15 25",
+			"color": "saddlebrown",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "10 20",
+			"mass": "15 25",
+			"color": "saddlebrown",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "10 20",
+			"mass": "15 25",
+			"color": "grey",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "10 20",
+			"mass": "15 25",
+			"color": "grey",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "10 20",
+			"mass": "15 25",
+			"color": "grey",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "20 30",
+			"mass": "15 25",
+			"color": "saddlebrown",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "20 30",
+			"mass": "15 25",
+			"color": "saddlebrown",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "20 30",
+			"mass": "15 25",
+			"color": "saddlebrown",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "20 30",
+			"mass": "15 25",
+			"color": "grey",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "20 30",
+			"mass": "15 25",
+			"color": "grey",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		},
+		{
+			"x": "-1500 1500",
+			"y": "-750 750",
+			"diameter": "20 30",
+			"mass": "15 25",
+			"color": "grey",
+			"vx": "-5 5",
+			"vy": "-5 5"
+		}
+	],
+	"spawn": [
+		{
+			"x": -750,
+			"y": -375,
+			"size": 100
+		},
+		{
+			"x": -750,
+			"y": 375,
+			"size": 100
+		},
+		{
+			"x": 750,
+			"y": -375,
+			"size": 100
+		},
+		{
+			"x": 750,
+			"y": 375,
+			"size": 100
+		}
+	],
+
+	"thumb": "/data/maps/images/chaosThumb.png",
+	"alt": "Star system of many planets"
+}

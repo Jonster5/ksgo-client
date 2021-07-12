@@ -1,14 +1,14 @@
-import type { DisplayObject } from './utils';
-import type { Stage } from './stage';
+import type { Sprite } from '@api/sprite';
+import { Vec2 } from '@api/vec2';
 
 export class Canvas {
-	parent: HTMLElement;
+	target: HTMLElement;
 	element: HTMLCanvasElement;
 	ar: number;
 
 	ctx: CanvasRenderingContext2D;
 
-	update: () => void;
+	update!: () => void;
 
 	private rd: {
 		timestamp: number;
@@ -20,18 +20,16 @@ export class Canvas {
 		fps: number;
 	};
 
-	private w: number;
-	private h: number;
+	private size: Vec2;
+	private default: DOMMatrix;
 
-	readonly gx = 0;
-	readonly gy = 0;
+	animator: number | null;
+	fpschecker: number | null;
 
-	animator: number;
-	children: Set<DisplayObject>;
-	fpschecker: number;
+	children: Sprite[];
 
-	constructor(target: HTMLElement, size: number) {
-		this.parent = target;
+	constructor(target: HTMLElement, width: number) {
+		this.target = target;
 
 		this.element = document.createElement('canvas');
 
@@ -40,21 +38,28 @@ export class Canvas {
 
 		this.ar = window.innerWidth / window.innerHeight;
 
-		this.w = size;
-		this.h = size / this.ar;
+		this.size = new Vec2(width, width / this.ar);
 
-		this.element.width = this.w * dpr;
-		this.element.height = this.h * dpr;
+		this.element.width = this.size.x * dpr;
+		this.element.height = this.size.y * dpr;
 
-		this.ctx = this.element.getContext('2d');
-		this.ctx.scale(dpr, dpr);
+		this.ctx = this.element.getContext('2d')!;
+		this.ctx.transform(
+			dpr,
+			0,
+			0,
+			-dpr,
+			this.element.width / 2,
+			this.element.height / 2
+		);
+		this.default = this.ctx.getTransform();
 
 		this.element.setAttribute(
 			'style',
-			`display: block; width: 100vw; height: 100vh; border: none; background: transparent;';`
+			`display: block; width: 100%; height: 100%; border: none; background: transparent;`
 		);
 
-		target.appendChild(this.element);
+		this.target.appendChild(this.element);
 
 		this.rd = {
 			timestamp: 0,
@@ -67,8 +72,13 @@ export class Canvas {
 		};
 
 		this.animator = null;
+		this.fpschecker = null;
 
-		this.children = new Set<DisplayObject>();
+		this.children = [];
+	}
+
+	get globalPosition(): Vec2 {
+		return new Vec2(0);
 	}
 
 	get UPS() {
@@ -83,34 +93,55 @@ export class Canvas {
 	}
 
 	get width(): number {
-		return this.w;
+		return this.size.x;
 	}
 
 	get height(): number {
-		return this.h;
+		return this.size.y;
 	}
 
-	size(width?: number): void {
+	setSize(width: number): void {
 		const dpr =
 			window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
 
-		this.w = width;
-		this.h = width / this.ar;
+		this.size.set(width, width / this.ar);
 
 		this.element.width = width * dpr;
 		this.element.height = (width / this.ar) * dpr;
 
-		this.ctx.scale(dpr, dpr);
+		this.ctx.resetTransform();
+
+		this.ctx.transform(
+			dpr,
+			0,
+			0,
+			-dpr,
+			this.element.width / 2,
+			this.element.height / 2
+		);
+		this.default = this.ctx.getTransform();
 	}
 
-	add(stage: Stage) {
-		if (stage.parent) stage.parent.remove(stage);
-		stage.parent = this;
-		this.children.add(stage);
+	add(...sprites: Sprite[]): void {
+		for (let sprite of sprites) {
+			if (sprite.parent) sprite.parent.remove(sprite);
+
+			sprite.parent = this;
+			this.children.push(sprite);
+		}
 	}
-	remove(stage: Stage) {
-		this.children.delete(stage);
-		stage.parent = null;
+	remove(...sprites: Sprite[]): void {
+		for (let sprite of sprites) {
+			if (sprite.parent !== this) {
+				throw new Error('Sprite must already be a child');
+			}
+
+			sprite.parent = null;
+			this.children.splice(
+				this.children.findIndex((s) => s === sprite),
+				1
+			);
+		}
 	}
 
 	stop(delay?: number) {
@@ -119,7 +150,7 @@ export class Canvas {
 			setTimeout(this.stop, delay);
 		} else {
 			cancelAnimationFrame(this.animator);
-			cancelAnimationFrame(this.fpschecker);
+			cancelAnimationFrame(this.fpschecker as number);
 			this.animator = null;
 			this.fpschecker = null;
 		}
@@ -132,8 +163,8 @@ export class Canvas {
 
 	step() {
 		this.render();
-		this.refreshLoop();
-		this.stop();
+		cancelAnimationFrame(this.animator!);
+		this.animator = null;
 	}
 
 	private refreshLoop() {
@@ -150,8 +181,6 @@ export class Canvas {
 	private getLagOffset(timestamp: number) {
 		const frameDuration = 1000 / this.rd.ups;
 
-		if (!timestamp) timestamp = 0;
-
 		const elapsed =
 			timestamp - this.rd.prev > 1000
 				? frameDuration
@@ -160,19 +189,18 @@ export class Canvas {
 		this.rd.lag += elapsed;
 
 		while (this.rd.lag >= frameDuration) {
-			this.children.forEach((stage: Stage) => {
-				stage.prevx = stage.x;
-				stage.prevy = stage.y;
-				stage.prevr = stage.r;
+			this.children.forEach((stage) => {
+				stage.prev.set(stage.position);
+				stage.prevr = stage.rotation;
 
 				stage.children.forEach(spp);
 
-				function spp(sprite: DisplayObject) {
-					sprite.prevx = sprite.x;
-					sprite.prevy = sprite.y;
-					sprite.prevr = sprite.r;
+				function spp(sprite: Sprite) {
+					sprite.prev.set(sprite.position);
+					sprite.prevr = sprite.rotation;
 
-					if (sprite.children.size > 0) sprite.children.forEach(spp);
+					if (sprite.children.length > 0)
+						sprite.children.forEach(spp);
 				}
 			});
 
@@ -184,21 +212,20 @@ export class Canvas {
 	}
 
 	private render(timestamp?: number) {
-		const lagOffset = this.getLagOffset(timestamp);
+		const lagOffset = this.getLagOffset(timestamp ?? 0);
 
-		this.ctx.clearRect(0, 0, this.width, this.height);
+		this.ctx.setTransform(this.default);
 
-		this.ctx.save();
+		this.ctx.clearRect(
+			-this.size.x,
+			-this.size.y,
+			this.size.x * 2,
+			this.size.y * 2
+		);
 
-		this.ctx.translate(this.w / 2, this.h / 2);
-
-		for (let stage of this.children)
-			stage.render(this.ctx, lagOffset, {
-				w: this.width,
-				h: this.height,
-			});
-
-		this.ctx.restore();
+		for (let sprite of this.children) {
+			sprite.render(this.ctx, lagOffset, this.size);
+		}
 
 		this.animator = requestAnimationFrame(this.render.bind(this));
 	}

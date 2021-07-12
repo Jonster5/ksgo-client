@@ -1,45 +1,26 @@
-import type { Circle } from '@api/circle';
+import type { Sprite } from '@api/sprite';
+import type { Vec2 } from '@api/vec2';
 
 export interface SpawnObject {
-	x: number;
-	y: number;
+	position: Vec2;
 	size: number;
 
-	getCoords(): { x: number; y: number };
+	getCoords(): Vec2;
 }
 
 export interface StellarObject {
-	sprite: Circle;
+	sprite: Sprite;
 	mass: number;
 }
 
 export abstract class StellarUtils {
-	sprite: Circle;
-	get x(): number {
-		return this.sprite.x;
-	}
-	set x(val: number) {
-		this.sprite.x = val;
+	sprite: Sprite;
+
+	get position(): Vec2 {
+		return this.sprite.position;
 	}
 
-	get y(): number {
-		return this.sprite.y;
-	}
-	set y(val: number) {
-		this.sprite.y = val;
-	}
-
-	get vx(): number {
-		return this.sprite.vx;
-	}
-	set vx(val: number) {
-		this.sprite.vx = val;
-	}
-
-	get vy(): number {
-		return this.sprite.vy;
-	}
-	set vy(val: number) {
-		this.sprite.vy = val;
+	get velocity(): Vec2 {
+		return this.sprite.velocity;
 	}
 }

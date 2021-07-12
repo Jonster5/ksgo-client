@@ -1,0 +1,19 @@
+{
+	"version": 0.1,
+	"name": "Empty Map",
+	"size": 8000,
+	"friction": 0.999,
+	"stars": [],
+	"planets": [],
+	"asteroids": [],
+	"spawn": [
+		{
+			"x": 0,
+			"y": 0,
+			"size": 100
+		}
+	],
+
+	"thumb": "/data/maps/images/emptyThumb.png",
+	"alt": "Empty void"
+}

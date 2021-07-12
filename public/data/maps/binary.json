@@ -1,0 +1,53 @@
+{
+	"version": 0.1,
+	"name": "Binary",
+	"size": 6000,
+	"friction": 0.999,
+	"stars": [],
+	"planets": [
+		{
+			"x": 0,
+			"y": -600,
+			"diameter": 300,
+			"mass": 200,
+			"color": "orange",
+			"vx": 7.35,
+			"vy": 0
+		},
+		{
+			"x": 0,
+			"y": 600,
+			"diameter": 300,
+			"mass": 200,
+			"color": "gold",
+			"vx": -7.35,
+			"vy": 0
+		}
+	],
+	"asteroids": [],
+	"spawn": [
+		{
+			"x": -750,
+			"y": -375,
+			"size": 100
+		},
+		{
+			"x": -750,
+			"y": 375,
+			"size": 100
+		},
+		{
+			"x": 750,
+			"y": -375,
+			"size": 100
+		},
+		{
+			"x": 750,
+			"y": 375,
+			"size": 100
+		}
+	],
+
+	"thumb": "/data/maps/images/binaryThumb.png",
+	"alt": "Star system of many planets"
+}

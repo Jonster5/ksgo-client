@@ -1,188 +1,197 @@
-import { Circle } from '@api/circle';
-import type { Stage } from '@api/stage';
-import { Vec } from '@api/vec';
-import type { StarItem, PlanetItem, AsteroidItem } from '@data/types';
+import { Ellipse } from '@api/material';
+import { Sprite } from '@api/sprite';
+import { Vec2 } from '@api/vec2';
+import type { ParsedPlanetItem, ParsedAsteroidItem } from '@data/assetTypes';
 import { StellarUtils, StellarObject, SpawnObject } from '@utils/stellarUtils';
 
 export class Star extends StellarUtils implements StellarObject {
-	sprite: Circle;
+	sprite: Sprite<Ellipse>;
 	mass: number;
 
-	constructor(stage: Stage, stats: StarItem) {
+	constructor(
+		stage: Sprite,
+		stats: { position: Vec2; mass: number; diameter: number; color: string }
+	) {
 		super();
 
-		const { x, y, mass, diameter, color } = stats;
+		const { position, mass, diameter, color } = stats;
 
-		this.sprite = new Circle((diameter as number) / 2, color, {
-			color: '',
-			thickness: 0,
-		});
+		this.sprite = new Sprite(
+			new Ellipse({ texture: color }),
+			new Vec2(diameter),
+			position
+		);
 		stage.add(this.sprite);
 
-		this.sprite.x = x as number;
-		this.sprite.y = y as number;
-
-		this.mass = (mass as number) / 10;
+		this.mass = mass / 10;
 	}
 }
 
 export class Planet extends StellarUtils implements StellarObject {
-	sprite: Circle;
+	sprite: Sprite<Ellipse>;
 	mass: number;
 
-	constructor(stage: Stage, stats: PlanetItem) {
+	constructor(
+		stage: Sprite,
+		stats: {
+			position: Vec2;
+			velocity: Vec2;
+			mass: number;
+			diameter: number;
+			color: string;
+		}
+	) {
 		super();
 
-		const { x, y, vx, vy, mass, diameter, color } = stats;
+		const { position, velocity, mass, diameter, color } = stats;
 
-		this.sprite = new Circle((diameter as number) / 2, color, {
-			color: '',
-			thickness: 0,
-		});
+		this.sprite = new Sprite(
+			new Ellipse({ texture: color }),
+			new Vec2(diameter),
+			position
+		);
+
+		this.sprite.velocity.set(velocity);
+
 		stage.add(this.sprite);
 
-		this.sprite.x = x as number;
-		this.sprite.y = y as number;
-		this.sprite.vx = vx as number;
-		this.sprite.vy = vy as number;
-
-		this.mass = (mass as number) / 10;
+		this.mass = mass / 10;
 	}
 
-	updateGravity(stars: Array<Star>, planets: Array<Planet>) {
-		const gravity_modifier = { x: 0, y: 0 };
+	updateGravity(stars: Star[], planets: Planet[]) {
+		const gm = new Vec2(0);
 
 		if (stars.length > 0) {
 			for (let star of stars) {
-				let vx = star.x - this.x,
-					vy = star.y - this.y;
+				const v = star.position.clone().subtract(this.position);
 
-				let m = Math.sqrt(vx * vx + vy * vy);
+				const m = v.magnitude;
 
-				let dx = vx / m,
-					dy = vy / m;
-
-				gravity_modifier.x += (dx * (star.mass * this.mass)) / m;
-				gravity_modifier.y += (dy * (star.mass * this.mass)) / m;
+				gm.add(
+					v
+						.normalize()
+						.multiply(star.mass * this.mass)
+						.divide(m)
+				);
 			}
 		}
 		if (planets.length > 0) {
 			for (let planet of planets) {
 				if (planet === this) continue;
-				let vx = planet.x - this.x,
-					vy = planet.y - this.y;
+				const v = planet.position.clone().subtract(this.position);
 
-				let m = Math.sqrt(vx * vx + vy * vy);
+				const m = v.magnitude;
 
-				let dx = vx / m,
-					dy = vy / m;
-
-				gravity_modifier.x += (dx * (planet.mass * this.mass)) / m;
-				gravity_modifier.y += (dy * (planet.mass * this.mass)) / m;
+				gm.add(
+					v
+						.normalize()
+						.multiply(planet.mass * this.mass)
+						.divide(m)
+				);
 			}
 		}
 
-		this.vx += gravity_modifier.x;
-		this.vy += gravity_modifier.y;
+		this.sprite.velocity.add(gm);
 	}
 }
 
 export class Asteroid extends StellarUtils implements StellarObject {
-	sprite: Circle;
+	sprite: Sprite<Ellipse>;
 	mass: number;
 
-	constructor(stage: Stage, stats: AsteroidItem) {
+	constructor(
+		stage: Sprite,
+		stats: {
+			position: Vec2;
+			velocity: Vec2;
+			mass: number;
+			diameter: number;
+			color: string;
+		}
+	) {
 		super();
 
-		const { x, y, vx, vy, mass, diameter, color } = stats;
+		const { position, velocity, mass, diameter, color } = stats;
 
-		this.sprite = new Circle((diameter as number) / 2, color, {
-			color: '',
-			thickness: 0,
-		});
+		this.sprite = new Sprite(
+			new Ellipse({ texture: color }),
+			new Vec2(diameter),
+			position
+		);
+
+		this.sprite.velocity.set(velocity);
+
 		stage.add(this.sprite);
 
-		this.sprite.x = x as number;
-		this.sprite.y = y as number;
-		this.sprite.vx = vx as number;
-		this.sprite.vy = vy as number;
-
-		this.mass = (mass as number) / 10;
+		this.mass = mass / 10;
 	}
 
-	updateGravity(
-		stars: Array<Star>,
-		planets: Array<Planet>,
-		asteroids: Array<Asteroid>
-	) {
-		let gravity_modifier = { x: 0, y: 0 };
+	updateGravity(stars: Star[], planets: Planet[], asteroids: Asteroid[]) {
+		const gm = new Vec2(0);
 
 		if (stars.length > 0) {
 			for (let star of stars) {
-				let vx = star.x - this.x,
-					vy = star.y - this.y;
+				const v = star.position.clone().subtract(this.position);
 
-				let m = Math.sqrt(vx * vx + vy * vy);
+				const m = v.magnitude;
 
-				let dx = vx / m,
-					dy = vy / m;
-
-				gravity_modifier.x += (dx * (star.mass * this.mass)) / m;
-				gravity_modifier.y += (dy * (star.mass * this.mass)) / m;
+				gm.add(
+					v
+						.normalize()
+						.multiply(star.mass * this.mass)
+						.divide(m)
+				);
 			}
 		}
 		if (planets.length > 0) {
 			for (let planet of planets) {
-				let vx = planet.x - this.x,
-					vy = planet.y - this.y;
+				const v = planet.position.clone().subtract(this.position);
 
-				let m = Math.sqrt(vx * vx + vy * vy);
+				const m = v.magnitude;
 
-				let dx = vx / m,
-					dy = vy / m;
-
-				gravity_modifier.x += (dx * (planet.mass * this.mass)) / m;
-				gravity_modifier.y += (dy * (planet.mass * this.mass)) / m;
+				gm.add(
+					v
+						.normalize()
+						.multiply(planet.mass * this.mass)
+						.divide(m)
+				);
 			}
 		}
 		if (asteroids.length > 0) {
 			for (let asteroid of asteroids) {
 				if (asteroid === this) continue;
-				let vx = asteroid.x - this.x,
-					vy = asteroid.y - this.y;
+				const v = asteroid.position.clone().subtract(this.position);
 
-				let m = Math.sqrt(vx * vx + vy * vy);
+				const m = v.magnitude;
 
-				let dx = vx / m,
-					dy = vy / m;
-
-				gravity_modifier.x += (dx * (asteroid.mass * this.mass)) / m;
-				gravity_modifier.y += (dy * (asteroid.mass * this.mass)) / m;
+				gm.add(
+					v
+						.normalize()
+						.multiply(asteroid.mass * this.mass)
+						.divide(m)
+				);
 			}
 		}
 
-		this.vx += gravity_modifier.x;
-		this.vy += gravity_modifier.y;
+		this.sprite.velocity.add(gm);
 	}
 }
 
 export class Spawn implements SpawnObject {
-	x: number;
-	y: number;
+	position: Vec2;
 	size: number;
 
-	constructor(x: number, y: number, s: number) {
-		this.x = x;
-		this.y = y;
+	constructor(p: Vec2, s: number) {
+		this.position = p.clone();
 		this.size = s;
 	}
 
-	getCoords(): Vec {
-		return new Vec(
+	getCoords(): Vec2 {
+		return new Vec2(
 			Math.floor(Math.random() * this.size),
 			Math.floor(Math.random() * this.size)
 		)
 			.subtract(this.size / 2)
-			.add(new Vec(this.x, this.y));
+			.add(this.position);
 	}
 }
