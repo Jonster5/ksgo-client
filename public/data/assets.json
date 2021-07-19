@@ -13,6 +13,6 @@
 
 	"modes": ["peaceful.json", "waves.json"],
 
-	"ionthrust": ["ionThrust1.png", "ionThrust2.png", "ionThrust3.png", "ionThrust2.png"],
+	"ionthrust": ["ionthrust1.png", "ionthrust2.png", "ionthrust3.png", "ionthrust2.png"],
 	"gamebg": ["gameBG1.png"]
 }
