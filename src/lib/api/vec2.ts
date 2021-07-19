@@ -68,19 +68,13 @@ export class Vec2 {
 	private calculateLimits() {
 		if (this._xUpperLim !== Infinity && this._x > this._xUpperLim) {
 			if (this._limTrigger === 'wrap') {
-				this._x =
-					this._xLowerLim !== -Infinity
-						? this._xLowerLim
-						: Number.MIN_SAFE_INTEGER;
+				this._x = this._xLowerLim !== -Infinity ? this._xLowerLim : Number.MIN_SAFE_INTEGER;
 			} else if (this._limTrigger === 'cap') {
 				this.x = this._xUpperLim;
 			}
 		} else if (this._xLowerLim !== -Infinity && this._x < this._xLowerLim) {
 			if (this._limTrigger === 'wrap') {
-				this._x =
-					this._xUpperLim !== Infinity
-						? this._xUpperLim
-						: Number.MAX_SAFE_INTEGER;
+				this._x = this._xUpperLim !== Infinity ? this._xUpperLim : Number.MAX_SAFE_INTEGER;
 			} else if (this._limTrigger === 'cap') {
 				this.x = this._xLowerLim;
 			}
@@ -88,19 +82,13 @@ export class Vec2 {
 
 		if (this._yUpperLim !== Infinity && this._y > this._yUpperLim) {
 			if (this._limTrigger === 'wrap') {
-				this._y =
-					this._yLowerLim !== -Infinity
-						? this._yLowerLim
-						: Number.MIN_SAFE_INTEGER;
+				this._y = this._yLowerLim !== -Infinity ? this._yLowerLim : Number.MIN_SAFE_INTEGER;
 			} else if (this._limTrigger === 'cap') {
 				this.y = this._yUpperLim;
 			}
 		} else if (this._yLowerLim !== -Infinity && this._y < this._yLowerLim) {
 			if (this._limTrigger === 'wrap') {
-				this._y =
-					this._yUpperLim !== Infinity
-						? this._yUpperLim
-						: Number.MAX_SAFE_INTEGER;
+				this._y = this._yUpperLim !== Infinity ? this._yUpperLim : Number.MAX_SAFE_INTEGER;
 			} else if (this._limTrigger === 'cap') {
 				this.y = this._yLowerLim;
 			}
@@ -113,13 +101,9 @@ export class Vec2 {
 				this._y /= mg;
 
 				this._x *=
-					this._magLowerLim !== -Infinity
-						? this._magLowerLim
-						: Number.MIN_SAFE_INTEGER;
+					this._magLowerLim !== -Infinity ? this._magLowerLim : Number.MIN_SAFE_INTEGER;
 				this._y *=
-					this._magLowerLim !== -Infinity
-						? this._magLowerLim
-						: Number.MIN_SAFE_INTEGER;
+					this._magLowerLim !== -Infinity ? this._magLowerLim : Number.MIN_SAFE_INTEGER;
 			} else if (this._limTrigger === 'cap') {
 				this._x /= mg;
 				this._y /= mg;
@@ -133,13 +117,9 @@ export class Vec2 {
 				this._y /= mg;
 
 				this._x *=
-					this._magUpperLim !== Infinity
-						? this._magUpperLim
-						: Number.MAX_SAFE_INTEGER;
+					this._magUpperLim !== Infinity ? this._magUpperLim : Number.MAX_SAFE_INTEGER;
 				this._y *=
-					this._magUpperLim !== Infinity
-						? this._magUpperLim
-						: Number.MAX_SAFE_INTEGER;
+					this._magUpperLim !== Infinity ? this._magUpperLim : Number.MAX_SAFE_INTEGER;
 			} else if (this._limTrigger === 'cap') {
 				this._x /= mg;
 				this._y /= mg;
@@ -290,10 +270,7 @@ export class Vec2 {
 			console.log(
 				`${name} { x: ${this._x} y: ${this._y} r: ${this.angle} m: ${this.magnitude}`
 			);
-		else
-			console.log(
-				`x: ${this._x} y: ${this._y} r: ${this.angle} m: ${this.magnitude}`
-			);
+		else console.log(`x: ${this._x} y: ${this._y} r: ${this.angle} m: ${this.magnitude}`);
 
 		return this;
 	}
@@ -325,6 +302,34 @@ export class Vec2 {
 		return this;
 	}
 
+	getCrossProduct(x: number | Vec2, y?: number): number {
+		if (x instanceof Vec2) {
+			return this._x * x.y - this._y * x.x;
+		} else if (typeof x === 'number' && y !== undefined) {
+			return this._x * x - this._y * y;
+		} else {
+			throw new Error(`${x} is an invalid input`);
+		}
+	}
+
+	getDotProduct(x: number | Vec2, y?: number): number {
+		if (x instanceof Vec2) {
+			return this._x * x._x + this._y * x._y;
+		} else if (typeof x === 'number' && y !== undefined) {
+			return this._x * x + this._y + y;
+		} else {
+			throw new Error(`${x} is an invalid input`);
+		}
+	}
+
+	get leftNormal(): Vec2 {
+		return new Vec2(this._y, -this._x);
+	}
+
+	get rightNormal(): Vec2 {
+		return new Vec2(-this._y, this._x);
+	}
+
 	get magnitude(): number {
 		return Math.hypot(this._y, this._x);
 	}
@@ -349,6 +354,14 @@ export class Vec2 {
 
 	get angle(): number {
 		return Math.atan2(this._y, this._x);
+	}
+
+	getAngleBetween(v: Vec2): number {
+		const mg = this.magnitude + v.magnitude;
+		// mag &&.. short circuits if mag == 0
+		const cos = mg && this.getDotProduct(v) / mg;
+		// Math.min(Math.max(cosine, -1), 1) clamps the cosine between -1 and 1
+		return Math.acos(Math.min(Math.max(cos, -1), 1));
 	}
 
 	set angle(v: number) {

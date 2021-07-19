@@ -137,6 +137,6 @@
 		}
 	],
 
-	"image": "/data/ships/images/[SL] cruiser.png",
-	"thumb": "/data/ships/images/[SL] cruiserThumb.png"
+	"image": "images/[SL] cruiser.png",
+	"thumb": "images/[SL] cruiserThumb.png"
 }

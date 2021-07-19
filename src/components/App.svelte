@@ -8,14 +8,11 @@
 	import { cubicOut } from 'svelte/easing';
 
 	import { GET_KSGO_FIREBASE } from '@data/multiplayerTypes';
-	import config from 'credentials.json';
 	import Singleplayer from './singleplayer/Singleplayer.svelte';
 
-	import { LoadAssets } from '@classes/assets';
+	import { LoadAssets } from '@api/assets';
 
 	let screen = 'title';
-
-	const db = GET_KSGO_FIREBASE(config);
 
 	const click = ({ detail }) => {
 		screen = detail.screen;

@@ -52,6 +52,6 @@
 		}
 	],
 
-	"image": "/data/ships/images/[SL] fighter.png",
-	"thumb": "/data/ships/images/[SL] fighterThumb.png"
+	"image": "images/[SL] fighter.png",
+	"thumb": "images/[SL] fighterThumb.png"
 }

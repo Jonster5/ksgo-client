@@ -42,24 +42,16 @@ export class PlayerShip implements Ship, Player {
 	uh: () => void;
 	uc: () => void;
 
-	constructor(
-		stage: Sprite<Stage>,
-		stats: ParsedShipItem,
-		assets: ParsedAssets
-	) {
+	constructor(stage: Sprite<Stage>, stats: ParsedShipItem, assets: ParsedAssets) {
 		this.sprite = new Sprite(
 			new Texture({ frames: [stats.image] }),
 			stats.size.clone().divide(5)
 		);
 		this.thrusters = [];
 
-		this.thrusters = stats.thrusters.map(
-			(stats) => new ShipThruster(this, stats, assets)
-		);
+		this.thrusters = stats.thrusters.map((stats) => new ShipThruster(this, stats, assets));
 
-		this.weapons = stats.weapons.map(
-			(stats) => new ShipLaser(this, stats, assets)
-		);
+		this.weapons = stats.weapons.map((stats) => new ShipLaser(this, stats, assets));
 
 		this.sprite.add(...this.thrusters.map((t) => t.sprite));
 		stage.add(this.sprite);
@@ -101,8 +93,7 @@ export class PlayerShip implements Ship, Player {
 				case 'w':
 					this.forward = true;
 
-					!this.cooldown &&
-						this.thrusters.forEach((t) => t.on('forward'));
+					!this.cooldown && this.thrusters.forEach((t) => t.on('forward'));
 					break;
 				case 'S':
 				case 's':
@@ -112,16 +103,14 @@ export class PlayerShip implements Ship, Player {
 				case 'a':
 					this.left = true;
 
-					!this.cooldown &&
-						this.thrusters.forEach((t) => t.on('left'));
+					!this.cooldown && this.thrusters.forEach((t) => t.on('left'));
 					break;
 
 				case 'D':
 				case 'd':
 					this.right = true;
 
-					!this.cooldown &&
-						this.thrusters.forEach((t) => t.on('right'));
+					!this.cooldown && this.thrusters.forEach((t) => t.on('right'));
 					break;
 				case ' ':
 					!this.cooldown && this.weapons.forEach((w) => w.on());
@@ -181,8 +170,7 @@ export class PlayerShip implements Ship, Player {
 				.forEach((t) => {
 					cost += t.energy;
 					if (t.direction === 'forward') fv += t.thrust;
-					if (t.direction === 'right')
-						this.rotation += t.thrust * 0.1;
+					if (t.direction === 'right') this.rotation += t.thrust * 0.1;
 					if (t.direction === 'left') this.rotation -= t.thrust * 0.1;
 				});
 			this.weapons.forEach((w) => w.fire(this));
@@ -192,18 +180,14 @@ export class PlayerShip implements Ship, Player {
 		}
 
 		this.e.update((e) =>
-			e - cost < 0
-				? 0
-				: e - cost > this.maxEnergy
-				? this.maxEnergy
-				: e - cost
+			e - cost < 0 ? 0 : e - cost > this.maxEnergy ? this.maxEnergy : e - cost
 		);
 
 		const dif = this.velocity
 			.clone()
 			.add(fv / this.mass)
 			.rotate(this.rotation)
-			.divide(10);
+			.multiply(0.1);
 
 		this.s.set(dif.magnitude);
 
@@ -221,9 +205,9 @@ export class PlayerShip implements Ship, Player {
 
 		if (stars.length > 0) {
 			for (let star of stars) {
-				const v = star.position.clone().subtract(this.position);
+				const d = star.position.clone().subtract(this.position);
 
-				const m = v.magnitude;
+				const m = d.magnitude;
 
 				gm.add(
 					v

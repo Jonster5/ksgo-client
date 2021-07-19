@@ -24,12 +24,7 @@
 			href="https://github.com/Jonster5/ksgo-client"
 			title="Github"
 		/>
-		<Icon
-			src={KofiSrc}
-			alt="KSGO's Kofi page"
-			href="https://ko-fi.com/ksgogame"
-			title="Kofi"
-		/>
+		<Icon src={KofiSrc} alt="KSGO's Kofi page" href="https://ko-fi.com/ksgogame" title="Kofi" />
 	</div>
 
 	<div class="title">K S G O</div>
@@ -63,6 +58,7 @@
 		-moz-user-select: none;
 		-webkit-user-select: none;
 		color: $title;
+		text-shadow: 0 0 20vh $title;
 		font-size: 10vw;
 		margin: 4vh 4vw;
 		margin-bottom: 2vh;
@@ -74,6 +70,7 @@
 		-webkit-user-select: none;
 		color: $subtitle;
 		background: $UIBoxBG;
+		text-shadow: 0 0 1vh $subtitle;
 		padding: 1vh 1vw;
 		font-size: 1vw;
 		margin: 2vh;

@@ -139,6 +139,6 @@
 		}
 	],
 
-	"thumb": "/data/maps/images/asteroidsThumb.png",
+	"thumb": "images/asteroidsThumb.png",
 	"alt": "Dense asteroid field"
 }

@@ -4,21 +4,23 @@ $text: white;
 
 $titleFont: 'Righteous', sans-serif;
 $textFont: 'Trispace', monospace;
+$subtextFont: 'Crete Round', sans-serif;
 
 $UIBarBG: #303030;
 $UIBoxBG: #000000aa;
+
+$buttonShadow: 0px 0px 1.1vh #ffffff70;
+$textShadow: 0px 0px 1vh white;
 
 @mixin Button {
 	font-family: $textFont;
 	color: $text;
 	background: black;
 	// border: 0.1vh solid white;
+	box-shadow: $buttonShadow;
+	text-shadow: $textShadow;
+	padding: 1vh 1vw;
 	text-align: center;
-	padding: 1%;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	box-shadow: 0vh 0vh 0vh 0.4vh #ffffffaa;
-	border-radius: 0.1vh;
 
 	&:hover {
 		cursor: pointer;
@@ -28,7 +30,7 @@ $UIBoxBG: #000000aa;
 
 	&:active {
 		background: grey;
-		box-shadow: 0vh 0vh 0vh 0.4vh grey;
+		border: 0.1vh solid grey;
 		color: black;
 		cursor: pointer;
 	}

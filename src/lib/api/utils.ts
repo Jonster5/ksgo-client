@@ -1,9 +1,8 @@
 import type { Canvas } from '@api/canvas';
-import type { Blank } from '@api/material';
 import type { Sprite } from '@api/sprite';
 import type { Vec2 } from '@api/vec2';
 
-export interface SpriteProperties<Material extends MaterialProperties = Blank> {
+export interface SpriteProperties<Material extends MaterialProperties = any> {
 	visible: boolean;
 	parent: Sprite | Canvas | null;
 

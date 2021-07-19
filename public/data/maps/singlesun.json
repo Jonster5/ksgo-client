@@ -37,6 +37,6 @@
 		}
 	],
 
-	"thumb": "/data/maps/images/singlesunThumb.png",
+	"thumb": "images/singlesunThumb.png",
 	"alt": "A single sun"
 }

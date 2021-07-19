@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Righteous&family=Trispace:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Righteous&family=Trispace:wght@300&family=Crete+Round&display=swap&display=swap');
 
 html,
 body {
@@ -8,7 +8,7 @@ body {
 	height: 100%;
 	font-family: Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background: radial-gradient(#00000000, #000000ff), url('images/titlebg.png');
+	background: radial-gradient(#00000080, #000000ff), url('images/titlebg.png');
 	/* background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/titlebg.png'); */
 	background-size: cover;
 	min-width: 540px;

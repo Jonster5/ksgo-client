@@ -74,6 +74,6 @@
 		}
 	],
 
-	"thumb": "/data/maps/images/starsystemThumb.png",
+	"thumb": "images/starsystemThumb.png",
 	"alt": "Star system of many planets"
 }

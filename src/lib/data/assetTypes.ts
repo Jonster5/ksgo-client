@@ -1,4 +1,4 @@
-import type { Vec2 } from '../api/vec2';
+import type { Vec2 } from '@api/vec2';
 
 export type Direction = 'forward' | 'right' | 'left' | 'reverse';
 

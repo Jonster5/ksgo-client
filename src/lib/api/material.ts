@@ -1,10 +1,6 @@
 import type { MaterialProperties } from '@api/utils';
 import type { Vec2 } from '@api/vec2';
 
-export class Blank implements MaterialProperties {
-	draw(ctx: CanvasRenderingContext2D, hs: Vec2): void {}
-}
-
 export class Stage implements MaterialProperties {
 	// filter: string;
 	// alpha: number;
@@ -179,10 +175,7 @@ export function Pattern(
 	const pattern = tctx.createPattern(image, repeat ?? 'repeat')!;
 
 	pattern.setTransform(
-		new DOMMatrix([1, 0, 0, 1, 0, 0]).translate(
-			-image.width / 2,
-			-image.height / 2
-		)
+		new DOMMatrix([1, 0, 0, 1, 0, 0]).translate(-image.width / 2, -image.height / 2)
 	);
 
 	return pattern;

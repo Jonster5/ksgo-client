@@ -1,11 +1,8 @@
 import type { Canvas } from '@api/canvas';
-import type { Stage, Texture, Rectangle, Ellipse, Blank } from '@api/material';
 import type { MaterialProperties, SpriteProperties } from '@api/utils';
 import { Vec2 } from '@api/vec2';
 
-export class Sprite<Material extends MaterialProperties = Blank>
-	implements SpriteProperties
-{
+export class Sprite<Material extends MaterialProperties = any> implements SpriteProperties {
 	material: Material;
 
 	position: Vec2;
@@ -22,12 +19,7 @@ export class Sprite<Material extends MaterialProperties = Blank>
 	parent!: Sprite | Canvas | null;
 	children: Sprite[];
 
-	constructor(
-		material: Material,
-		size: Vec2,
-		position?: Vec2,
-		rotation?: number
-	) {
+	constructor(material: Material, size: Vec2, position?: Vec2, rotation?: number) {
 		this.material = material;
 
 		this.size = size.clone();

@@ -22,58 +22,62 @@ import type {
 	ParsedSpawnItem,
 } from '@data/assetTypes';
 
+const SHIP_BASE = '/data/ships/';
+const MAP_BASE = '/data/maps/';
+const MODE_BASE = '/data/modes/';
+const IMAGE_BASE = '/data/images/';
+
 export async function LoadAssets(assetURL: string): Promise<ParsedAssets> {
-	const response = await fetch(assetURL);
-	if (!response.ok) throw new Error(response.statusText);
+	try {
+		const response = await fetch(assetURL);
+		if (!response.ok) throw new Error(response.statusText);
 
-	const json = await response.json();
+		const json = await response.json();
 
-	const rawAssets: RawAssets = {
-		maps: await Promise.all(
-			json.maps.map(
-				(m: string): Promise<RawMapItem> =>
-					fetch(`/data/${m}.json`).then((r) => r.json())
-			)
-		),
-		ships: await Promise.all(
-			json.ships.map(
-				(m: string): Promise<RawShipItem> =>
-					fetch(`/data/${m}.json`).then((r) => r.json())
-			)
-		),
-		modes: await Promise.all(
-			json.modes.map(
-				(m: string): Promise<RawModeItem> =>
-					fetch(`/data/${m}.json`).then((r) => r.json())
-			)
-		),
-		ionthrust: json.ionthrust,
-		gamebg: json.gamebg,
-	};
+		const rawAssets: RawAssets = {
+			maps: await Promise.all(
+				json.maps.map(
+					(m: string): Promise<RawMapItem> =>
+						fetch(`${MAP_BASE}${m}`).then((r) => r.json())
+				)
+			),
+			ships: await Promise.all(
+				json.ships.map(
+					(m: string): Promise<RawShipItem> =>
+						fetch(`${SHIP_BASE}${m}`).then((r) => r.json())
+				)
+			),
+			modes: await Promise.all(
+				json.modes.map(
+					(m: string): Promise<RawModeItem> =>
+						fetch(`${MODE_BASE}${m}`).then((r) => r.json())
+				)
+			),
+			ionthrust: json.ionthrust,
+			gamebg: json.gamebg,
+		};
 
-	const maps: ParsedMapItem[] = await Promise.all(
-		rawAssets.maps.map(LoadMap)
-	);
-	const ships: ParsedShipItem[] = await Promise.all(
-		rawAssets.ships.map(LoadShip)
-	);
-	const modes: ParsedModeItem[] = await Promise.all(
-		rawAssets.modes.map(LoadMode)
-	);
-	const ionthrust: HTMLImageElement[] = await Promise.all(
-		rawAssets.ionthrust.map(LoadImage)
-	);
-	const gamebg: HTMLImageElement[] = await Promise.all(
-		rawAssets.gamebg.map(LoadImage)
-	);
+		const maps: ParsedMapItem[] = await Promise.all(rawAssets.maps.map(LoadMap));
+		const ships: ParsedShipItem[] = await Promise.all(rawAssets.ships.map(LoadShip));
+		const modes: ParsedModeItem[] = await Promise.all(rawAssets.modes.map(LoadMode));
+		const ionthrust: HTMLImageElement[] = await Promise.all(
+			rawAssets.ionthrust.map((i) => LoadImage(IMAGE_BASE + i))
+		);
+		const gamebg: HTMLImageElement[] = await Promise.all(
+			rawAssets.gamebg.map((g) => LoadImage(IMAGE_BASE + g))
+		);
 
-	return {
-		maps,
-		ships,
-		modes,
-		ionthrust,
-		gamebg,
-	};
+		return {
+			maps,
+			ships,
+			modes,
+			ionthrust,
+			gamebg,
+		};
+	} catch (error) {
+		console.error(error);
+		throw new Error(error);
+	}
 }
 
 export function LoadImage(input: string): Promise<HTMLImageElement> {
@@ -106,7 +110,7 @@ export async function LoadMode(input: RawModeItem): Promise<ParsedModeItem> {
 	return {
 		name,
 		description,
-		thumb: await LoadImage(thumb),
+		thumb: await LoadImage(MODE_BASE + thumb),
 	};
 }
 
@@ -140,14 +144,12 @@ export async function LoadShip(input: RawShipItem): Promise<ParsedShipItem> {
 		mass,
 		thrusters: thrusters.map(LoadShipThruster),
 		weapons: weapons.map(LoadShipWeapon),
-		image: await LoadImage(image),
-		thumb: await LoadImage(thumb),
+		image: await LoadImage(SHIP_BASE + image),
+		thumb: await LoadImage(SHIP_BASE + thumb),
 	};
 }
 
-export function LoadShipThruster(
-	input: RawShipThrustItem
-): ParsedShipThrustItem {
+export function LoadShipThruster(input: RawShipThrustItem): ParsedShipThrustItem {
 	const { x, y, size, thrust, direction, energy } = input;
 
 	return {
@@ -174,18 +176,7 @@ export function LoadShipWeapon(input: RawShipWeaponItem): ParsedShipWeaponItem {
 }
 
 export async function LoadMap(input: RawMapItem): Promise<ParsedMapItem> {
-	const {
-		version,
-		name,
-		size,
-		friction,
-		stars,
-		planets,
-		asteroids,
-		spawn,
-		thumb,
-		alt,
-	} = input;
+	const { version, name, size, friction, stars, planets, asteroids, spawn, thumb, alt } = input;
 
 	return {
 		version,
@@ -198,7 +189,7 @@ export async function LoadMap(input: RawMapItem): Promise<ParsedMapItem> {
 		asteroids: asteroids.map(LoadAsteroid),
 		spawns: spawn.map(LoadSpawn),
 
-		thumb: await LoadImage(thumb),
+		thumb: await LoadImage(MAP_BASE + thumb),
 		alt,
 	};
 }

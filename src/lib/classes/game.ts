@@ -4,15 +4,11 @@ import { Sprite } from '@api/sprite';
 import { Vec2 } from '@api/vec2';
 import { GameMap } from '@classes/map';
 import { PlayerShip, PlayerShipObject } from '@classes/ship';
-import type {
-	ParsedAssets,
-	ParsedMapItem,
-	ParsedShipItem,
-} from '@data/assetTypes';
+import type { ParsedAssets, ParsedMapItem, ParsedShipItem } from '@data/assetTypes';
 import { GameUtils, PeacefulGameProperties } from '@utils/gameUtils';
 import { Writable, writable } from 'svelte/store';
 
-export class PeacefulGame extends GameUtils implements PeacefulGameProperties {
+export class PeacefulFreeplayGame extends GameUtils implements PeacefulGameProperties {
 	assets: ParsedAssets;
 
 	canvas: Canvas;
@@ -50,9 +46,7 @@ export class PeacefulGame extends GameUtils implements PeacefulGameProperties {
 		this.map.setupBackground(m, this.stage);
 		this.map.setupMap(m, this.stage);
 
-		this.canvas.element.addEventListener('contextmenu', (e: Event) =>
-			e.preventDefault()
-		);
+		this.canvas.element.addEventListener('contextmenu', (e: Event) => e.preventDefault());
 
 		window.addEventListener('resize', () => {
 			this.canvas.ar = window.innerWidth / window.innerHeight;
@@ -64,11 +58,7 @@ export class PeacefulGame extends GameUtils implements PeacefulGameProperties {
 
 			this.map.updateGravity();
 
-			this.player.updateGravity(
-				this.map.stars,
-				this.map.planets,
-				this.map.asteroids
-			);
+			this.player.updateGravity(this.map.stars, this.map.planets, this.map.asteroids);
 
 			this.map.updatePosition(this.stage);
 
@@ -83,18 +73,10 @@ export class PeacefulGame extends GameUtils implements PeacefulGameProperties {
 			'wheel',
 			(e) => {
 				if (e.deltaY > 0) {
-					if (
-						this.canvas.width + 100 >=
-						this.player.sprite.size.y * 50
-					)
-						return;
+					if (this.canvas.width + 100 >= this.player.sprite.size.y * 50) return;
 					this.canvas.setSize(this.canvas.width + 100);
 				} else {
-					if (
-						this.canvas.width - 100 <=
-						this.player.sprite.size.y * 10
-					)
-						return;
+					if (this.canvas.width - 100 <= this.player.sprite.size.y * 10) return;
 					this.canvas.setSize(this.canvas.width - 100);
 				}
 			},

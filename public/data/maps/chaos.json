@@ -194,6 +194,6 @@
 		}
 	],
 
-	"thumb": "/data/maps/images/chaosThumb.png",
+	"thumb": "images/chaosThumb.png",
 	"alt": "Star system of many planets"
 }

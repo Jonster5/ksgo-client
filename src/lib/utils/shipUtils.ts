@@ -44,11 +44,7 @@ export interface Player {
 	uc: () => void;
 
 	update(stage: Sprite<Stage>): void;
-	updateGravity(
-		stars: Star[],
-		planets: Planet[],
-		asteroids: Asteroid[]
-	): void;
+	updateGravity(stars: Star[], planets: Planet[], asteroids: Asteroid[]): void;
 }
 
 export interface AI {

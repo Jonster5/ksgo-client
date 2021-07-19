@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ParsedAssets } from '@data/assets';
+	import type { ParsedAssets } from '@data/assetTypes';
 	import GameMode from './GameMode.svelte';
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
@@ -8,11 +8,14 @@
 
 	export let assets: ParsedAssets;
 
-	const dispatch = createEventDispatcher();
-
 	type SingleplayerScreen = 'game mode' | 'game options' | 'game';
 
+	const dispatch = createEventDispatcher();
+
 	let screen: SingleplayerScreen = 'game mode';
+	const options = {
+		selectedMap: writable(''),
+	};
 
 	const click = ({ detail }) => {
 		screen = detail.screen;
@@ -24,7 +27,7 @@
 		in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: 100 }}
 		out:fly={{ easing: cubicOut, duration: 250, y: 100 }}
 	>
-		<GameMode on:click {assets} />
+		<GameMode on:click {assets} selectedMap={options.selectedMap} />
 	</div>
 {:else if screen === 'game options'}
 	<div
@@ -41,7 +44,7 @@
 		in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: 100 }}
 		out:fly={{ easing: cubicOut, duration: 250, y: 100 }}
 	>
-		<GameMode on:click {assets} />
+		<GameMode on:click {assets} selectedMap={options.selectedMap} />
 	</div>
 {/if}
 

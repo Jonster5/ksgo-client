@@ -1,12 +1,11 @@
 <script lang="ts">
 	import FPmapitem from './FPmapitem.svelte';
 	import UI from './UI.svelte';
-	import type { MapItem } from '@/src/lib/data/assetTypes';
 	import { onDestroy } from 'svelte';
-	import { PeacefulFreeplayGame } from '@classes/game';
 	import Srpitem from './Srpitem.svelte';
-	import type { ParsedAssets } from '@data/assets';
+	import type { ParsedAssets, ParsedMapItem } from '@data/assetTypes';
 	import Backbutton from '@comp/general/Backbutton.svelte';
+	import { PeacefulFreeplayGame } from '@classes/game';
 
 	export let assets: ParsedAssets;
 
@@ -31,7 +30,7 @@
 	const startGame = (mapName: string) => {
 		game = new PeacefulFreeplayGame(gameElement, assets);
 		srs = game.needsShipRespawn.subscribe((v) => (showRespawnScreen = v));
-		game.init(assets.maps.find((m: MapItem) => m.name === mapName));
+		game.init(assets.maps.find((m: ParsedMapItem) => m.name === mapName));
 	};
 
 	onDestroy(() => {
