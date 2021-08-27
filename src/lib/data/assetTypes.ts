@@ -18,10 +18,43 @@ export interface ParsedAssets {
 	gamebg: HTMLImageElement[];
 }
 
+export interface RawModeItem {
+	name: string;
+	description: string;
+
+	setMap: true | string;
+	setGravity: true | number;
+	setTimeLimit: true | number;
+	setKillLimit: true | number;
+
+	thumb: string;
+	alt: string;
+}
+
 export interface ParsedModeItem {
 	name: string;
 	description: string;
+
+	setMap: true | string;
+	setGravity: true | number;
+	setTimeLimit: true | number;
+	setKillLimit: true | number;
+
 	thumb: HTMLImageElement;
+	alt: string;
+}
+
+export interface RawMapItem {
+	version: number;
+	name: string;
+	size: number;
+	friction: number;
+	stars: RawStarItem[];
+	planets: RawPlanetItem[];
+	asteroids: RawAsteroidItem[];
+	spawn: RawSpawnItem[];
+	thumb: string;
+	alt: string;
 }
 
 export interface ParsedMapItem {
@@ -37,6 +70,14 @@ export interface ParsedMapItem {
 	alt: string;
 }
 
+export interface RawStarItem {
+	x: number | string;
+	y: number | string;
+	diameter: number | string;
+	mass: number | string;
+	color: string;
+}
+
 export interface ParsedStarItem {
 	uPosition: Vec2;
 	lPosition: Vec2;
@@ -50,18 +91,13 @@ export interface ParsedStarItem {
 	color: string;
 }
 
-export interface ParsedAsteroidItem {
-	uPosition: Vec2;
-	lPosition: Vec2;
-	uVelocity: Vec2;
-	lVelocity: Vec2;
-
-	uDiameter: number;
-	lDiameter: number;
-
-	uMass: number;
-	lMass: number;
-
+export interface RawPlanetItem {
+	x: number | string;
+	y: number | string;
+	vx: number | string;
+	vy: number | string;
+	diameter: number | string;
+	mass: number | string;
 	color: string;
 }
 
@@ -80,87 +116,6 @@ export interface ParsedPlanetItem {
 	color: string;
 }
 
-export interface ParsedSpawnItem {
-	position: Vec2;
-	size: number;
-}
-
-export interface ParsedShipItem {
-	version: number;
-	name: string;
-	faction: string;
-	size: Vec2;
-
-	maxEnergy: number;
-	energyGain: number;
-	maxHull: number;
-	maxSpeed: number;
-
-	mass: number;
-
-	thrusters: ParsedShipThrustItem[];
-	weapons: ParsedShipWeaponItem[];
-
-	image: HTMLImageElement;
-	thumb: HTMLImageElement;
-}
-
-export interface ParsedShipThrustItem {
-	direction: Direction;
-	size: number;
-	position: Vec2;
-	energy: number;
-	thrust: number;
-}
-
-export interface ParsedShipWeaponItem {
-	direction: Direction;
-	type: string;
-	length: number;
-	width: number;
-	position: Vec2;
-
-	damage: number;
-	energy: number;
-}
-
-export interface RawModeItem {
-	name: string;
-	description: string;
-	thumb: string;
-}
-
-export interface RawMapItem {
-	version: number;
-	name: string;
-	size: number;
-	friction: number;
-	stars: RawStarItem[];
-	planets: RawPlanetItem[];
-	asteroids: RawAsteroidItem[];
-	spawn: RawSpawnItem[];
-	thumb: string;
-	alt: string;
-}
-
-export interface RawStarItem {
-	x: number | string;
-	y: number | string;
-	diameter: number | string;
-	mass: number | string;
-	color: string;
-}
-
-export interface RawPlanetItem {
-	x: number | string;
-	y: number | string;
-	vx: number | string;
-	vy: number | string;
-	diameter: number | string;
-	mass: number | string;
-	color: string;
-}
-
 export interface RawAsteroidItem {
 	x: number | string;
 	y: number | string;
@@ -171,9 +126,29 @@ export interface RawAsteroidItem {
 	vy: number | string;
 }
 
+export interface ParsedAsteroidItem {
+	uPosition: Vec2;
+	lPosition: Vec2;
+	uVelocity: Vec2;
+	lVelocity: Vec2;
+
+	uDiameter: number;
+	lDiameter: number;
+
+	uMass: number;
+	lMass: number;
+
+	color: string;
+}
+
 export interface RawSpawnItem {
 	x: number;
 	y: number;
+	size: number;
+}
+
+export interface ParsedSpawnItem {
+	position: Vec2;
 	size: number;
 }
 
@@ -199,11 +174,39 @@ export interface RawShipItem {
 	thumb: string;
 }
 
+export interface ParsedShipItem {
+	version: number;
+	name: string;
+	faction: string;
+	size: Vec2;
+
+	maxEnergy: number;
+	energyGain: number;
+	maxHull: number;
+	maxSpeed: number;
+
+	mass: number;
+
+	thrusters: ParsedShipThrustItem[];
+	weapons: ParsedShipWeaponItem[];
+
+	image: HTMLImageElement;
+	thumb: HTMLImageElement;
+}
+
 export interface RawShipThrustItem {
 	direction: Direction;
 	size: number;
 	x: number;
 	y: number;
+	energy: number;
+	thrust: number;
+}
+
+export interface ParsedShipThrustItem {
+	direction: Direction;
+	size: number;
+	position: Vec2;
 	energy: number;
 	thrust: number;
 }
@@ -215,6 +218,17 @@ export interface RawShipWeaponItem {
 	width: number;
 	x: number;
 	y: number;
+
+	damage: number;
+	energy: number;
+}
+
+export interface ParsedShipWeaponItem {
+	direction: Direction;
+	type: string;
+	length: number;
+	width: number;
+	position: Vec2;
 
 	damage: number;
 	energy: number;

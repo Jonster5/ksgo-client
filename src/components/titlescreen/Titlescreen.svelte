@@ -3,6 +3,7 @@
 	import Icon from './LinkIcon.svelte';
 	import GithubSrc from '@assets/images/github.png';
 	import KofiSrc from '@assets/images/kofi.png';
+	import discordSrc from '@assets/images/Discord_Logo_Square.png';
 	import SettingsIcon from '@comp/general/SettingsIcon.svelte';
 
 	const dispatch = createEventDispatcher();
@@ -25,9 +26,15 @@
 			title="Github"
 		/>
 		<Icon src={KofiSrc} alt="KSGO's Kofi page" href="https://ko-fi.com/ksgogame" title="Kofi" />
+		<Icon
+			src={discordSrc}
+			alt="KSGO Community Discord Server"
+			href="https://discord.gg/xVN6WaKYuT"
+			title="Discord"
+		/>
 	</div>
 
-	<div class="title">K S G O</div>
+	<div class="title">Black Lives <strong>Matter</strong></div>
 	<div class="version">V0.1</div>
 	<div class="button" on:click={() => click('play')}>Play</div>
 	<div class="button" on:click={() => alert('Coming soon')}>Leaderboards</div>
@@ -62,6 +69,10 @@
 		font-size: 10vw;
 		margin: 4vh 4vw;
 		margin-bottom: 2vh;
+
+		strong {
+			text-shadow: 0 0 20vh white;
+		}
 	}
 
 	.version {
@@ -82,5 +93,6 @@
 		width: 15%;
 		margin: 2vh 1vw;
 		font-size: 2vw;
+		user-select: none;
 	}
 </style>

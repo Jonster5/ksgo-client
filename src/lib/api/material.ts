@@ -164,8 +164,6 @@ export class Ellipse implements MaterialProperties {
 	}
 }
 
-// export function Gradient(): CanvasGradient {}
-
 export function Pattern(
 	image: CanvasImageSource,
 	repeat?: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat'

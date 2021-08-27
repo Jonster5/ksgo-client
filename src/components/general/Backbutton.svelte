@@ -26,5 +26,6 @@
 		padding: 0;
 		width: 5vw;
 		font-size: 1.4vw;
+		z-index: 9999;
 	}
 </style>

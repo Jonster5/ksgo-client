@@ -1,19 +1,14 @@
 <script lang="ts">
-	export let target: string;
-	export let eventName: string = 'click';
-
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
 
-	const click = (screen: string): void => {
-		dispatch(eventName, {
-			screen,
-		});
+	const start = (): void => {
+		dispatch('start');
 	};
 </script>
 
-<div on:click={() => click(target)}>Next</div>
+<div on:click={start}>Start</div>
 
 <style lang="scss">
 	@import '../../styles/vars';

@@ -16,11 +16,7 @@ export class Star extends StellarUtils implements StellarObject {
 
 		const { position, mass, diameter, color } = stats;
 
-		this.sprite = new Sprite(
-			new Ellipse({ texture: color }),
-			new Vec2(diameter),
-			position
-		);
+		this.sprite = new Sprite(new Ellipse({ texture: color }), new Vec2(diameter), position);
 		stage.add(this.sprite);
 
 		this.mass = mass / 10;
@@ -45,11 +41,7 @@ export class Planet extends StellarUtils implements StellarObject {
 
 		const { position, velocity, mass, diameter, color } = stats;
 
-		this.sprite = new Sprite(
-			new Ellipse({ texture: color }),
-			new Vec2(diameter),
-			position
-		);
+		this.sprite = new Sprite(new Ellipse({ texture: color }), new Vec2(diameter), position);
 
 		this.sprite.velocity.set(velocity);
 
@@ -113,11 +105,7 @@ export class Asteroid extends StellarUtils implements StellarObject {
 
 		const { position, velocity, mass, diameter, color } = stats;
 
-		this.sprite = new Sprite(
-			new Ellipse({ texture: color }),
-			new Vec2(diameter),
-			position
-		);
+		this.sprite = new Sprite(new Ellipse({ texture: color }), new Vec2(diameter), position);
 
 		this.sprite.velocity.set(velocity);
 

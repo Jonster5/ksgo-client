@@ -21,13 +21,13 @@
 
 		img {
 			width: 3vw;
-			height: auto;
+			height: 3vw;
 			border-radius: 50%;
 			transition-duration: 100ms;
 		}
 
 		&:hover img {
-			box-shadow: 0 0 0.5vw 0.2vw white;
+			box-shadow: 0 0 1vh white;
 		}
 	}
 </style>

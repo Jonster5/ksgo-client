@@ -105,12 +105,19 @@ export function LoadFuzzyNumber(input: number | string): [number, number] {
 }
 
 export async function LoadMode(input: RawModeItem): Promise<ParsedModeItem> {
-	const { name, description, thumb } = input;
+	const { name, description, setMap, setGravity, setTimeLimit, setKillLimit, thumb, alt } = input;
 
 	return {
 		name,
 		description,
+
+		setMap,
+		setGravity,
+		setTimeLimit,
+		setKillLimit,
+
 		thumb: await LoadImage(MODE_BASE + thumb),
+		alt,
 	};
 }
 

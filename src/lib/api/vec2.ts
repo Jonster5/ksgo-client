@@ -401,3 +401,4 @@ export class Vec2 {
 		return [this._x, this._y];
 	}
 }
+

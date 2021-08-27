@@ -1,15 +1,7 @@
 {
 	"ships": ["fighter.json", "frigate.json", "cruiser.json", "spectator.json"],
 
-	"maps": [
-		"empty.json",
-		"singlesun.json",
-		"asteroids.json",
-		"starsystem.json",
-		"binary.json",
-		"black_hole.json",
-		"chaos.json"
-	],
+	"maps": ["empty.json", "singlesun.json", "asteroids.json", "starsystem.json"],
 
 	"modes": ["peaceful.json", "waves.json"],
 

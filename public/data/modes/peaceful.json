@@ -1,5 +1,6 @@
 {
 	"name": "Peaceful",
 	"description": "Lorem Ipsum L L L L L",
-	"thumb": "images/peacefulThumb.png"
+	"thumb": "images/peacefulThumb.png",
+	"alt": "a lone ship"
 }

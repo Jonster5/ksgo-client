@@ -33,8 +33,7 @@ export class Canvas {
 
 		this.element = document.createElement('canvas');
 
-		const dpr =
-			window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
+		const dpr = window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
 
 		this.ar = window.innerWidth / window.innerHeight;
 
@@ -44,14 +43,7 @@ export class Canvas {
 		this.element.height = this.size.y * dpr;
 
 		this.ctx = this.element.getContext('2d')!;
-		this.ctx.transform(
-			dpr,
-			0,
-			0,
-			-dpr,
-			this.element.width / 2,
-			this.element.height / 2
-		);
+		this.ctx.transform(dpr, 0, 0, -dpr, this.element.width / 2, this.element.height / 2);
 		this.default = this.ctx.getTransform();
 
 		this.element.setAttribute(
@@ -101,8 +93,7 @@ export class Canvas {
 	}
 
 	setSize(width: number): void {
-		const dpr =
-			window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
+		const dpr = window.devicePixelRatio !== undefined ? window.devicePixelRatio : 1;
 
 		this.size.set(width, width / this.ar);
 
@@ -111,14 +102,7 @@ export class Canvas {
 
 		this.ctx.resetTransform();
 
-		this.ctx.transform(
-			dpr,
-			0,
-			0,
-			-dpr,
-			this.element.width / 2,
-			this.element.height / 2
-		);
+		this.ctx.transform(dpr, 0, 0, -dpr, this.element.width / 2, this.element.height / 2);
 		this.default = this.ctx.getTransform();
 	}
 
@@ -169,8 +153,7 @@ export class Canvas {
 
 	private refreshLoop() {
 		const now = performance.now();
-		while (this.rd.times.length > 0 && this.rd.times[0] <= now - 1000)
-			this.rd.times.shift();
+		while (this.rd.times.length > 0 && this.rd.times[0] <= now - 1000) this.rd.times.shift();
 
 		this.rd.times.push(now);
 		this.rd.fps = this.rd.times.length;
@@ -181,10 +164,7 @@ export class Canvas {
 	private getLagOffset(timestamp: number) {
 		const frameDuration = 1000 / this.rd.ups;
 
-		const elapsed =
-			timestamp - this.rd.prev > 1000
-				? frameDuration
-				: timestamp - this.rd.prev;
+		const elapsed = timestamp - this.rd.prev > 1000 ? frameDuration : timestamp - this.rd.prev;
 
 		this.rd.lag += elapsed;
 
@@ -199,8 +179,7 @@ export class Canvas {
 					sprite.prev.set(sprite.position);
 					sprite.prevr = sprite.rotation;
 
-					if (sprite.children.length > 0)
-						sprite.children.forEach(spp);
+					if (sprite.children.length > 0) sprite.children.forEach(spp);
 				}
 			});
 
@@ -216,12 +195,7 @@ export class Canvas {
 
 		this.ctx.setTransform(this.default);
 
-		this.ctx.clearRect(
-			-this.size.x,
-			-this.size.y,
-			this.size.x * 2,
-			this.size.y * 2
-		);
+		this.ctx.clearRect(-this.size.x, -this.size.y, this.size.x * 2, this.size.y * 2);
 
 		for (let sprite of this.children) {
 			sprite.render(this.ctx, lagOffset, this.size);

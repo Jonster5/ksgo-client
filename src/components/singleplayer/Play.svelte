@@ -6,8 +6,10 @@
 	import type { ParsedAssets, ParsedMapItem } from '@data/assetTypes';
 	import Backbutton from '@comp/general/Backbutton.svelte';
 	import { PeacefulFreeplayGame } from '@classes/game';
+	import type { OutputOptionProperties } from '@data/gameTypes';
 
 	export let assets: ParsedAssets;
+	export let options: OutputOptionProperties;
 
 	let gameElement: HTMLElement;
 

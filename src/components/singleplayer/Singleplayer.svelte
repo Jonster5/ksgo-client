@@ -1,39 +1,51 @@
 <script lang="ts">
 	import type { ParsedAssets } from '@data/assetTypes';
-	import GameMode from './GameMode.svelte';
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { createEventDispatcher } from 'svelte';
 	import { writable } from 'svelte/store';
+	import GameOptions from '@comp/singleplayer/GameOptions.svelte';
+	import type { InputOptionProperties, OutputOptionProperties } from '@data/gameTypes';
 
 	export let assets: ParsedAssets;
 
-	type SingleplayerScreen = 'game mode' | 'game options' | 'game';
+	type SingleplayerScreen = 'game options' | 'game';
 
 	const dispatch = createEventDispatcher();
 
-	let screen: SingleplayerScreen = 'game mode';
-	const options = {
-		selectedMap: writable(''),
+	let screen: SingleplayerScreen = 'game options';
+	const options: InputOptionProperties = {
+		mode: writable(assets.modes[0].name),
+		map: writable(assets.maps[0].name),
+		gravity: writable(10),
+		timeLimit: writable(5),
+		killLimit: writable(10),
 	};
 
+	let selectedOptions: OutputOptionProperties;
+
 	const click = ({ detail }) => {
-		screen = detail.screen;
+		if (detail.screen === 'title') {
+			dispatch('click', {
+				screen: 'title',
+			});
+		} else {
+			screen = detail.screen;
+		}
+	};
+
+	const start = ({ detail }: { detail: OutputOptionProperties }) => {
+		selectedOptions = detail;
 	};
 </script>
 
-{#if screen === 'game mode'}
-	<div
-		in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: 100 }}
-		out:fly={{ easing: cubicOut, duration: 250, y: 100 }}
-	>
-		<GameMode on:click {assets} selectedMap={options.selectedMap} />
-	</div>
-{:else if screen === 'game options'}
+{#if screen === 'game options'}
 	<div
 		in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: -100 }}
 		out:fly={{ easing: cubicOut, duration: 250, y: -100 }}
-	/>
+	>
+		<GameOptions {assets} {...options} on:click on:start={start} />
+	</div>
 {:else if screen === 'game'}
 	<div
 		in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: -100 }}
@@ -41,10 +53,10 @@
 	/>
 {:else}
 	<div
-		in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: 100 }}
-		out:fly={{ easing: cubicOut, duration: 250, y: 100 }}
+		in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: -100 }}
+		out:fly={{ easing: cubicOut, duration: 250, y: -100 }}
 	>
-		<GameMode on:click {assets} selectedMap={options.selectedMap} />
+		<GameOptions {assets} {...options} on:click on:start={start} />
 	</div>
 {/if}
 
