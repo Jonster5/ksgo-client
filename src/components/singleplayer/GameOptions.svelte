@@ -15,6 +15,7 @@
 	export let gravity: Writable<number>;
 	export let timeLimit: Writable<number>;
 	export let killLimit: Writable<number>;
+	export let extra: Object;
 
 	const dispatch = createEventDispatcher();
 
@@ -72,6 +73,7 @@
 			gravity: $gravity / 10,
 			timeLimit: $timeLimit * 60,
 			killLimit: $killLimit,
+			extra: {},
 		} as OutputOptionProperties);
 	};
 </script>
@@ -191,7 +193,9 @@
 			/>
 		</div>
 	</div>
-	<div class="segment other" />
+	<div class="segment extra">
+		<h4>{extra} (ignore this for now)</h4>
+	</div>
 </main>
 
 <style lang="scss">
@@ -431,7 +435,7 @@
 			}
 		}
 
-		.other {
+		.extra {
 			grid-area: e;
 		}
 

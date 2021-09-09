@@ -5,15 +5,16 @@
 	import Srpitem from './Srpitem.svelte';
 	import type { ParsedAssets, ParsedMapItem } from '@data/assetTypes';
 	import Backbutton from '@comp/general/Backbutton.svelte';
-	import { PeacefulFreeplayGame } from '@classes/game';
+	import * as Games from '@classes/game';
 	import type { OutputOptionProperties } from '@data/gameTypes';
 
 	export let assets: ParsedAssets;
 	export let options: OutputOptionProperties;
 
-	let gameElement: HTMLElement;
+	const GAME = Games[options.mode.gameClassName]!;
 
-	let game: PeacefulFreeplayGame;
+	let game: any;
+	let gameElement: HTMLElement;
 	let showRespawnScreen: boolean;
 	let needsMapSelection = true;
 	let UIVisible = false;
@@ -30,7 +31,7 @@
 	};
 
 	const startGame = (mapName: string) => {
-		game = new PeacefulFreeplayGame(gameElement, assets);
+		game = new GAME(gameElement, assets, options);
 		srs = game.needsShipRespawn.subscribe((v) => (showRespawnScreen = v));
 		game.init(assets.maps.find((m: ParsedMapItem) => m.name === mapName));
 	};

@@ -5,11 +5,13 @@ import { Vec2 } from '@api/vec2';
 import { GameMap } from '@classes/map';
 import { PlayerShip, PlayerShipObject } from '@classes/ship';
 import type { ParsedAssets, ParsedMapItem, ParsedShipItem } from '@data/assetTypes';
+import type { OutputOptionProperties } from '@data/gameTypes';
 import { GameUtils, PeacefulGameProperties } from '@utils/gameUtils';
 import { Writable, writable } from 'svelte/store';
 
 export class PeacefulFreeplayGame extends GameUtils implements PeacefulGameProperties {
 	assets: ParsedAssets;
+	options: OutputOptionProperties;
 
 	canvas: Canvas;
 	stage: Sprite<Stage>;
@@ -21,9 +23,12 @@ export class PeacefulFreeplayGame extends GameUtils implements PeacefulGamePrope
 	pause: boolean;
 	needsShipRespawn: Writable<boolean>;
 
-	constructor(p: HTMLElement, assets: ParsedAssets) {
+	constructor(p: HTMLElement, assets: ParsedAssets, options: OutputOptionProperties) {
 		super();
 		this.assets = assets;
+		this.options = options;
+
+		const m = this.options.map;
 
 		this.canvas = new Canvas(p, window.innerWidth);
 		this.stage = new Sprite(new Stage(), new Vec2(0));
@@ -37,21 +42,31 @@ export class PeacefulFreeplayGame extends GameUtils implements PeacefulGamePrope
 
 		this.pause = true;
 		this.needsShipRespawn = writable(false);
-	}
 
-	init(m: ParsedMapItem) {
 		this.canvas.setSize(m.size / 2);
 		this.stage.size.set(m.size);
 
 		this.map.setupBackground(m, this.stage);
 		this.map.setupMap(m, this.stage);
 
-		this.canvas.element.addEventListener('contextmenu', (e: Event) => e.preventDefault());
-
 		window.addEventListener('resize', () => {
 			this.canvas.ar = window.innerWidth / window.innerHeight;
 			this.canvas.setSize(this.canvas.width);
 		});
+
+		this.canvas.element.addEventListener(
+			'wheel',
+			(e) => {
+				if (e.deltaY > 0) {
+					if (this.canvas.width + 100 >= this.player.sprite.size.y * 50) return;
+					this.canvas.setSize(this.canvas.width + 100);
+				} else {
+					if (this.canvas.width - 100 <= this.player.sprite.size.y * 10) return;
+					this.canvas.setSize(this.canvas.width - 100);
+				}
+			},
+			{ passive: true }
+		);
 
 		this.canvas.update = () => {
 			if (this.pause) return;
@@ -68,20 +83,6 @@ export class PeacefulFreeplayGame extends GameUtils implements PeacefulGamePrope
 		this.canvas.start();
 
 		this.needsShipRespawn.set(true);
-
-		this.canvas.element.addEventListener(
-			'wheel',
-			(e) => {
-				if (e.deltaY > 0) {
-					if (this.canvas.width + 100 >= this.player.sprite.size.y * 50) return;
-					this.canvas.setSize(this.canvas.width + 100);
-				} else {
-					if (this.canvas.width - 100 <= this.player.sprite.size.y * 10) return;
-					this.canvas.setSize(this.canvas.width - 100);
-				}
-			},
-			{ passive: true }
-		);
 	}
 
 	spawnPlayer(u: ParsedShipItem) {

@@ -51,6 +51,8 @@ export class Canvas {
 			`display: block; width: 100%; height: 100%; border: none; background: transparent;`
 		);
 
+		this.element.addEventListener('contextmenu', (e) => e.preventDefault());
+
 		this.target.appendChild(this.element);
 
 		this.rd = {

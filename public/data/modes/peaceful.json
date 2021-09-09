@@ -1,6 +1,8 @@
 {
 	"name": "Peaceful",
-	"description": "Lorem Ipsum L L L L L",
+	"description": "Do something by yourself, I guess",
+	"gameClassName": "PeacefulFreeplayGame",
 	"thumb": "images/peacefulThumb.png",
-	"alt": "a lone ship"
+	"alt": "a lone ship",
+	"extra": {}
 }

@@ -21,11 +21,13 @@ export interface ParsedAssets {
 export interface RawModeItem {
 	name: string;
 	description: string;
+	gameClassName: string;
 
 	setMap: true | string;
 	setGravity: true | number;
 	setTimeLimit: true | number;
 	setKillLimit: true | number;
+	extra: Object;
 
 	thumb: string;
 	alt: string;
@@ -34,11 +36,13 @@ export interface RawModeItem {
 export interface ParsedModeItem {
 	name: string;
 	description: string;
+	gameClassName: string;
 
 	setMap: true | string;
 	setGravity: true | number;
 	setTimeLimit: true | number;
 	setKillLimit: true | number;
+	extra: Object;
 
 	thumb: HTMLImageElement;
 	alt: string;

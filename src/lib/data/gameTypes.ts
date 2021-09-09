@@ -7,6 +7,10 @@ export interface InputOptionProperties {
 	gravity: Writable<number>;
 	timeLimit: Writable<number>;
 	killLimit: Writable<number>;
+	extra: {
+		// Extra options for modes/maps that require them
+		[key: string]: any;
+	};
 }
 
 export interface OutputOptionProperties {

@@ -6,6 +6,7 @@
 	import { writable } from 'svelte/store';
 	import GameOptions from '@comp/singleplayer/GameOptions.svelte';
 	import type { InputOptionProperties, OutputOptionProperties } from '@data/gameTypes';
+	import Play from '@comp/singleplayer/Play.svelte';
 
 	export let assets: ParsedAssets;
 
@@ -20,22 +21,15 @@
 		gravity: writable(10),
 		timeLimit: writable(5),
 		killLimit: writable(10),
+		extra: {},
 	};
 
 	let selectedOptions: OutputOptionProperties;
 
-	const click = ({ detail }) => {
-		if (detail.screen === 'title') {
-			dispatch('click', {
-				screen: 'title',
-			});
-		} else {
-			screen = detail.screen;
-		}
-	};
-
 	const start = ({ detail }: { detail: OutputOptionProperties }) => {
 		selectedOptions = detail;
+
+		screen = 'game';
 	};
 </script>
 
@@ -50,7 +44,9 @@
 	<div
 		in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: -100 }}
 		out:fly={{ easing: cubicOut, duration: 250, y: -100 }}
-	/>
+	>
+		<Play {assets} options={selectedOptions} />
+	</div>
 {:else}
 	<div
 		in:fly={{ easing: cubicOut, delay: 250, duration: 250, y: -100 }}

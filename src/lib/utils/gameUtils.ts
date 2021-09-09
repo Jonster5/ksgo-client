@@ -3,15 +3,13 @@ import type { Stage } from '@api/material';
 import type { Sprite } from '@api/sprite';
 import type { GameMap } from '@classes/map';
 import type { PlayerShipObject, PlayerShip } from '@classes/ship';
-import type {
-	ParsedAssets,
-	ParsedMapItem,
-	ParsedShipItem,
-} from '@data/assetTypes';
+import type { ParsedAssets, ParsedMapItem, ParsedShipItem } from '@data/assetTypes';
+import type { OutputOptionProperties } from '@data/gameTypes';
 import type { Writable } from 'svelte/store';
 
 export interface PeacefulGameProperties {
 	assets: ParsedAssets;
+	options: OutputOptionProperties;
 
 	canvas: Canvas;
 	stage: Sprite<Stage>;
@@ -23,7 +21,6 @@ export interface PeacefulGameProperties {
 	pause: boolean;
 	needsShipRespawn: Writable<boolean>;
 
-	init(m: ParsedMapItem): void;
 	kill(): void;
 
 	spawnPlayer(u: ParsedShipItem): void;

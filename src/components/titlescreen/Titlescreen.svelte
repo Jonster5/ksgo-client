@@ -34,7 +34,7 @@
 		/>
 	</div>
 
-	<div class="title">Black Lives <strong>Matter</strong></div>
+	<div class="title">K S G O</div>
 	<div class="version">V0.1</div>
 	<div class="button" on:click={() => click('play')}>Play</div>
 	<div class="button" on:click={() => alert('Coming soon')}>Leaderboards</div>
@@ -69,10 +69,6 @@
 		font-size: 10vw;
 		margin: 4vh 4vw;
 		margin-bottom: 2vh;
-
-		strong {
-			text-shadow: 0 0 20vh white;
-		}
 	}
 
 	.version {

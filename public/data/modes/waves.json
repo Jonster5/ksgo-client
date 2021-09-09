@@ -1,6 +1,8 @@
 {
 	"name": "Waves",
 	"description": "genius genius great mind great mind",
+	"gameClassName": "WavesFreeplayGame",
 	"thumb": "images/wavesThumb.png",
-	"alt": "two ships about to fight"
+	"alt": "two ships about to fight",
+	"extra": {}
 }
