@@ -127,7 +127,7 @@
 			"energy": 1
 		},
 		{
-			"type": "laser",
+			"type": "Laser",
 			"direction": "forward",
 			"x": 4,
 			"y": -33,

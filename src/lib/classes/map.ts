@@ -57,9 +57,7 @@ export class GameMap implements GameMapObject {
 					const mass = this.rand(star.lMass, star.uMass);
 					const color = star.color;
 
-					this.stars.push(
-						new Star(stage, { position, diameter, mass, color })
-					);
+					this.stars.push(new Star(stage, { position, diameter, mass, color }));
 				});
 
 				m.planets.forEach((planet) => {
@@ -73,10 +71,7 @@ export class GameMap implements GameMapObject {
 						this.rand(planet.lVelocity.y, planet.uVelocity.y)
 					);
 
-					const diameter = this.rand(
-						planet.lDiameter,
-						planet.uDiameter
-					);
+					const diameter = this.rand(planet.lDiameter, planet.uDiameter);
 					const mass = this.rand(planet.lMass, planet.uMass);
 					const color = planet.color;
 
@@ -102,10 +97,7 @@ export class GameMap implements GameMapObject {
 						this.rand(asteroid.lVelocity.y, asteroid.uVelocity.y)
 					);
 
-					const diameter = this.rand(
-						asteroid.lDiameter,
-						asteroid.uDiameter
-					);
+					const diameter = this.rand(asteroid.lDiameter, asteroid.uDiameter);
 					const mass = this.rand(asteroid.lMass, asteroid.uMass);
 					const color = asteroid.color;
 
@@ -184,6 +176,7 @@ export class GameMap implements GameMapObject {
 	}
 
 	getSpawnCoords(): { p: Vec2; r: number } {
+		console.log(this.spawns);
 		const p = this.spawns[this.rand(0, this.spawns.length)].getCoords();
 		const r = (this.rand(0, 360) * Math.PI) / 180;
 
@@ -191,6 +184,6 @@ export class GameMap implements GameMapObject {
 	}
 
 	private rand(min: number, max: number): number {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
+		return Math.floor(Math.random() * (max - min)) + min;
 	}
 }

@@ -63,7 +63,7 @@ export class Texture implements MaterialProperties {
 		ctx.globalAlpha = this.alpha;
 
 		ctx.save();
-		ctx.scale(1, -1);
+		ctx.scale(1, 1);
 
 		ctx.beginPath();
 		ctx.drawImage(this.currentFrame, -hs.x, -hs.y, hs.x * 2, hs.y * 2);

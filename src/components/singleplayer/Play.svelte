@@ -1,10 +1,8 @@
 <script lang="ts">
-	import FPmapitem from './FPmapitem.svelte';
 	import UI from './UI.svelte';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Srpitem from './Srpitem.svelte';
-	import type { ParsedAssets, ParsedMapItem } from '@data/assetTypes';
-	import Backbutton from '@comp/general/Backbutton.svelte';
+	import type { ParsedAssets } from '@data/assetTypes';
 	import * as Games from '@classes/game';
 	import type { OutputOptionProperties } from '@data/gameTypes';
 
@@ -16,25 +14,18 @@
 	let game: any;
 	let gameElement: HTMLElement;
 	let showRespawnScreen: boolean;
-	let needsMapSelection = true;
 	let UIVisible = false;
 	let srs: () => void;
-
-	const selectMap = ({ detail }) => {
-		startGame(detail);
-		needsMapSelection = false;
-	};
 
 	const selectShip = ({ detail }) => {
 		game.spawnPlayer(assets.ships.find((s) => s.name === detail));
 		UIVisible = true;
 	};
 
-	const startGame = (mapName: string) => {
+	onMount(() => {
 		game = new GAME(gameElement, assets, options);
 		srs = game.needsShipRespawn.subscribe((v) => (showRespawnScreen = v));
-		game.init(assets.maps.find((m: ParsedMapItem) => m.name === mapName));
-	};
+	});
 
 	onDestroy(() => {
 		try {
@@ -48,19 +39,6 @@
 
 {#if UIVisible}
 	<UI {...game.getUIProps()} />
-{/if}
-
-{#if needsMapSelection}
-	<main class="map">
-		<Backbutton target="title" on:click />
-		<h1>Select a map</h1>
-
-		<div class="maplist">
-			{#each assets.maps as { name, thumb, alt }}
-				<FPmapitem {name} {thumb} {alt} on:select={selectMap} />
-			{/each}
-		</div>
-	</main>
 {/if}
 
 {#if showRespawnScreen}
@@ -83,6 +61,8 @@
 
 	.game {
 		background: black;
+		width: 100%;
+		height: 100%;
 	}
 
 	.map {

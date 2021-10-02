@@ -57,7 +57,7 @@
 
 	"weapons": [
 		{
-			"type": "laser",
+			"type": "Laser",
 			"direction": "forward",
 			"length": 300,
 			"width": 3,

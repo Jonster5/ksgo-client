@@ -43,7 +43,7 @@ export class PeacefulFreeplayGame extends GameUtils implements PeacefulGamePrope
 		this.pause = true;
 		this.needsShipRespawn = writable(false);
 
-		this.canvas.setSize(m.size / 2);
+		this.canvas.setSize(m.size);
 		this.stage.size.set(m.size);
 
 		this.map.setupBackground(m, this.stage);

@@ -75,51 +75,51 @@ export class Laser implements AmmoProperties {
 	}
 }
 
-export class toBeRemoved {
-	sprite: Sprite<Rectangle>;
-	direction: Direction;
+// export class toBeRemoved {
+// 	sprite: Sprite<Rectangle>;
+// 	direction: Direction;
 
-	energy: number;
-	damage: number;
-	firing: boolean;
+// 	energy: number;
+// 	damage: number;
+// 	firing: boolean;
 
-	points: [Vec2, Vec2];
-	readonly length: number;
+// 	points: [Vec2, Vec2];
+// 	readonly length: number;
 
-	constructor(ship: ShipObject, stats: ParsedShipWeaponItem, assets: ParsedAssets) {
-		const { position, width, length, direction } = stats;
+// 	constructor(ship: ShipObject, stats: ParsedShipWeaponItem, assets: ParsedAssets) {
+// 		const { position, width, length, direction } = stats;
 
-		this.sprite = new Sprite(
-			new Rectangle({ texture: 'red' }),
-			new Vec2(width, length),
-			new Vec2(position.x, position.y + length / 2),
-			direction === 'forward'
-				? 0
-				: direction === 'reverse'
-				? Math.PI
-				: direction === 'right'
-				? Math.PI / 2
-				: direction === 'left'
-				? -Math.PI / 2
-				: Math.PI
-		);
+// 		this.sprite = new Sprite(
+// 			new Rectangle({ texture: 'red' }),
+// 			new Vec2(width, length),
+// 			new Vec2(position.x, position.y + length / 2),
+// 			direction === 'forward'
+// 				? 0
+// 				: direction === 'reverse'
+// 				? Math.PI
+// 				: direction === 'right'
+// 				? Math.PI / 2
+// 				: direction === 'left'
+// 				? -Math.PI / 2
+// 				: Math.PI
+// 		);
 
-		this.sprite.visible = false;
+// 		this.sprite.visible = false;
 
-		ship.sprite.add(this.sprite);
+// 		ship.sprite.add(this.sprite);
 
-		this.length = length;
-		this.firing = false;
+// 		this.length = length;
+// 		this.firing = false;
 
-		this.points = [position.clone(), new Vec2(position.x, position.y + length)];
-	}
+// 		this.points = [position.clone(), new Vec2(position.x, position.y + length)];
+// 	}
 
-	on() {
-		this.sprite.visible = true;
-	}
-	off() {
-		this.sprite.visible = false;
-	}
+// 	on() {
+// 		this.sprite.visible = true;
+// 	}
+// 	off() {
+// 		this.sprite.visible = false;
+// 	}
 
-	fire(ship: ShipObject) {}
-}
+// 	fire(ship: ShipObject) {}
+// }
