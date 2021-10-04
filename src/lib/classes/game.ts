@@ -38,20 +38,17 @@ export class PeacefulFreeplayGame extends GameUtils implements PeacefulGamePrope
 
 		this.player = null;
 
-		this.map = new GameMap(this.assets);
-
 		this.pause = true;
 		this.needsShipRespawn = writable(false);
 
 		this.canvas.setSize(m.size);
 		this.stage.size.set(m.size);
 
-		this.map.setupBackground(m, this.stage);
-		this.map.setupMap(m, this.stage);
+		this.map = new GameMap(this.assets, this.stage, m);
 
 		window.addEventListener('resize', () => {
 			this.canvas.ar = window.innerWidth / window.innerHeight;
-			this.canvas.setSize(this.canvas.width);
+			this.canvas.setSize(this.canvas.width / 2);
 		});
 
 		this.canvas.element.addEventListener(

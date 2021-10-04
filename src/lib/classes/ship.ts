@@ -159,7 +159,7 @@ export class PlayerShip implements Ship, Player {
 	update(stage: Sprite<Stage>) {
 		let cost = -this.energyGain;
 
-		let fv = 0;
+		let fv = new Vec2(0);
 
 		if (this.energy <= 0) this.c.set(true);
 
@@ -168,7 +168,7 @@ export class PlayerShip implements Ship, Player {
 				.filter((t) => t.firing)
 				.forEach((t) => {
 					cost += t.energy;
-					if (t.direction === 'forward') fv += t.thrust;
+					if (t.direction === 'forward') fv.add(0, t.thrust);
 					if (t.direction === 'right') this.rotation += t.thrust * 0.1;
 					if (t.direction === 'left') this.rotation -= t.thrust * 0.1;
 				});
@@ -181,21 +181,35 @@ export class PlayerShip implements Ship, Player {
 			e - cost < 0 ? 0 : e - cost > this.maxEnergy ? this.maxEnergy : e - cost
 		);
 
-		const dif = this.velocity
-			.clone()
-			.add(fv / this.mass)
-			.rotate(this.rotation)
-			.multiply(0.1);
+		fv.divide(this.mass * 10).rotate(this.rotation - Math.PI / 2);
 
-		this.s.set(dif.magnitude);
+		this.velocity.add(fv);
+
+		this.s.set(this.velocity.magnitude);
 
 		if (this.speed > this.maxSpeed) {
-			dif.magnitude = this.maxSpeed;
+			this.velocity.magnitude = this.maxSpeed;
 			this.s.set(this.maxSpeed);
 		}
 
 		this.position.add(this.velocity);
 		stage.position.set(this.position.clone().negate());
+
+		if (this.position.x > stage.halfSize.x) {
+			this.sprite.setX(-stage.halfSize.x);
+			stage.setX(stage.halfSize.x);
+		} else if (this.position.x < -stage.halfSize.x) {
+			this.sprite.setX(stage.halfSize.x);
+			stage.setX(-stage.halfSize.x);
+		}
+
+		if (this.position.y > stage.halfSize.y) {
+			this.sprite.setY(-stage.halfSize.y);
+			stage.setY(stage.halfSize.y);
+		} else if (this.position.y < -stage.halfSize.y) {
+			this.sprite.setY(stage.halfSize.y);
+			stage.setY(-stage.halfSize.y);
+		}
 	}
 
 	updateGravity(stars: Star[], planets: Planet[], asteroids: Asteroid[]) {

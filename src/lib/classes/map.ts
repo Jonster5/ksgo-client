@@ -1,8 +1,8 @@
-import { Pattern, Rectangle } from '@api/material';
+import { Pattern, Rectangle, Stage } from '@api/material';
 import { Sprite } from '@api/sprite';
 import { Vec2 } from '@api/vec2';
 import { Star, Planet, Asteroid, Spawn } from '@classes/stellar';
-import type { ParsedAssets, ParsedMapItem } from '@data/assetTypes';
+import type { ParsedAssets, ParsedMapItem, ParsedModeItem } from '@data/assetTypes';
 import type { GameMapObject } from '@utils/mapUtils';
 
 export class GameMap implements GameMapObject {
@@ -18,7 +18,7 @@ export class GameMap implements GameMapObject {
 	bgSprite: Sprite<Rectangle>;
 	bgMaterial: Rectangle;
 
-	constructor(assets: ParsedAssets) {
+	constructor(assets: ParsedAssets, stage: Sprite<Stage>, m: ParsedMapItem) {
 		this.assets = assets;
 
 		this.stars = [];
@@ -28,6 +28,9 @@ export class GameMap implements GameMapObject {
 
 		const c = document.createElement('canvas');
 		this.tctx = c.getContext('2d');
+
+		this.setupBackground(m, stage);
+		this.setupMap(m, stage);
 	}
 
 	setupBackground(m: ParsedMapItem, stage: Sprite): void {
@@ -75,7 +78,7 @@ export class GameMap implements GameMapObject {
 					const mass = this.rand(planet.lMass, planet.uMass);
 					const color = planet.color;
 
-					this.stars.push(
+					this.planets.push(
 						new Planet(stage, {
 							position,
 							velocity,
@@ -85,6 +88,8 @@ export class GameMap implements GameMapObject {
 						})
 					);
 				});
+
+				console.log(this.planets);
 
 				m.asteroids.forEach((asteroid) => {
 					const position = new Vec2(
@@ -101,7 +106,7 @@ export class GameMap implements GameMapObject {
 					const mass = this.rand(asteroid.lMass, asteroid.uMass);
 					const color = asteroid.color;
 
-					this.stars.push(
+					this.asteroids.push(
 						new Asteroid(stage, {
 							position,
 							velocity,
@@ -136,7 +141,6 @@ export class GameMap implements GameMapObject {
 			this.planets.forEach((planet) => {
 				planet.position.add(planet.velocity);
 
-				// console.log(planet.x, this.stage.halfWidth);
 				if (planet.position.x > stage.halfSize.x) {
 					planet.sprite.setX(-stage.halfSize.x);
 				}
@@ -157,7 +161,6 @@ export class GameMap implements GameMapObject {
 			this.asteroids.forEach((asteroid) => {
 				asteroid.position.add(asteroid.velocity);
 
-				// console.log(planet.x, this.stage.halfWidth);
 				if (asteroid.position.x > stage.halfSize.x) {
 					asteroid.sprite.setX(-stage.halfSize.x);
 				}
