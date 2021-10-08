@@ -289,6 +289,194 @@ export class PlayerShip implements Ship, Player {
 	}
 }
 
+export class PlayerSpectator implements Ship, Player {
+	sprite: Sprite<Texture>;
+	thrusters: ShipThruster[];
+	weapons: Weapon[];
+
+	forward: boolean;
+	left: boolean;
+	right: boolean;
+	mass: number;
+	boost: boolean;
+
+	e: Writable<number>;
+	h: Writable<number>;
+	s: Writable<number>;
+	c: Writable<boolean>;
+
+	maxEnergy: number;
+	energyGain: number;
+	maxSpeed: number;
+	maxHull: number;
+
+	energy: number;
+	speed: number;
+	hull: number;
+	cooldown: boolean;
+
+	us: () => void;
+	ue: () => void;
+	uh: () => void;
+	uc: () => void;
+
+	constructor(stage: Sprite<Stage>, stats: ParsedShipItem, assets: ParsedAssets) {
+		this.sprite = new Sprite(new Texture({ frames: [stats.image] }), stats.size.clone());
+		this.thrusters = [];
+
+		this.thrusters = stats.thrusters.map((stats) => new ShipThruster(this, stats, assets));
+
+		this.weapons = stats.weapons.map((stats) => new Weapon(AMMO[stats.type], stats));
+
+		this.sprite.add(...this.thrusters.map((t) => t.sprite));
+		stage.add(this.sprite);
+
+		this.s = writable(0);
+		this.e = writable(0);
+		this.h = writable(stats.maxHull);
+		this.c = writable(false);
+
+		this.mass = stats.mass;
+		this.maxSpeed = stats.maxSpeed;
+
+		this.maxEnergy = stats.maxEnergy;
+		this.energyGain = stats.energyGain;
+
+		this.maxHull = stats.maxHull;
+
+		this.forward = false;
+		this.left = false;
+		this.right = false;
+		this.boost = false;
+
+		this.energy = 0;
+		this.speed = 0;
+		this.hull = this.maxHull;
+		this.cooldown = false;
+
+		this.us = this.s.subscribe((v) => (this.speed = v));
+		this.ue = this.e.subscribe((e) => (this.energy = e));
+		this.uh = this.h.subscribe((h) => (this.hull = h));
+		this.uc = this.c.subscribe((c) => (this.cooldown = c));
+
+		window.addEventListener('keydown', (event: KeyboardEvent) => {
+			event.preventDefault();
+
+			switch (event.key) {
+				case 'W':
+				case 'w':
+					this.velocity.y = 10;
+					break;
+				case 'S':
+				case 's':
+					this.velocity.y = -10;
+					break;
+
+				case 'A':
+				case 'a':
+					this.velocity.x = -10;
+					break;
+
+				case 'D':
+				case 'd':
+					this.velocity.x = 10;
+					break;
+				case ' ':
+					!this.cooldown && this.weapons.forEach((w) => w.on());
+					break;
+				case 'Shift':
+					this.boost = true;
+			}
+		});
+		window.addEventListener('keyup', (event: KeyboardEvent) => {
+			event.preventDefault();
+			switch (event.key) {
+				case 'W':
+					this.boost = false;
+				case 'w':
+					this.forward = false;
+
+					this.velocity.y = 0;
+					break;
+				case 'S':
+				case 's':
+					this.velocity.y = 0;
+					break;
+
+				case 'A':
+				case 'a':
+					this.left = false;
+
+					this.velocity.x = 0;
+					break;
+
+				case 'D':
+				case 'd':
+					this.right = false;
+
+					this.velocity.x = 0;
+					break;
+				case ' ':
+					this.weapons.forEach((w) => w.off());
+					break;
+				case 'Shift':
+					this.boost = false;
+					break;
+			}
+		});
+	}
+
+	update(stage: Sprite<Stage>) {
+		this.position.add(this.velocity);
+		stage.position.set(this.position.clone().negate());
+
+		if (this.position.x > stage.halfSize.x) {
+			this.sprite.setX(-stage.halfSize.x);
+			stage.setX(stage.halfSize.x);
+		} else if (this.position.x < -stage.halfSize.x) {
+			this.sprite.setX(stage.halfSize.x);
+			stage.setX(-stage.halfSize.x);
+		}
+
+		if (this.position.y > stage.halfSize.y) {
+			this.sprite.setY(-stage.halfSize.y);
+			stage.setY(stage.halfSize.y);
+		} else if (this.position.y < -stage.halfSize.y) {
+			this.sprite.setY(stage.halfSize.y);
+			stage.setY(-stage.halfSize.y);
+		}
+	}
+
+	updateGravity(stars: Star[], planets: Planet[], asteroids: Asteroid[]) {}
+
+	kill() {
+		this.sprite.parent.remove(this.sprite);
+
+		this.us();
+		this.ue();
+		this.uh();
+	}
+
+	get position(): Vec2 {
+		return this.sprite.position;
+	}
+	get rotation(): number {
+		return this.sprite.rotation;
+	}
+	set rotation(v: number) {
+		this.sprite.rotation = v;
+	}
+	get velocity(): Vec2 {
+		return this.sprite.velocity;
+	}
+	get rotationalVelocity(): number {
+		return this.sprite.rotationVelocity;
+	}
+	set rotationVelocity(v: number) {
+		this.sprite.rotationVelocity = v;
+	}
+}
+
 // export class EnemyShip implements Ship, AI {
 // 	sprite: Sprite<Texture>;
 // 	thrusters: ShipThruster[];

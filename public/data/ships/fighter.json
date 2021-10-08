@@ -8,7 +8,7 @@
 	"energy_gain": 1.5,
 	"max_hull": 50,
 	"max_speed": 100,
-	"mass": 1,
+	"mass": 5,
 
 	"thrusters": [
 		{
@@ -16,8 +16,8 @@
 			"size": 15,
 			"x": 0,
 			"y": 22,
-			"energy": 2.5,
-			"thrust": 6
+			"energy": 2,
+			"thrust": 20
 		},
 
 		{

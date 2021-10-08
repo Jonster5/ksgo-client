@@ -3,7 +3,7 @@ import { Stage } from '@api/material';
 import { Sprite } from '@api/sprite';
 import { Vec2 } from '@api/vec2';
 import { GameMap } from '@classes/map';
-import { PlayerShip, PlayerShipObject } from '@classes/ship';
+import { PlayerShip, PlayerShipObject, PlayerSpectator } from '@classes/ship';
 import type { ParsedAssets, ParsedMapItem, ParsedShipItem } from '@data/assetTypes';
 import type { OutputOptionProperties } from '@data/gameTypes';
 import { GameUtils, PeacefulGameProperties } from '@utils/gameUtils';
@@ -87,11 +87,17 @@ export class PeacefulFreeplayGame extends GameUtils implements PeacefulGamePrope
 			this.player.kill();
 		}
 
-		this.player = new PlayerShip(this.stage, u, this.assets);
-
 		const { p, r } = this.map.getSpawnCoords();
 
-		this.player.sprite.setPosition(p, r);
+		if (u.name === 'Spectator') {
+			this.player = new PlayerSpectator(this.stage, u, this.assets);
+
+			this.player.sprite.setPosition(new Vec2(0), 0);
+		} else {
+			this.player = new PlayerShip(this.stage, u, this.assets);
+
+			this.player.sprite.setPosition(p, r);
+		}
 
 		this.needsShipRespawn.set(false);
 		this.pause = false;

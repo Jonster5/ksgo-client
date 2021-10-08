@@ -10,7 +10,7 @@
 	"max_hull": 350,
 	"max_speed": 30,
 
-	"mass": 5,
+	"mass": 10,
 
 	"thrusters": [
 		{

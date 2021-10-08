@@ -89,8 +89,6 @@ export class GameMap implements GameMapObject {
 					);
 				});
 
-				console.log(this.planets);
-
 				m.asteroids.forEach((asteroid) => {
 					const position = new Vec2(
 						this.rand(asteroid.lPosition.x, asteroid.uPosition.x),
@@ -179,7 +177,6 @@ export class GameMap implements GameMapObject {
 	}
 
 	getSpawnCoords(): { p: Vec2; r: number } {
-		console.log(this.spawns);
 		const p = this.spawns[this.rand(0, this.spawns.length)].getCoords();
 		const r = (this.rand(0, 360) * Math.PI) / 180;
 
